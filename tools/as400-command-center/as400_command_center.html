@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AS400</title>
+  <style>
+    :root{
+      --bg:#020403;
+      --bg2:#050807;
+      --panel:#080d0b;
+      --panel2:#0b1411;
+      --line:#2f453a;
+      --line2:#53665c;
+      --green:#42ff63;
+      --green2:#8dff9e;
+      --muted:#adc4b4;
+      --text:#e5efe8;
+      --dim:#82918a;
+      --red:#ff3b42;
+      --blue:#43a2ff;
+      --yellow:#ffd23f;
+      --purple:#c678ff;
+      --teal:#34fff3;
+      --orange:#ffac4a;
+      --shadow: 0 0 0 1px rgba(66,255,99,.12), 0 22px 60px rgba(0,0,0,.45);
+      --radius:10px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--bg);}
+    body{margin:0;min-height:100vh;color:var(--text);font-family:var(--mono);background:radial-gradient(circle at top left,rgba(42,104,52,.18),transparent 34rem),linear-gradient(180deg,#010201,#030604 60%,#000);line-height:1.45;}
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.022),rgba(255,255,255,.022) 1px,transparent 1px,transparent 4px);mix-blend-mode:screen;opacity:.25;z-index:1000}
+    a{color:var(--green2)}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .skip{position:absolute;top:-40px;left:8px;background:var(--green);color:#001b05;padding:.6rem .9rem;border-radius:8px;z-index:2000}
+    .skip:focus{top:8px}
+    .wrap{width:min(1500px,96vw);margin:0 auto;padding:22px 0 34px}
+    header.hero{border:1px solid var(--line2);background:linear-gradient(180deg,rgba(9,18,14,.96),rgba(3,6,4,.96));border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px}
+    .hero-top{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;padding:16px 18px;border-bottom:1px solid var(--line)}
+    h1{margin:0;color:var(--green);font-size:clamp(2rem,5vw,4.3rem);line-height:.95;letter-spacing:.06em;text-shadow:0 0 14px rgba(66,255,99,.28)}
+    .subtitle{color:var(--green2);font-size:clamp(.88rem,1.2vw,1.05rem);margin-top:6px}
+    .meta{display:flex;gap:1rem;flex-wrap:wrap;justify-content:flex-end;color:var(--muted);font-size:.95rem;white-space:nowrap}
+    .meta b{color:var(--green);font-weight:700}
+    .topnav{display:grid;grid-template-columns:repeat(8,1fr);gap:0;border-top:1px solid rgba(255,255,255,.03)}
+    .navbtn{background:#050806;color:var(--green);border:0;border-right:1px solid var(--line2);border-bottom:1px solid transparent;padding:13px 7px;text-transform:uppercase;letter-spacing:.04em;font-weight:800;min-height:48px}
+    .navbtn:hover,.navbtn:focus,.navbtn.active{background:#0c1611;box-shadow:inset 0 -2px 0 var(--green);outline:none}
+    .navbtn[data-target="commands"]{color:var(--green2)}
+    .navbtn[data-target="meat"]{color:var(--red)}
+    .navbtn[data-target="receiving"]{color:var(--blue)}
+    .navbtn[data-target="calculators"]{color:var(--green)}
+    .navbtn[data-target="errors"]{color:var(--yellow)}
+    .navbtn[data-target="templates"]{color:var(--purple)}
+    .navbtn[data-target="wins"]{color:var(--teal);border-right:0}
+    .screen{display:none;animation:fade .12s ease-out}
+    .screen.active{display:block}
+    @keyframes fade{from{opacity:.65;transform:translateY(3px)}to{opacity:1;transform:none}}
+    .grid{display:grid;gap:12px}
+    .layout-home{grid-template-columns:360px minmax(0,1fr) 320px;align-items:start}
+    .panel{background:linear-gradient(180deg,rgba(9,15,12,.96),rgba(3,6,4,.98));border:1px solid var(--line2);border-radius:var(--radius);box-shadow:var(--shadow);padding:15px;position:relative;overflow:hidden}
+    .panel::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,transparent,rgba(66,255,99,.035),transparent);transform:translateX(-110%);transition:.5s}
+    .panel:hover::after{transform:translateX(110%)}
+    .panel-title{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--green);font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:1.05rem;margin:0 0 12px;border-bottom:1px solid var(--line);padding-bottom:9px}
+    .panel-title small{color:var(--muted);font-weight:500;text-transform:none}
+    .input-row{display:grid;gap:6px;margin:10px 0}
+    label{color:var(--muted);font-size:.9rem}
+    input,textarea,select{width:100%;background:#010201;border:1px solid var(--line2);color:var(--green2);border-radius:5px;padding:10px 11px;outline:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.5)}
+    textarea{min-height:86px;resize:vertical;color:var(--text)}
+    input:focus,textarea:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 2px rgba(66,255,99,.12)}
+    .cmdline{display:flex;align-items:center;gap:8px;background:#010201;border:1px solid var(--line2);border-radius:6px;padding:8px 10px;color:var(--green);margin-top:12px;position:sticky;bottom:8px;z-index:50;box-shadow:var(--shadow)}
+    .cmdline span{white-space:nowrap;color:var(--green)}
+    .cmdline input{border:0;padding:0;background:transparent;color:var(--green);height:30px}
+    .cmdline input:focus{box-shadow:none}
+    .blink{width:10px;height:20px;background:var(--green);display:inline-block;animation:blink 1s steps(2,end) infinite;box-shadow:0 0 10px rgba(66,255,99,.5)}
+    @keyframes blink{50%{opacity:0}}
+    .quick-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+    .quick-list li{display:grid;grid-template-columns:78px 1fr;gap:8px;align-items:start;color:var(--text)}
+    .quick-list b{color:var(--green);letter-spacing:.04em}
+    .callout{border:1px solid var(--line2);background:#050806;border-radius:8px;padding:13px;color:var(--text)}
+    .callout ul{margin:.2rem 0 .2rem 1.2rem;padding:0}.callout li{margin:.35rem 0}
+    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .home-card{border:1px solid var(--line2);background:linear-gradient(180deg,#0b1110,#050706);border-radius:9px;padding:18px;min-height:176px;display:flex;flex-direction:column;justify-content:space-between;text-align:center;color:var(--text);text-decoration:none;transition:.15s ease;position:relative;overflow:hidden}
+    .home-card:hover,.home-card:focus{transform:translateY(-2px);border-color:var(--green);box-shadow:0 0 0 2px rgba(66,255,99,.12),0 18px 50px rgba(0,0,0,.45);outline:none}
+    .icon{font-size:2.6rem;line-height:1;filter:drop-shadow(0 0 9px rgba(66,255,99,.25))}.home-card h3{margin:10px 0 4px;font-size:1.25rem;text-transform:uppercase;letter-spacing:.04em}.home-card p{margin:0;color:var(--muted);font-size:.9rem}.arrow{font-size:1.2rem;margin-top:10px;color:var(--green)}
+    .red{color:var(--red)!important}.blue{color:var(--blue)!important}.yellow{color:var(--yellow)!important}.purple{color:var(--purple)!important}.teal{color:var(--teal)!important}.orange{color:var(--orange)!important}.green{color:var(--green)!important}
+    .keybar{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;font-size:.86rem;color:var(--muted)}
+    .keybar b{color:var(--green)}
+    .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:16px 0 12px;border:1px solid var(--line2);border-radius:var(--radius);padding:16px;background:linear-gradient(180deg,#0b1110,#030604)}
+    .section-head h2{margin:0;font-size:clamp(1.8rem,3vw,3rem);color:var(--green);text-transform:uppercase;letter-spacing:.05em}.section-head p{margin:.35rem 0 0;color:var(--muted)}
+    .tiny{font-size:.82rem;color:var(--dim)}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .pill,.chip,.action{border:1px solid var(--line2);background:#050806;color:var(--green2);border-radius:999px;padding:8px 11px;font-size:.86rem;line-height:1;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+    .pill:hover,.pill:focus,.chip.active,.action:hover,.action:focus{border-color:var(--green);background:#0d1712;outline:none}
+    .action{border-radius:6px;color:var(--green);font-weight:800;text-transform:uppercase;letter-spacing:.03em}.action.danger{color:var(--red);border-color:#6b3033}.action.secondary{color:var(--muted)}
+    .filters{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}.chip{cursor:pointer}.chip .count{color:var(--dim)}
+    .command-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.command-card{border:1px solid var(--line2);background:linear-gradient(180deg,#0b1110,#040705);border-radius:9px;padding:14px;display:grid;gap:10px;min-height:280px}.command-card h3{margin:0;color:var(--green);font-size:1.8rem;letter-spacing:.05em}.command-card .name{color:var(--text);font-weight:800}.tagline{color:var(--muted);font-size:.9rem}.tagwrap{display:flex;gap:6px;flex-wrap:wrap}.tag{border:1px solid rgba(141,255,158,.25);background:#010201;color:var(--green2);border-radius:999px;padding:4px 7px;font-size:.76rem}.confidence{color:#001b05;background:var(--green);border-radius:4px;padding:3px 6px;font-size:.72rem;font-weight:900;text-transform:uppercase}.confidence.std{background:var(--blue);color:#001427}.confidence.local{background:var(--yellow);color:#1d1400}.confidence.restricted{background:var(--orange);color:#1b0c00}.kv{display:grid;gap:6px;font-size:.9rem}.kv b{color:var(--green2)}
+    details{border:1px solid var(--line);border-radius:8px;background:#030604;padding:0;margin:8px 0}summary{cursor:pointer;padding:10px;color:var(--green);font-weight:800;text-transform:uppercase}details>div{padding:0 12px 12px;color:var(--text)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.four{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .subnav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}.subnav .pill{border-radius:6px;text-transform:uppercase;font-weight:800}.subsection{scroll-margin-top:12px}.routine{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.routine-card{border:1px solid var(--line2);border-radius:8px;background:#050806;padding:13px}.routine-card h3{margin:0 0 10px;color:var(--green);text-transform:uppercase}.routine-card ol{margin:.2rem 0 0 1.35rem;padding:0}.routine-card li{margin:.45rem 0;color:var(--text)}
+    .table-wrap{overflow:auto;border:1px solid var(--line2);border-radius:8px}table{border-collapse:collapse;width:100%;min-width:680px;background:#040705}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{color:var(--green);text-transform:uppercase;background:#07100b}td{color:var(--text)}
+    .calc-output{border:1px solid var(--line2);background:#010201;border-radius:8px;padding:12px;min-height:56px;color:var(--green2);white-space:pre-wrap}.result-big{font-size:1.35rem;color:var(--green);font-weight:900}.copybox{position:relative}.copybox textarea{min-height:130px}.copybtn{position:absolute;right:8px;top:8px}
+    .list{display:grid;gap:10px}.entry{border:1px solid var(--line2);border-radius:8px;background:#050806;padding:12px}.entry h4{margin:0 0 5px;color:var(--green)}.entry .entry-meta{display:flex;gap:8px;flex-wrap:wrap;color:var(--dim);font-size:.82rem}.entry p{margin:.5rem 0 0;color:var(--text);white-space:pre-wrap}.empty{color:var(--dim);border:1px dashed var(--line2);padding:14px;border-radius:8px;background:#030604}
+    .statusbar{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line2);padding:11px 18px;color:var(--green);font-size:.88rem}.footkeys{display:flex;gap:26px;flex-wrap:wrap;color:var(--green);font-size:.9rem;padding:12px 2px 0}.footkeys span{white-space:nowrap}.footkeys b{font-weight:900}
+    .notice{border-left:4px solid var(--yellow);background:#0e0b02;border-radius:8px;padding:12px;color:#ffeaaa}.ok{border-left-color:var(--green);background:#031006;color:var(--green2)}.danger-note{border-left-color:var(--red);background:#120405;color:#ffc4c6}
+    .progress{height:12px;background:#010201;border:1px solid var(--line2);border-radius:999px;overflow:hidden}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--teal));width:0%}.checklist{display:grid;gap:8px}.check{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--line);background:#030604;border-radius:7px;padding:8px}.check input{width:auto;margin-top:2px}.check label{color:var(--text);font-size:.9rem}
+    .kbd{border:1px solid var(--line2);background:#010201;color:var(--green);border-radius:4px;padding:2px 5px;font-size:.8rem}
+    @media (max-width:1180px){.layout-home{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}.command-grid{grid-template-columns:repeat(2,1fr)}.two,.three,.four,.routine{grid-template-columns:1fr}.meta{justify-content:flex-start}.hero-top{grid-template-columns:1fr}}
+    @media (max-width:760px){.wrap{width:min(100vw - 16px,1500px);padding-top:8px}.topnav{grid-template-columns:repeat(2,1fr)}.cards,.command-grid{grid-template-columns:1fr}.keybar{grid-template-columns:1fr}.section-head{display:block}.statusbar{display:block}.quick-list li{grid-template-columns:64px 1fr}}
+    @media print{body{background:#fff;color:#000}body::before,.topnav,.cmdline,.footkeys,.action,.chip,.pill,.skip{display:none!important}.screen{display:block!important}.panel,.section-head,.command-card,.routine-card,.entry{box-shadow:none;border-color:#333;background:#fff;color:#000}.green,.red,.blue,.yellow,.purple,.teal,.orange,h1,.section-head h2,.panel-title,.command-card h3{color:#000!important}input,textarea,select{border:1px solid #333;color:#000;background:#fff}.wrap{width:100%;padding:0}}
+  </style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<div class="wrap">
+  <header class="hero" role="banner">
+    <div class="hero-top">
+      <div><h1>AS400</h1><div class="subtitle">Command center for fast learning, cleaner execution, and documented recognition.</div></div>
+      <div class="meta" aria-label="Local tool status"><span>User: <b id="userId">LOCAL</b></span><span>Warehouse: <b>--</b></span><span>Saved: <b id="saveCount">0</b></span><span>Updated: <b id="lastSaved">never</b></span></div>
+    </div>
+    <nav class="topnav" aria-label="Primary">
+      <button class="navbtn active" data-target="home">[ Home ]</button>
+      <button class="navbtn" data-target="commands">[ Commands ]</button>
+      <button class="navbtn" data-target="meat">[ Meat ]</button>
+      <button class="navbtn" data-target="receiving">[ Receiving ]</button>
+      <button class="navbtn" data-target="calculators">[ Calculators ]</button>
+      <button class="navbtn" data-target="errors">[ Errors ]</button>
+      <button class="navbtn" data-target="templates">[ Templates ]</button>
+      <button class="navbtn" data-target="wins">[ Wins / Notes ]</button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section id="home" class="screen active" aria-labelledby="home-title">
+      <div class="grid layout-home">
+        <aside class="grid">
+          <div class="panel">
+            <h2 class="panel-title" id="home-title">Quick Command Search</h2>
+            <label for="homeSearch">Enter command, usage, or tag</label>
+            <input id="homeSearch" placeholder="IAI, RHI, meat, spool, receiving..." autocomplete="off" />
+            <p class="tiny">Examples: <b class="green">IAI</b>, <b class="green">RHI</b>, <b class="green">DASH</b>, <b class="green">WRKSPLF</b></p>
+            <button class="action" id="homeSearchBtn">Search Commands</button>
+          </div>
+          <div class="panel">
+            <h2 class="panel-title">Most Used</h2>
+            <ul class="quick-list" id="popularCommands"></ul>
+            <button class="action secondary" data-goto="commands">More commands →</button>
+          </div>
+        </aside>
+        <section class="grid">
+          <div class="panel">
+            <h2 class="panel-title">Daily At-a-Glance <small>run the floor like a future supervisor</small></h2>
+            <div class="callout">
+              <ul>
+                <li>Start with <b class="green">IAI / ITMW</b> for top items, status, on-hand, and ETA.</li>
+                <li>Use <b class="green">RHI</b> to confirm what posted after receiving.</li>
+                <li>Use <b class="green">DASH</b> before and during truck windows.</li>
+                <li>Save one proof point daily: shrink caught, sign fixed, variance found, or cut-list adjustment.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="panel">
+            <h2 class="panel-title">Browse By Area</h2>
+            <div class="cards">
+              <a class="home-card" href="#commands" data-link="commands"><div><div class="icon green">⌨</div><h3 class="green">Commands</h3><p>Searchable command cards with usage, tags, and best cases.</p></div><div class="arrow">→</div></a>
+              <a class="home-card" href="#meat" data-link="meat"><div><div class="icon red">◖</div><h3 class="red">Meat</h3><p>Cut list, shrink control, movement checks, and manager proof.</p></div><div class="arrow red">→</div></a>
+              <a class="home-card" href="#receiving" data-link="receiving"><div><div class="icon blue">▣</div><h3 class="blue">Receiving</h3><p>DASH, RHI, shortages, damages, and same-day discrepancy flow.</p></div><div class="arrow blue">→</div></a>
+              <a class="home-card" href="#calculators" data-link="calculators"><div><div class="icon green">▦</div><h3 class="green">Calculators</h3><p>Cut list, days supply, shrink %, GP %, and variance.</p></div><div class="arrow">→</div></a>
+              <a class="home-card" href="#errors" data-link="errors"><div><div class="icon yellow">!</div><h3 class="yellow">Errors</h3><p>Fast fixes for input inhibited, spool issues, locks, and job logs.</p></div><div class="arrow yellow">→</div></a>
+              <a class="home-card" href="#templates" data-link="templates"><div><div class="icon purple">□</div><h3 class="purple">Templates</h3><p>Copy-ready huddles, weekly updates, variance notes, and coaching.</p></div><div class="arrow purple">→</div></a>
+              <a class="home-card" href="#wins" data-link="wins"><div><div class="icon teal">☆</div><h3 class="teal">Wins / Notes</h3><p>Save wins, notes, action items, and spool references locally.</p></div><div class="arrow teal">→</div></a>
+              <a class="home-card" href="#wins" data-link="wins"><div><div class="icon orange">↻</div><h3 class="orange">Self-Update</h3><p>Add local verified commands, export, import, and track mastery.</p></div><div class="arrow orange">→</div></a>
+            </div>
+          </div>
+        </section>
+        <aside class="grid">
+          <div class="panel">
+            <h2 class="panel-title">My Tools</h2>
+            <ul class="quick-list">
+              <li><b>★</b><span><button class="action secondary" data-goto="wins">Wins bank</button></span></li>
+              <li><b>⌁</b><span><button class="action secondary" data-goto="wins">Spool references</button></span></li>
+              <li><b>+</b><span><button class="action secondary" data-goto="commands">Add local command</button></span></li>
+              <li><b>✓</b><span><button class="action secondary" data-goto="wins">Mastery tracker</button></span></li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h2 class="panel-title">Recognition Rule</h2>
+            <div class="notice ok">Do not just work hard. Document what you caught, what screen you used, what action you took, and what changed. That is what managers can repeat.</div>
+          </div>
+          <div class="panel">
+            <h2 class="panel-title">Saved Quick Note</h2>
+            <textarea id="quickNote" placeholder="Example: Review ribeye on-hand after truck. Check RHI before close."></textarea>
+            <button class="action" id="saveQuickNote">[ Save Note ]</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="commands" class="screen" aria-labelledby="commands-title">
+      <div class="section-head"><div><h2 id="commands-title">Commands</h2><p>Search by code, purpose, use case, or tag. Confirmed Costco mnemonics stay separate from standard IBM i commands and local-verify process screens.</p></div><div class="toolbar"><button class="action" id="printCommands">Print</button><button class="action secondary" id="clearCommandSearch">Clear</button></div></div>
+      <div class="panel">
+        <div class="two">
+          <div class="input-row"><label for="commandSearch">Command search</label><input id="commandSearch" placeholder="Try: meat, item, RHI, signs, spool, sales, receiving..." autocomplete="off"></div>
+          <div class="input-row"><label for="confidenceFilter">Confidence</label><select id="confidenceFilter"><option value="all">All</option><option value="Confirmed">Confirmed Costco command</option><option value="Standard IBM i">Standard IBM i</option><option value="Restricted">Restricted / manager access</option><option value="Local Verify">Local verify</option></select></div>
+        </div>
+        <details open><summary>Searchable Tags</summary><div><div id="tagFilters" class="filters"></div></div></details>
+        <div id="commandCount" class="tiny"></div>
+      </div>
+      <div class="command-grid" id="commandGrid"></div>
+      <div class="panel" style="margin-top:12px">
+        <h3 class="panel-title">Add Local Verified Command <small>saved only in this browser</small></h3>
+        <div class="three">
+          <div class="input-row"><label for="localCode">Command / screen</label><input id="localCode" placeholder="Example: local shrink screen"></div>
+          <div class="input-row"><label for="localName">Name</label><input id="localName" placeholder="What your trainer calls it"></div>
+          <div class="input-row"><label for="localTags">Tags</label><input id="localTags" placeholder="meat, shrink, production"></div>
+        </div>
+        <div class="two"><div class="input-row"><label for="localUsage">Usage</label><textarea id="localUsage" placeholder="How to use it. Include option numbers and function keys only after locally verified."></textarea></div><div class="input-row"><label for="localVerified">Verified by / date</label><textarea id="localVerified" placeholder="Example: Verified with Dept Mgr on MM/DD. Function key legend checked."></textarea></div></div>
+        <button class="action" id="saveLocalCommand">[ Save Local Command ]</button>
+      </div>
+    </section>
+
+    <section id="meat" class="screen" aria-labelledby="meat-title">
+      <div class="section-head"><div><h2 id="meat-title" class="red">Meat</h2><p>Simple flow: check movement, build cut list, protect shrink, document proof. Keep local production screen names verified with your trainer.</p></div><div class="toolbar"><a class="pill" href="#meat-routine">Routine</a><a class="pill" href="#meat-cutlist">Cut List</a><a class="pill" href="#meat-shrink">Shrink</a><a class="pill" href="#meat-proof">Proof</a></div></div>
+      <div class="notice danger-note">Accuracy guardrail: publicly available sources do not verify exact Costco meat production/shrink-entry screen mnemonics. Use this playbook as a workflow aid; verify exact AS400 screens, option numbers, and function keys locally.</div>
+      <div id="meat-routine" class="subsection panel">
+        <h3 class="panel-title">Daily Meat Routine</h3>
+        <div class="routine">
+          <div class="routine-card"><h3>Open</h3><ol><li>Check top meat items in <b>IAI</b> or <b>ITMW</b>.</li><li>Review yesterday movement and expected demand.</li><li>Check on-hand, on-order, and delivery timing.</li><li>Build cut list from movement, not guesswork.</li><li>Verify signs before production ramps.</li></ol></div>
+          <div class="routine-card"><h3>Midday</h3><ol><li>Re-check fast movers before they become out-of-stocks.</li><li>Cut to fill need, not to keep the case overloaded.</li><li>Watch slow movers and short shelf-life risk.</li><li>Communicate one risk early: item, number, action.</li></ol></div>
+          <div class="routine-card"><h3>Close</h3><ol><li>Record shrink by reason, not vague memory.</li><li>Check whether receiving posted correctly in <b>RHI</b>.</li><li>Save one win or issue in the Wins bank.</li><li>Prep tomorrow’s cut note for the opener.</li></ol></div>
+        </div>
+      </div>
+      <div id="meat-cutlist" class="panel subsection">
+        <h3 class="panel-title">Cut List Builder <small>planning aid</small></h3>
+        <div class="four">
+          <div class="input-row"><label>Item / cut</label><input id="cutItem" placeholder="Ribeye, top sirloin, salmon..."></div>
+          <div class="input-row"><label>Avg daily sales units</label><input id="cutAvg" type="number" step="0.01" min="0"></div>
+          <div class="input-row"><label>Current saleable on-hand units</label><input id="cutOnHand" type="number" step="0.01" min="0"></div>
+          <div class="input-row"><label>Target days supply</label><input id="cutTarget" type="number" step="0.1" min="0" value="1.5"></div>
+        </div>
+        <div class="four">
+          <div class="input-row"><label>Expected extra demand %</label><input id="cutLift" type="number" step="1" value="0"></div>
+          <div class="input-row"><label>Pack size / tray multiple</label><input id="cutPack" type="number" step="1" min="1" value="1"></div>
+          <div class="input-row"><label>Safety buffer units</label><input id="cutBuffer" type="number" step="1" value="0"></div>
+          <div class="input-row"><label>Local pull window note</label><input id="cutNote" placeholder="Verify locally"></div>
+        </div>
+        <button class="action" id="calcCut">[ Calculate Suggested Cut ]</button>
+        <button class="action secondary" id="saveCutAsWin">Save as action note</button>
+        <div class="calc-output" id="cutOutput">Result will appear here.</div>
+      </div>
+      <div class="two">
+        <div id="meat-shrink" class="panel subsection"><h3 class="panel-title">Shrink Control</h3><ul><li>Watch repeated out-of-date shrink on the same item; that usually means overproduction or poor movement read.</li><li>Separate true trim/fat/bone loss from damages, leakers, out-of-date, donations, and sample/internal use.</li><li>Use item movement + days supply before cutting more.</li><li>Use receiving history to rule out mis-posted freight before blaming production.</li></ul></div>
+        <div class="panel"><h3 class="panel-title">Meat Command Chain</h3><ol><li><b>IAI / ITMW</b> — item status, on-hand, on-order, ETA.</li><li><b>IATOP / DSL</b> — movement and department sales context.</li><li><b>RHI</b> — receiving history and posted quantity.</li><li><b>SI / EDSR</b> — sign verification and printing.</li><li><b>WRKSPLF</b> — save/report spool evidence.</li></ol></div>
+      </div>
+      <div id="meat-proof" class="panel subsection">
+        <h3 class="panel-title">Recognition Proof Builder</h3>
+        <div class="two"><div class="input-row"><label for="meatProofIssue">Issue found</label><textarea id="meatProofIssue" placeholder="Example: Top sirloin DOS above target; risk of out-of-date shrink."></textarea></div><div class="input-row"><label for="meatProofNumbers">Numbers / screen used</label><textarea id="meatProofNumbers" placeholder="Example: ITMW showed ___ OH; DSL avg ___/day; RHI showed ___ received."></textarea></div></div>
+        <button class="action" id="buildMeatProof">Build manager note</button>
+        <div class="copybox"><button class="action copybtn" data-copy="meatProofOut">Copy</button><textarea id="meatProofOut" readonly></textarea></div>
+      </div>
+    </section>
+
+    <section id="receiving" class="screen" aria-labelledby="receiving-title">
+      <div class="section-head"><div><h2 id="receiving-title" class="blue">Receiving</h2><p>Verify freight, catch errors same day, protect inventory accuracy, and save proof.</p></div><div class="toolbar"><a class="pill" href="#rec-flow">Flow</a><a class="pill" href="#rec-discrepancy">Discrepancy</a><a class="pill" href="#rec-spool">Spools</a></div></div>
+      <div id="rec-flow" class="panel subsection">
+        <h3 class="panel-title">Daily Receiving Flow</h3>
+        <div class="routine">
+          <div class="routine-card"><h3>Before Truck</h3><ol><li>Check <b>DASH</b> for inbound vendors, appointments, status, and doors.</li><li>Know priority departments and likely problem freight.</li><li>Prepare discrepancy notes before unload starts.</li></ol></div>
+          <div class="routine-card"><h3>During Truck</h3><ol><li>Match PO / invoice / physical freight.</li><li>Separate shortages, damages, wrong item, and overages immediately.</li><li>For catch-weight freight, verify total weight tolerance using local receiving process.</li></ol></div>
+          <div class="routine-card"><h3>After Truck</h3><ol><li>Use <b>RHI</b> to confirm posting after receiving.</li><li>Use <b>WRKSPLF</b> for proof reports/spool references if available.</li><li>Report variances the same day with item, PO, quantity, and action.</li></ol></div>
+        </div>
+      </div>
+      <div id="rec-discrepancy" class="panel subsection">
+        <h3 class="panel-title">Discrepancy Builder</h3>
+        <div class="four"><div class="input-row"><label>Vendor / PO</label><input id="recVendor" placeholder="Vendor / PO"></div><div class="input-row"><label>Item</label><input id="recItem" placeholder="Item # / description"></div><div class="input-row"><label>Expected</label><input id="recExpected" type="number" step="0.01"></div><div class="input-row"><label>Actual</label><input id="recActual" type="number" step="0.01"></div></div>
+        <div class="two"><div class="input-row"><label>Issue type</label><select id="recType"><option>Short</option><option>Overage</option><option>Damage</option><option>Wrong item</option><option>Catch-weight variance</option><option>Posting issue</option></select></div><div class="input-row"><label>Action taken</label><input id="recAction" placeholder="Separated freight, notified manager, rechecked RHI..."></div></div>
+        <button class="action" id="buildRecNote">Build discrepancy note</button>
+        <button class="action secondary" id="saveRecAsWin">Save as win / issue</button>
+        <div class="copybox"><button class="action copybtn" data-copy="recOut">Copy</button><textarea id="recOut" readonly></textarea></div>
+      </div>
+      <div id="rec-spool" class="panel subsection">
+        <h3 class="panel-title">Receiving Spool Evidence</h3>
+        <p class="tiny">Use this to record proof you viewed/printed. This does not store the actual AS400 spool file; it stores the reference and your notes locally.</p>
+        <button class="action" data-goto="wins">Go to spool saver</button>
+      </div>
+    </section>
+
+    <section id="calculators" class="screen" aria-labelledby="calculators-title">
+      <div class="section-head"><div><h2 id="calculators-title">Calculators</h2><p>Fast math for better decisions. Planning aids only; verify against local department expectations.</p></div></div>
+      <div class="two">
+        <div class="panel"><h3 class="panel-title">Days Supply</h3><div class="two"><div class="input-row"><label>On-hand</label><input id="dosOn" type="number" step="0.01"></div><div class="input-row"><label>Avg daily sales</label><input id="dosAvg" type="number" step="0.01"></div></div><button class="action" id="calcDos">Calculate</button><div id="dosOut" class="calc-output"></div></div>
+        <div class="panel"><h3 class="panel-title">Shrink %</h3><div class="two"><div class="input-row"><label>Shrink dollars</label><input id="shrinkDollars" type="number" step="0.01"></div><div class="input-row"><label>Sales dollars</label><input id="salesDollars" type="number" step="0.01"></div></div><button class="action" id="calcShrink">Calculate</button><div id="shrinkOut" class="calc-output"></div></div>
+        <div class="panel"><h3 class="panel-title">Gross Profit %</h3><div class="two"><div class="input-row"><label>Retail</label><input id="gpRetail" type="number" step="0.01"></div><div class="input-row"><label>Cost</label><input id="gpCost" type="number" step="0.01"></div></div><button class="action" id="calcGp">Calculate</button><div id="gpOut" class="calc-output"></div></div>
+        <div class="panel"><h3 class="panel-title">Receiving Variance</h3><div class="two"><div class="input-row"><label>Expected</label><input id="varExpected" type="number" step="0.01"></div><div class="input-row"><label>Actual</label><input id="varActual" type="number" step="0.01"></div></div><button class="action" id="calcVar">Calculate</button><div id="varOut" class="calc-output"></div></div>
+      </div>
+    </section>
+
+    <section id="errors" class="screen" aria-labelledby="errors-title">
+      <div class="section-head"><div><h2 id="errors-title" class="yellow">Errors</h2><p>Fix the simple stuff fast. For system/profile issues, capture the code and escalate cleanly.</p></div></div>
+      <div class="command-grid" id="errorGrid"></div>
+    </section>
+
+    <section id="templates" class="screen" aria-labelledby="templates-title">
+      <div class="section-head"><div><h2 id="templates-title" class="purple">Templates</h2><p>Copy-ready updates that make you sound prepared, not vague.</p></div></div>
+      <div class="two" id="templateGrid"></div>
+    </section>
+
+    <section id="wins" class="screen" aria-labelledby="wins-title">
+      <div class="section-head"><div><h2 id="wins-title" class="teal">Wins / Notes</h2><p>Save wins, notes, action items, and spool references locally. Export monthly and bring proof to your review.</p></div><div class="toolbar"><button class="action" id="exportData">Export Data</button><label class="action secondary" for="importData">Import Data</label><input id="importData" type="file" accept="application/json" style="display:none"></div></div>
+      <div class="two">
+        <div class="panel"><h3 class="panel-title">Add Win / Action Note</h3><div class="two"><div class="input-row"><label>Type</label><select id="winType"><option>Win</option><option>Issue</option><option>Action item</option><option>Training note</option></select></div><div class="input-row"><label>Screen / source</label><input id="winScreen" placeholder="IAI, RHI, DASH, WRKSPLF..."></div></div><div class="input-row"><label>Note</label><textarea id="winText" placeholder="What happened, what you did, what changed."></textarea></div><button class="action" id="saveWin">Save</button></div>
+        <div class="panel"><h3 class="panel-title">Save Spool Reference</h3><div class="two"><div class="input-row"><label>Report / command</label><input id="spoolReport" placeholder="WRKSPLF, MACR, DSL, RHI..."></div><div class="input-row"><label>Spool file / user data</label><input id="spoolName" placeholder="Name, date, outq, or identifying note"></div></div><div class="two"><div class="input-row"><label>Why saved</label><input id="spoolReason" placeholder="Variance, shrink proof, receiving issue..."></div><div class="input-row"><label>Location / status</label><input id="spoolLocation" placeholder="Printed, PDF, binder, manager reviewed..."></div></div><div class="input-row"><label>Notes</label><textarea id="spoolNotes" placeholder="What the spool proves."></textarea></div><button class="action" id="saveSpool">Save Spool Ref</button></div>
+      </div>
+      <div class="two" style="margin-top:12px">
+        <div class="panel"><h3 class="panel-title">Mastery Tracker</h3><div class="progress"><span id="masteryBar"></span></div><p class="tiny" id="masteryText"></p><div class="checklist" id="masteryList"></div></div>
+        <div class="panel"><h3 class="panel-title">Local Data Summary</h3><div id="dataSummary" class="calc-output"></div><button class="action danger" id="clearAllData">Clear Local Data</button></div>
+      </div>
+      <div class="two" style="margin-top:12px"><div class="panel"><h3 class="panel-title">Saved Wins / Notes</h3><div id="winsList" class="list"></div></div><div class="panel"><h3 class="panel-title">Saved Spool References</h3><div id="spoolList" class="list"></div></div></div>
+    </section>
+  </main>
+
+  <div class="cmdline" aria-label="AS400 style command line"><span>Command ===&gt;</span><input id="globalCommand" placeholder="Type command or section, then Enter"><span class="blink" aria-hidden="true"></span></div>
+  <div class="statusbar"><span>Bottom</span><span>Use command search, save proof, verify local screens.</span></div>
+  <div class="footkeys" aria-label="Function key reminders"><span><b>F3</b>=Exit</span><span><b>F4</b>=Prompt</span><span><b>F5</b>=Refresh</span><span><b>F9</b>=Retrieve</span><span><b>F11</b>=Alt view</span><span><b>F12</b>=Cancel</span><span><b>WRKSPLF</b>=Spool files</span></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const STORE_KEY='as400.command.center.v3';
+const commands=[
+{code:'IAI',name:'Item Alpha Inquiry',confidence:'Confirmed',tags:['item','inventory','meat','sales','lookup','signs'],purpose:'Primary item lookup and gateway to item detail.',usage:'Type IAI, then search by description, item number, department, or UPC without the check digit if manually keyed. Use Opt-column choices where available, such as on-hand, sales, detail, or planned shipments.',best:'Start almost every item investigation here. Use it before asking a supervisor where an item stands.',meat:'Check meat item status, active/inactive, on-hand, on-order, retail, cost, and planned deliveries before building a cut list.',pitfall:'Do not assume every option or function key is identical locally. Check the screen footer.'},
+{code:'ITMW',name:'Item / Warehouse',confidence:'Confirmed',tags:['item','warehouse','inventory','meat','eta'],purpose:'Item view scoped to your current warehouse.',usage:'Use when you already know the item number and need a clean warehouse-level view of on-hand, on-order, status, and delivery information.',best:'Faster than broad search when the item number is known.',meat:'Use for top meat movers before cutting: on-hand, on-order, ETA, status.',pitfall:'ETAs can shift. Do not overpromise exact arrival to members.'},
+{code:'IIL',name:'Item Inventory Lookup',confidence:'Confirmed',tags:['inventory','sister warehouse','stockout','meat','lookup'],purpose:'Cross-warehouse on-hand view.',usage:'Search item inventory across warehouses. Use regional or wider scope if permitted.',best:'Find sister warehouse stock, compare regional position, and avoid surprises on focus items.',meat:'Check if another warehouse has inventory before escalating a stockout or transfer question.',pitfall:'Cross-warehouse on-hand may update overnight, not real time.'},
+{code:'UPC',name:'UPC Lookup',confidence:'Confirmed',tags:['item','barcode','lookup','front end'],purpose:'Find an item by barcode when description or item number is not enough.',usage:'Key the UPC according to local convention; when manually keying UPCs, verify whether the check digit should be dropped.',best:'Use when scan fails or packaging has unclear item description.',meat:'Helpful for fixed-weight or case-ready meat items where barcode is clearer than description.',pitfall:'Variable-weight labels may encode price/weight; verify local scan/keying process.'},
+{code:'SI',name:'Sign Inquiry',confidence:'Confirmed',tags:['signs','price','item','audit'],purpose:'View sign content before printing.',usage:'Use to check price, sign size, instant savings text, and effective dates.',best:'Verify signs before printing to reduce wrong-sign mistakes.',meat:'Check meat case signs before opening or after a price change.',pitfall:'Printing the wrong sign is worse than taking an extra minute to view it first.'},
+{code:'EDSR',name:'Every Day Sign Request',confidence:'Confirmed',tags:['signs','print','price','audit'],purpose:'Request/print price signs.',usage:'Use to print signs, often reachable through item inquiry flow. Confirm sign size locally.',best:'Run during sign walks and price-change follow-up.',meat:'Use after verifying meat item signs with SI/IAI.',pitfall:'Do not confuse EDSR with sales reports. Verify sign size and effective date.'},
+{code:'RHI',name:'Receiving History Inquiry',confidence:'Confirmed',tags:['receiving','po','vendor','meat','variance','inventory'],purpose:'Shows receiving history for an item.',usage:'Enter item to review received dates, vendor/PO information, quantities, and costs where available.',best:'Use to validate vendor claims, investigate receiving errors, and confirm posting.',meat:'Critical for meat truck follow-up, catch-weight questions, and cooler tie-outs.',pitfall:'If physical freight and RHI do not match, escalate same day.'},
+{code:'DASH',name:'Receiving Dashboard',confidence:'Confirmed',tags:['receiving','truck','po','vendor','dashboard'],purpose:'Shows inbound truck/appointment information.',usage:'Use before and during receiving windows to see expected inbound freight and status.',best:'Receiving clerks and department leads should use it to anticipate freight.',meat:'Check meat deliveries before production planning. Cross-check with RHI after posting.',pitfall:'Dashboard expected freight is not the same as confirmed received freight.'},
+{code:'DSI',name:'Department Sales Inquiry',confidence:'Confirmed',tags:['sales','department','manager','daily'],purpose:'Today’s department sales view.',usage:'Review current daily department sales status.',best:'Quick daily scoreboard for managers/supervisors.',meat:'Use for department pulse before huddle or close.',pitfall:'Sales total alone is not enough; pair with movement and on-hand.'},
+{code:'DSL',name:'Department Sales Listing',confidence:'Confirmed',tags:['sales','department','weekly','ytd','meat','trend'],purpose:'Daily, weekly, and YTD department sales detail.',usage:'Use for sales vs prior year/plan and period review.',best:'Bring this to period-end or weekly conversations.',meat:'Use trend to justify cut-list changes or shrink reduction actions.',pitfall:'Avoid opinions. Cite the time range and exact trend.'},
+{code:'LSDT',name:'Daily Sales Tracking',confidence:'Confirmed',tags:['sales','labor','daily','productivity'],purpose:'Daily sales plus labor tracking.',usage:'Review sales, planned hours, used hours, and labor variance where available.',best:'Helps explain staffing decisions and sales-per-labor productivity.',meat:'Useful for explaining production labor pressure during high-demand days.',pitfall:'Do not use labor data without manager context.'},
+{code:'LSWT',name:'Weekly Sales Tracking',confidence:'Confirmed',tags:['sales','labor','weekly','schedule'],purpose:'Weekly sales and labor tracking.',usage:'Review weekly trend and labor use by day.',best:'Use for schedule conversations and weekly recap.',meat:'Tie weekend meat demand to staffing and production needs.',pitfall:'Weekly averages can hide weekend spikes.'},
+{code:'LSDC',name:'Door Count',confidence:'Confirmed',tags:['traffic','sales','daily','front end'],purpose:'Member traffic by day/hour where available.',usage:'Review traffic vs plan/prior year.',best:'Pair with sales to understand demand pressure.',meat:'High traffic can justify tighter mid-day fast-mover checks.',pitfall:'Traffic is directional; item movement still matters.'},
+{code:'IATOP',name:'Top Items by Department',confidence:'Confirmed',tags:['sales','item','department','top movers','meat'],purpose:'Ranks top department items by sales/units.',usage:'Choose department/time range and review top movers.',best:'Use before buyer/regional walks or weekend prep.',meat:'Build meat focus list: top cuts, top shrink risk, top OOS risk.',pitfall:'Top sales with low on-hand is a stockout warning.'},
+{code:'IAFEP',name:'Front-End Productivity',confidence:'Confirmed',tags:['front end','productivity','cashier','labor'],purpose:'Front-end productivity metrics.',usage:'Use for cashier/register productivity and coaching where authorized.',best:'Front-end supervisor coaching.',meat:'Not a meat command, but useful for broader supervisor literacy.',pitfall:'Use fairly and with manager standards.'},
+{code:'MBA',name:'Membership Full Edit',confidence:'Confirmed',tags:['membership','member','restricted'],purpose:'Create/edit/cancel/refund membership records where authorized.',usage:'Use only if your profile permits and role requires it.',best:'Membership desk and supervisor roles.',meat:'Rarely meat-specific; useful for broader warehouse knowledge.',pitfall:'Full edit access carries risk. Use read-only when possible.'},
+{code:'MBA9',name:'Membership Read-Only Lookup',confidence:'Confirmed',tags:['membership','member','lookup','safe'],purpose:'View-only membership lookup.',usage:'Look up by membership identifiers where allowed.',best:'Safer than full edit for routine verification.',meat:'Can support member service without risking edits.',pitfall:'Still handle member data appropriately.'},
+{code:'MRC / MEMR',name:'Membership Report Card',confidence:'Confirmed',tags:['membership','report','manager','sales'],purpose:'Membership performance vs plan/prior year.',usage:'Review new signups, upgrades, renewals where available.',best:'Huddles and membership performance conversations.',meat:'Useful for all-around growth beyond meat.',pitfall:'Not a fresh-department production tool.'},
+{code:'MHS',name:'Member History Shopping',confidence:'Confirmed',tags:['membership','history','refund','member'],purpose:'Member purchase history analytics.',usage:'Look up member purchases where authorized.',best:'Member service and refund research.',meat:'Can support item questions after member purchase.',pitfall:'Follow privacy expectations.'},
+{code:'WII',name:'Warehouse Item Inquiry / Purchase History',confidence:'Confirmed',tags:['refund','member','item','history'],purpose:'Refund-desk purchase history workflow.',usage:'Enter member number, then item or category as the workflow requires.',best:'Validate purchase date/price for member service.',meat:'Can support meat return/refund questions where allowed.',pitfall:'Does not include Costco.com orders per source manual.'},
+{code:'EPRFM',name:'Employee Profile Maintenance',confidence:'Restricted',tags:['profile','access','manager','security'],purpose:'Set up/maintain employee AS400 profiles.',usage:'Restricted to appropriate management roles.',best:'Profile setup, access changes, specialty access.',meat:'Know it exists; do not expect access unless role requires it.',pitfall:'Never attempt access changes outside authorization.'},
+{code:'EPRFD',name:'Employee Profile Display',confidence:'Confirmed',tags:['profile','access','display','security'],purpose:'Read-only profile display.',usage:'View profile/access details if authorized.',best:'Troubleshoot access questions.',meat:'Useful if meat employees cannot access needed menus.',pitfall:'Access varies by position and profile.'},
+{code:'EPC',name:'Employee Price Change / Item Blocks',confidence:'Confirmed',tags:['price','item','blocks','restricted'],purpose:'Same-day item price changes and item blocks where authorized.',usage:'Use only under local rules and manager direction.',best:'Price corrections and item blocks.',meat:'Potentially relevant for markdowns/price changes if locally authorized.',pitfall:'Regional rules dictate access and workflow.'},
+{code:'IRCI',name:'Instant Rebate Coupon Inquiry',confidence:'Confirmed',tags:['coupon','rebate','price','item'],purpose:'Look up active, expired, and future IRCs.',usage:'Enter IRC code according to local convention, often dropping check digit.',best:'Diagnose coupon/register questions.',meat:'Less common but useful for sale questions.',pitfall:'Always check effective dates and restrictions.'},
+{code:'KRI',name:'Roadshow Inquiry',confidence:'Confirmed',tags:['roadshow','vendor','schedule'],purpose:'Roadshow vendor schedule.',usage:'Review vendor/date/floor details where available.',best:'Floor planning and member questions.',meat:'Rarely meat-specific.',pitfall:'Schedule can change.'},
+{code:'MACR',name:'Department Inventory Print',confidence:'Confirmed',tags:['inventory','department','print','count','spool','meat'],purpose:'Print department inventory listing.',usage:'Run for department inventory/on-hand listing where permitted.',best:'Cycle counts, inventory prep, buyer visit prep.',meat:'Use for meat inventory prep and slow-mover review.',pitfall:'Physical count still wins over stale printout.'},
+{code:'WRKSPLF',name:'Work with Spooled Files',confidence:'Standard IBM i',tags:['spool','print','reports','evidence','errors'],purpose:'View, hold, release, change, or manage spooled output.',usage:'Type WRKSPLF. Use option 5 to display, option 6 to release where available, and option 2 to change details if authorized.',best:'Find printed reports and save proof for follow-up.',meat:'Save references to cut-list, inventory, sales, receiving, or shrink report output.',pitfall:'Actual options can depend on authority and local setup.'},
+{code:'WRKOUTQ',name:'Work with Output Queue',confidence:'Standard IBM i',tags:['spool','printer','output queue','errors'],purpose:'Work with printer/output queue.',usage:'Use when spool files are waiting, routed wrong, or printer queues need review.',best:'Printer troubleshooting with permission.',meat:'Useful when meat reports/signs do not print.',pitfall:'Do not change queues unless you know local setup.'},
+{code:'DSPJOBLOG',name:'Display Job Log',confidence:'Standard IBM i',tags:['error','job','diagnostic','it'],purpose:'View the job log and exact CPF/error messages.',usage:'Run after an error to capture specific message text for IT or manager.',best:'Better escalation: exact error, not “AS400 broke.”',meat:'Use when a meat/receiving screen errors and you need proof.',pitfall:'Capture code and context before signing off if possible.'},
+{code:'DSPMSG',name:'Display Messages',confidence:'Standard IBM i',tags:['messages','error','diagnostic'],purpose:'Display system/user messages.',usage:'Use when message waiting indicator appears or a program prompts an error.',best:'Find what the system is trying to tell you.',meat:'Useful for failed print/update messages.',pitfall:'Read before blindly pressing through.'},
+{code:'WRKACTJOB',name:'Work with Active Jobs',confidence:'Standard IBM i',tags:['job','system','diagnostic'],purpose:'Shows active jobs on the system if authorized.',usage:'Use with proper authority to identify active/hung jobs.',best:'Supervisor/IT diagnostic context.',meat:'Rare for normal meat user.',pitfall:'Do not end jobs without authority.'},
+{code:'WRKOBJLCK',name:'Work with Object Locks',confidence:'Standard IBM i',tags:['lock','error','record','diagnostic'],purpose:'Show locks on objects/records if authorized.',usage:'Use to see what job is locking an object.',best:'Diagnose record lock issues.',meat:'Useful if a local meat entry screen is locked by another job.',pitfall:'Usually manager/IT handles release/end job.'},
+{code:'DSPLIBL',name:'Display Library List',confidence:'Standard IBM i',tags:['library','error','diagnostic'],purpose:'Display your library list.',usage:'Use when screens cannot find files or environment seems wrong.',best:'IT diagnostic detail.',meat:'Rare but useful for escalation.',pitfall:'Do not alter environment without direction.'},
+{code:'SIGNOFF',name:'Sign Off',confidence:'Standard IBM i',tags:['session','security','exit'],purpose:'Cleanly end your AS400 session.',usage:'Use SIGNOFF when done. SIGNOFF *LIST may print job log if configured/allowed.',best:'Security and clean session management.',meat:'Always sign off shared terminals.',pitfall:'Do not leave member/vendor information visible.'},
+{code:'PRTSCN',name:'Print Screen',confidence:'Standard IBM i',tags:['spool','print','evidence','screen'],purpose:'Capture current screen as printed/spooled output where available.',usage:'Often accessed through System Request option depending on emulator/local setup.',best:'Proof capture for errors or unusual screens.',meat:'Useful for documenting variance evidence if allowed.',pitfall:'Do not print sensitive data casually.'},
+{code:'WRKQRY / RUNQRY',name:'Query/400 Tools',confidence:'Standard IBM i',tags:['query','report','advanced','restricted'],purpose:'Build/run ad-hoc queries where authorized.',usage:'Typically limited to managers/buyers/advanced users.',best:'Custom reports and analysis.',meat:'Potentially powerful for item movement/shrink, but only if authorized.',pitfall:'Do not run heavy or unauthorized queries.'},
+{code:'EOI',name:'BOPIW Item Check-In',confidence:'Confirmed',tags:['pickup','bopiw','front end','member'],purpose:'Buy-online-pickup-in-warehouse workflow.',usage:'Use screen-specific function keys as shown, such as prompt/confirm/pickup when available.',best:'Member pickup operations.',meat:'Not meat-specific.',pitfall:'Always follow screen footer.'},
+{code:'LOCAL VERIFY',name:'Meat Production / Shrink / Markdown Screens',confidence:'Local Verify',tags:['meat','production','shrink','markdown','verify'],purpose:'Local Costco meat workflows not publicly verified by exact mnemonic.',usage:'Ask your meat manager/trainer: exact command, menu path, option numbers, function keys, reason codes, and when to key entries.',best:'This is where your local notes make the tool valuable.',meat:'Production entry, shrink entry, markdowns, physical inventory, transfers, and cut/trim tracking.',pitfall:'Do not invent codes. Verify and save them under Add Local Verified Command.'}
+];
+const popular=['IAI','ITMW','IIL','RHI','DASH','EDSR','DSL','IATOP','MACR','WRKSPLF','DSPJOBLOG'];
+const errors=[
+{title:'X II / Input Inhibited',fix:'Press Reset. If still stuck, use F12 to cancel or System Request if trained.',proof:'Note screen, command, and what message appeared.'},
+{title:'Spool file not printing',fix:'Use WRKSPLF. Option 5 displays contents; option 6 releases where allowed; confirm output queue if authorized.',proof:'Save spool name/date/outq as a spool reference.'},
+{title:'Record locked / CPF5032 style issue',fix:'Back out with F12. Retry. If persistent, capture job/message and escalate.',proof:'Use DSPJOBLOG if available; do not end jobs without authority.'},
+{title:'File not found / CPF4101 style issue',fix:'Capture exact message, screen, and time. Escalate to manager/IT.',proof:'DSPJOBLOG gives stronger details than memory.'},
+{title:'Function check / CPF9999 style issue',fix:'Stop guessing. Capture job log and steps that triggered it.',proof:'Manager note: command, item, member/vendor if appropriate, exact error.'},
+{title:'Wrong printer / output queue',fix:'WRKSPLF or WRKOUTQ if authorized. Check whether report is held, ready, or routed wrong.',proof:'Save output queue and report name.'}
+];
+const templates=[
+{title:'Daily Meat Huddle',text:'Yesterday meat sales were ____ vs ____ .\nTop mover: ____ .\nMain risk today: ____ .\nAS400 screen checked: ____ .\nAction today: ____ .\nFollow-up time: ____ .'},
+{title:'Weekly Manager Update',text:'This week I tracked ____ using ____ .\nIssue found: ____ .\nNumbers: ____ .\nAction taken: ____ .\nResult or expected result: ____ .\nNext step: ____ .'},
+{title:'Receiving Discrepancy',text:'Vendor/PO: ____ .\nItem: ____ .\nExpected: ____ . Actual: ____ . Variance: ____ .\nScreen checked: DASH / RHI / WRKSPLF.\nAction taken: ____ .\nFollow-up needed: ____ .'},
+{title:'Shrink Explanation',text:'Item: ____ .\nShrink reason: ____ .\nSales trend: ____ .\nOn-hand / days supply: ____ .\nReceiving checked in RHI: Yes / No.\nAction to prevent repeat: ____ .'},
+{title:'Spool Evidence Note',text:'Report/spool: ____ .\nCommand used: ____ .\nDate/time: ____ .\nWhat it proves: ____ .\nWhere stored: printed / PDF / binder / manager reviewed.\nFollow-up: ____ .'},
+{title:'Ask Trainer for Local Command',text:'Can you show me the exact AS400 screen for ____?\nI want to write down:\n1. Command or menu path\n2. Required fields\n3. Option numbers\n4. Function keys\n5. When to use it\n6. Common mistakes'}
+];
+const masteryItems=[
+'Find item status and on-hand using IAI or ITMW.',
+'Use IIL without promising real-time sister-warehouse accuracy.',
+'Confirm a receiving post using RHI.',
+'Find and display a spool file using WRKSPLF.',
+'Build a meat cut-list from movement/on-hand instead of guessing.',
+'Explain one shrink issue with numbers and an action.',
+'Save one spool reference or proof point.',
+'Give one manager update using screen names and numbers.',
+'Add one locally verified meat process screen.',
+'Teach one coworker a useful AS400 lookup.'
+];
+let state={wins:[],spools:[],localCommands:[],quickNote:'',mastery:{},lastSaved:null};
+let activeTag='all';
+const $=sel=>document.querySelector(sel); const $$=sel=>Array.from(document.querySelectorAll(sel));
+function load(){try{const raw=localStorage.getItem(STORE_KEY); if(raw){state=Object.assign(state,JSON.parse(raw));}}catch(e){console.warn(e)} }
+function save(){state.lastSaved=new Date().toISOString(); localStorage.setItem(STORE_KEY,JSON.stringify(state)); renderSaved(); updateMeta();}
+function updateMeta(){const total=(state.wins?.length||0)+(state.spools?.length||0)+(state.localCommands?.length||0); $('#saveCount').textContent=String(total); $('#lastSaved').textContent=state.lastSaved?new Date(state.lastSaved).toLocaleString():'never';}
+function goto(id){$$('.screen').forEach(s=>s.classList.toggle('active',s.id===id)); $$('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.target===id)); window.location.hash=id; setTimeout(()=>window.scrollTo({top:0,behavior:'smooth'}),0); if(id==='commands') $('#commandSearch').focus({preventScroll:true});}
+function initNav(){ $$('.navbtn').forEach(b=>b.addEventListener('click',()=>goto(b.dataset.target))); $$('[data-link],[data-goto]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();goto(el.dataset.link||el.dataset.goto)})); if(location.hash){const id=location.hash.replace('#',''); if($('#'+id)) goto(id);} }
+function allCommands(){return commands.concat((state.localCommands||[]).map(c=>({code:c.code,name:c.name,confidence:'Local Verify',tags:(c.tags||'local,verify').split(',').map(t=>t.trim()).filter(Boolean),purpose:'Locally added command/process.',usage:c.usage,best:c.verified||'Verify screen footer and local process.',meat:c.usage,pitfall:'Local process: re-check if you transfer warehouses or department rules change.'})));}
+function tagList(){const map=new Map(); allCommands().forEach(c=>c.tags.forEach(t=>map.set(t,(map.get(t)||0)+1))); return [...map.entries()].sort((a,b)=>a[0].localeCompare(b[0]));}
+function renderTags(){const box=$('#tagFilters'); box.innerHTML=''; const make=(tag,count)=>{const b=document.createElement('button'); b.className='chip'+(activeTag===tag?' active':''); b.innerHTML=`${tag} <span class="count">${count}</span>`; b.addEventListener('click',()=>{activeTag=tag; renderTags(); renderCommands();}); box.appendChild(b);}; make('all',allCommands().length); tagList().forEach(([t,c])=>make(t,c));}
+function confClass(c){if(c==='Standard IBM i')return 'std'; if(c==='Local Verify')return 'local'; if(c==='Restricted')return 'restricted'; return '';}
+function renderCommands(){const q=($('#commandSearch')?.value||'').toLowerCase().trim(); const cf=$('#confidenceFilter')?.value||'all'; const list=allCommands().filter(c=>{const hay=[c.code,c.name,c.confidence,c.purpose,c.usage,c.best,c.meat,c.pitfall,...c.tags].join(' ').toLowerCase(); return (!q||hay.includes(q))&&(activeTag==='all'||c.tags.includes(activeTag))&&(cf==='all'||c.confidence===cf);}); $('#commandCount').textContent=`Showing ${list.length} of ${allCommands().length} commands/process cards.`; const grid=$('#commandGrid'); grid.innerHTML=list.map(c=>`<article class="command-card"><div><h3>${esc(c.code)}</h3><div class="name">${esc(c.name)}</div></div><div><span class="confidence ${confClass(c.confidence)}">${esc(c.confidence)}</span></div><div class="tagwrap">${c.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div><div class="kv"><div><b>Purpose:</b> ${esc(c.purpose)}</div><div><b>Usage:</b> ${esc(c.usage)}</div><div><b>Best use:</b> ${esc(c.best)}</div><div><b>Meat/receiving angle:</b> ${esc(c.meat)}</div><div><b>Watchout:</b> ${esc(c.pitfall)}</div></div></article>`).join('')||'<div class="empty">No commands match your search.</div>';}
+function renderPopular(){const box=$('#popularCommands'); box.innerHTML=popular.map(code=>{const c=commands.find(x=>x.code===code);return `<li><b>${esc(code)}</b><span>${esc(c?c.name:'')}</span></li>`}).join('');}
+function esc(s){return String(s??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));}
+function num(id){const v=parseFloat($('#'+id).value); return Number.isFinite(v)?v:0;}
+function round(v,d=2){return Number.isFinite(v)?v.toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d}):'0.00';}
+function renderErrors(){const grid=$('#errorGrid'); grid.innerHTML=errors.map(e=>`<article class="command-card"><h3 class="yellow">${esc(e.title)}</h3><div class="kv"><div><b>Fix:</b> ${esc(e.fix)}</div><div><b>Proof to save:</b> ${esc(e.proof)}</div></div></article>`).join('');}
+function renderTemplates(){const grid=$('#templateGrid'); grid.innerHTML=templates.map((t,i)=>`<div class="panel"><h3 class="panel-title">${esc(t.title)}</h3><div class="copybox"><button class="action copybtn" data-copy="tmpl${i}">Copy</button><textarea id="tmpl${i}" readonly>${esc(t.text)}</textarea></div></div>`).join(''); bindCopy();}
+function bindCopy(){ $$('.copybtn').forEach(btn=>{btn.onclick=()=>{const el=$('#'+btn.dataset.copy); if(el){el.select(); navigator.clipboard?.writeText(el.value).catch(()=>document.execCommand('copy')); btn.textContent='Copied'; setTimeout(()=>btn.textContent='Copy',900);}}});}
+function renderMastery(){const list=$('#masteryList'); list.innerHTML=masteryItems.map((m,i)=>{const id='m'+i; const checked=state.mastery?.[id]?'checked':''; return `<div class="check"><input type="checkbox" id="${id}" ${checked}><label for="${id}">${esc(m)}</label></div>`}).join(''); masteryItems.forEach((m,i)=>{$('#m'+i).addEventListener('change',e=>{state.mastery['m'+i]=e.target.checked;save();renderMastery();});}); const done=Object.values(state.mastery||{}).filter(Boolean).length; const pct=Math.round(done/masteryItems.length*100); $('#masteryBar').style.width=pct+'%'; $('#masteryText').textContent=`${done}/${masteryItems.length} complete (${pct}%).`;}
+function renderSaved(){const wins=$('#winsList'); if(wins) wins.innerHTML=(state.wins||[]).length?state.wins.map((w,i)=>`<div class="entry"><h4>${esc(w.type)} — ${esc(w.screen||'No screen')}</h4><div class="entry-meta"><span>${new Date(w.date).toLocaleString()}</span><button class="action secondary" data-del-win="${i}">Delete</button></div><p>${esc(w.text)}</p></div>`).join(''):'<div class="empty">No wins or notes saved yet.</div>'; const sp=$('#spoolList'); if(sp) sp.innerHTML=(state.spools||[]).length?state.spools.map((s,i)=>`<div class="entry"><h4>${esc(s.report||'Spool reference')}</h4><div class="entry-meta"><span>${new Date(s.date).toLocaleString()}</span><span>${esc(s.name||'')}</span><button class="action secondary" data-del-spool="${i}">Delete</button></div><p><b>Why:</b> ${esc(s.reason)}\n<b>Location/status:</b> ${esc(s.location)}\n${esc(s.notes)}</p></div>`).join(''):'<div class="empty">No spool references saved yet.</div>'; const summary=$('#dataSummary'); if(summary) summary.textContent=`Wins/notes: ${(state.wins||[]).length}\nSpool refs: ${(state.spools||[]).length}\nLocal commands: ${(state.localCommands||[]).length}\nQuick note: ${state.quickNote?'saved':'empty'}\nLast saved: ${state.lastSaved?new Date(state.lastSaved).toLocaleString():'never'}`; $$('[data-del-win]').forEach(b=>b.onclick=()=>{state.wins.splice(+b.dataset.delWin,1);save();}); $$('[data-del-spool]').forEach(b=>b.onclick=()=>{state.spools.splice(+b.dataset.delSpool,1);save();}); updateMeta();}
+function initForms(){
+ $('#quickNote').value=state.quickNote||''; $('#saveQuickNote').onclick=()=>{state.quickNote=$('#quickNote').value;save();};
+ $('#homeSearchBtn').onclick=()=>{ $('#commandSearch').value=$('#homeSearch').value; goto('commands'); renderCommands();}; $('#homeSearch').addEventListener('keydown',e=>{if(e.key==='Enter')$('#homeSearchBtn').click();});
+ $('#commandSearch').addEventListener('input',renderCommands); $('#confidenceFilter').addEventListener('change',renderCommands); $('#clearCommandSearch').onclick=()=>{$('#commandSearch').value='';$('#confidenceFilter').value='all';activeTag='all';renderTags();renderCommands();}; $('#printCommands').onclick=()=>window.print();
+ $('#saveLocalCommand').onclick=()=>{const code=$('#localCode').value.trim(); if(!code){alert('Add a command or screen name first.');return;} state.localCommands.push({code,name:$('#localName').value.trim()||'Local process',tags:$('#localTags').value.trim()||'local,verify',usage:$('#localUsage').value.trim(),verified:$('#localVerified').value.trim(),date:new Date().toISOString()}); ['localCode','localName','localTags','localUsage','localVerified'].forEach(id=>$('#'+id).value='');save();renderTags();renderCommands();};
+ $('#calcCut').onclick=calcCut; $('#saveCutAsWin').onclick=()=>{const out=$('#cutOutput').textContent; if(out && !out.includes('Result will')){state.wins.push({type:'Action item',screen:'Cut List Builder',text:out,date:new Date().toISOString()});save();goto('wins');}};
+ $('#buildMeatProof').onclick=()=>{$('#meatProofOut').value=`Meat update:\nIssue: ${$('#meatProofIssue').value||'____'}\nNumbers / screen used: ${$('#meatProofNumbers').value||'____'}\nAction: ____\nFollow-up: ____\nResult expected: ____`;};
+ $('#buildRecNote').onclick=buildRecNote; $('#saveRecAsWin').onclick=()=>{buildRecNote();state.wins.push({type:'Issue',screen:'Receiving / RHI / DASH',text:$('#recOut').value,date:new Date().toISOString()});save();goto('wins');};
+ $('#calcDos').onclick=()=>{const on=num('dosOn'),avg=num('dosAvg'); $('#dosOut').innerHTML=avg>0?`<span class="result-big">${round(on/avg,2)} days supply</span>\nFormula: on-hand ÷ avg daily sales.`:'Enter avg daily sales above zero.'};
+ $('#calcShrink').onclick=()=>{const sh=num('shrinkDollars'),sales=num('salesDollars'); $('#shrinkOut').innerHTML=sales>0?`<span class="result-big">${round(sh/sales*100,2)}%</span>\nFormula: shrink dollars ÷ sales dollars × 100.`:'Enter sales above zero.'};
+ $('#calcGp').onclick=()=>{const retail=num('gpRetail'),cost=num('gpCost'); $('#gpOut').innerHTML=retail>0?`<span class="result-big">${round((retail-cost)/retail*100,2)}% GP</span>\nGross profit dollars: $${round(retail-cost,2)}`:'Enter retail above zero.'};
+ $('#calcVar').onclick=()=>{const exp=num('varExpected'),act=num('varActual'),diff=act-exp; $('#varOut').innerHTML=`<span class="result-big">${diff>=0?'+':''}${round(diff,2)}</span>\nVariance %: ${exp?round(diff/exp*100,2)+'%':'n/a'}\nPositive = overage. Negative = short.`};
+ $('#saveWin').onclick=()=>{const text=$('#winText').value.trim(); if(!text){alert('Write the win/note first.');return;} state.wins.push({type:$('#winType').value,screen:$('#winScreen').value.trim(),text,date:new Date().toISOString()}); $('#winText').value=''; $('#winScreen').value=''; save();};
+ $('#saveSpool').onclick=()=>{const report=$('#spoolReport').value.trim(); if(!report && !$('#spoolName').value.trim()){alert('Add a report/command or spool name first.');return;} state.spools.push({report,name:$('#spoolName').value.trim(),reason:$('#spoolReason').value.trim(),location:$('#spoolLocation').value.trim(),notes:$('#spoolNotes').value.trim(),date:new Date().toISOString()}); ['spoolReport','spoolName','spoolReason','spoolLocation','spoolNotes'].forEach(id=>$('#'+id).value=''); save();};
+ $('#exportData').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='as400-local-progress.json'; a.click(); URL.revokeObjectURL(a.href);};
+ $('#importData').addEventListener('change',e=>{const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{try{const data=JSON.parse(r.result); state=Object.assign(state,data); save(); renderAll(); alert('Imported.');}catch(err){alert('Import failed: invalid JSON.')}}; r.readAsText(f);});
+ $('#clearAllData').onclick=()=>{if(confirm('Clear all local wins, spools, notes, local commands, and mastery progress?')){localStorage.removeItem(STORE_KEY); state={wins:[],spools:[],localCommands:[],quickNote:'',mastery:{},lastSaved:null}; renderAll();}};
+ $('#globalCommand').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=e.target.value.trim().toLowerCase(); const section=['home','commands','meat','receiving','calculators','errors','templates','wins'].find(s=>s.startsWith(v)||v===s); if(section){goto(section);} else {$('#commandSearch').value=e.target.value; goto('commands'); renderCommands();} e.target.value='';}});
+ bindCopy();
+}
+function calcCut(){const item=$('#cutItem').value||'Item'; const avg=num('cutAvg'),on=num('cutOnHand'),target=num('cutTarget'),lift=num('cutLift'),pack=Math.max(1,num('cutPack')||1),buffer=num('cutBuffer'); const demand=avg*target*(1+lift/100)+buffer; let need=Math.max(0,demand-on); const rounded=Math.ceil(need/pack)*pack; const dos=avg>0?on/avg:0; const warning=rounded===0?'Do not cut more unless case presentation/local manager direction requires it.':'Cut enough to reach target without overbuilding the case.'; $('#cutOutput').textContent=`${item}\nSuggested cut: ${round(rounded,0)} units/trays (rounded to pack multiple ${pack}).\nCurrent days supply: ${avg>0?round(dos,2):'n/a'}\nTarget demand: ${round(demand,2)} units.\nWatchout: ${warning}\nLocal note: ${$('#cutNote').value||'Verify pull window and production process locally.'}\nManager note: Based on avg daily sales ${avg}, on-hand ${on}, target DOS ${target}, and demand lift ${lift}%, recommended cut is ${round(rounded,0)}.`;}
+function buildRecNote(){const exp=num('recExpected'),act=num('recActual'),diff=act-exp; $('#recOut').value=`Receiving discrepancy:\nVendor/PO: ${$('#recVendor').value||'____'}\nItem: ${$('#recItem').value||'____'}\nType: ${$('#recType').value}\nExpected: ${exp}\nActual: ${act}\nVariance: ${diff>=0?'+':''}${round(diff,2)} (${exp?round(diff/exp*100,2)+'%':'n/a'})\nAction taken: ${$('#recAction').value||'____'}\nScreens checked: DASH / RHI / WRKSPLF as applicable.\nFollow-up needed: ____`;}
+function renderAll(){renderPopular();renderTags();renderCommands();renderErrors();renderTemplates();renderMastery();renderSaved();$('#quickNote').value=state.quickNote||'';}
+load(); initNav(); initForms(); renderAll(); updateMeta();
+})();
+</script>
+</body>
+</html>

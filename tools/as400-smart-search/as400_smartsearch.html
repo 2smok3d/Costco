@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AS400 Quick Reference — Costco Warehouse</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #1a1a2e; }
+
+  header {
+    background: linear-gradient(135deg, #003087 0%, #0055a5 100%);
+    color: white; padding: 22px 28px 18px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+  }
+  header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.5px; }
+  header p { font-size: 0.82rem; opacity: 0.8; margin-top: 3px; }
+
+  .search-bar {
+    margin: 16px 28px 0;
+    position: relative;
+  }
+  .search-bar input {
+    width: 100%; padding: 12px 16px 12px 42px;
+    font-size: 1rem; border: none; border-radius: 8px;
+    background: rgba(255,255,255,0.15);
+    color: white; outline: none;
+    transition: background 0.2s;
+  }
+  .search-bar input::placeholder { color: rgba(255,255,255,0.65); }
+  .search-bar input:focus { background: rgba(255,255,255,0.22); }
+  .search-bar .icon {
+    position: absolute; left: 13px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem; opacity: 0.75;
+  }
+  #result-count {
+    font-size: 0.78rem; opacity: 0.75; margin-top: 6px; padding-bottom: 4px;
+  }
+
+  .filters {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 14px 28px 10px;
+  }
+  .filter-btn {
+    padding: 5px 14px; border-radius: 20px;
+    border: 2px solid transparent;
+    font-size: 0.78rem; font-weight: 600; cursor: pointer;
+    transition: all 0.15s; letter-spacing: 0.3px;
+  }
+  .filter-btn.active { color: white; }
+  .filter-btn:not(.active) { background: white; }
+
+  .main { padding: 0 28px 40px; }
+
+  .section-header {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: #666;
+    margin: 20px 0 10px; padding-left: 4px;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
+  }
+
+  .card {
+    background: white; border-radius: 10px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    border-left: 4px solid #ccc;
+    transition: box-shadow 0.15s, transform 0.1s;
+    cursor: default;
+  }
+  .card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+    transform: translateY(-1px);
+  }
+  .card.hidden { display: none; }
+
+  .card-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+  .cmd-badge {
+    font-size: 0.78rem; font-weight: 700;
+    padding: 3px 9px; border-radius: 5px;
+    color: white; white-space: nowrap; flex-shrink: 0;
+    letter-spacing: 0.5px; margin-top: 1px;
+  }
+  .card-title { font-size: 0.97rem; font-weight: 700; color: #1a1a2e; line-height: 1.3; }
+  .card-desc { font-size: 0.84rem; color: #555; line-height: 1.55; }
+  .card-steps {
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px solid #f0f0f0;
+  }
+  .card-steps-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #999; margin-bottom: 5px; }
+  .card-steps ul { padding-left: 16px; }
+  .card-steps li { font-size: 0.82rem; color: #444; line-height: 1.5; margin-bottom: 2px; }
+  .fkey { display: inline-block; background: #e8ecf0; color: #333; font-size: 0.72rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; margin: 0 1px; }
+  .tip { font-size: 0.78rem; background: #fffbe6; border-left: 3px solid #f0c040; padding: 6px 10px; border-radius: 0 5px 5px 0; margin-top: 8px; color: #6b5700; }
+
+  .no-results { text-align: center; padding: 60px 20px; color: #888; font-size: 1rem; }
+
+  /* Category colors */
+  .cat-intro    { border-color: #6c757d; }
+  .cat-passwords{ border-color: #dc3545; }
+  .cat-items    { border-color: #fd7e14; }
+  .cat-trans    { border-color: #ffc107; }
+  .cat-merch    { border-color: #198754; }
+  .cat-sales    { border-color: #0dcaf0; }
+  .cat-labor    { border-color: #6f42c1; }
+  .cat-member   { border-color: #d63384; }
+  .cat-account  { border-color: #20c997; }
+  .cat-reports  { border-color: #0d6efd; }
+  .cat-ancill   { border-color: #adb5bd; }
+  .cat-rf       { border-color: #e76f51; }
+
+  .bg-intro    { background: #6c757d; }
+  .bg-passwords{ background: #dc3545; }
+  .bg-items    { background: #fd7e14; }
+  .bg-trans    { background: #c99400; }
+  .bg-merch    { background: #198754; }
+  .bg-sales    { background: #0897b5; }
+  .bg-labor    { background: #6f42c1; }
+  .bg-member   { background: #d63384; }
+  .bg-account  { background: #20c997; color: #000 !important; }
+  .bg-reports  { background: #0d6efd; }
+  .bg-ancill   { background: #6c757d; }
+  .bg-rf       { background: #e76f51; }
+
+  .fbtn-intro    { border-color: #6c757d; color: #6c757d; }
+  .fbtn-passwords{ border-color: #dc3545; color: #dc3545; }
+  .fbtn-items    { border-color: #fd7e14; color: #fd7e14; }
+  .fbtn-trans    { border-color: #c99400; color: #c99400; }
+  .fbtn-merch    { border-color: #198754; color: #198754; }
+  .fbtn-sales    { border-color: #0897b5; color: #0897b5; }
+  .fbtn-labor    { border-color: #6f42c1; color: #6f42c1; }
+  .fbtn-member   { border-color: #d63384; color: #d63384; }
+  .fbtn-account  { border-color: #20c997; color: #20c997; }
+  .fbtn-reports  { border-color: #0d6efd; color: #0d6efd; }
+  .fbtn-ancill   { border-color: #6c757d; color: #6c757d; }
+  .fbtn-rf       { border-color: #e76f51; color: #e76f51; }
+
+  .filter-btn.active.fbtn-intro    { background: #6c757d; }
+  .filter-btn.active.fbtn-passwords{ background: #dc3545; }
+  .filter-btn.active.fbtn-items    { background: #fd7e14; }
+  .filter-btn.active.fbtn-trans    { background: #c99400; }
+  .filter-btn.active.fbtn-merch    { background: #198754; }
+  .filter-btn.active.fbtn-sales    { background: #0897b5; }
+  .filter-btn.active.fbtn-labor    { background: #6f42c1; }
+  .filter-btn.active.fbtn-member   { background: #d63384; }
+  .filter-btn.active.fbtn-account  { background: #20c997; color: #000; }
+  .filter-btn.active.fbtn-reports  { background: #0d6efd; }
+  .filter-btn.active.fbtn-ancill   { background: #6c757d; }
+  .filter-btn.active.fbtn-rf       { background: #e76f51; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📦 AS400 Quick Reference</h1>
+  <p>Costco Warehouse Operations · February 2026</p>
+  <div class="search-bar">
+    <span class="icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search by command, description, or keyword…" oninput="filterCards()">
+  </div>
+  <div id="result-count"></div>
+</header>
+
+<div class="filters" id="filterRow">
+  <button class="filter-btn active fbtn-all" onclick="setFilter('all',this)" style="border-color:#003087;color:#003087;">All</button>
+  <button class="filter-btn fbtn-intro" onclick="setFilter('intro',this)">Navigation</button>
+  <button class="filter-btn fbtn-passwords" onclick="setFilter('passwords',this)">Passwords</button>
+  <button class="filter-btn fbtn-items" onclick="setFilter('items',this)">Item Lookup</button>
+  <button class="filter-btn fbtn-trans" onclick="setFilter('trans',this)">Transactions</button>
+  <button class="filter-btn fbtn-merch" onclick="setFilter('merch',this)">Merchandising</button>
+  <button class="filter-btn fbtn-sales" onclick="setFilter('sales',this)">Warehouse Sales</button>
+  <button class="filter-btn fbtn-labor" onclick="setFilter('labor',this)">Labor Scheduling</button>
+  <button class="filter-btn fbtn-member" onclick="setFilter('member',this)">Membership</button>
+  <button class="filter-btn fbtn-account" onclick="setFilter('account',this)">Accounting</button>
+  <button class="filter-btn fbtn-reports" onclick="setFilter('reports',this)">Reports</button>
+  <button class="filter-btn fbtn-ancill" onclick="setFilter('ancill',this)">Ancillary</button>
+  <button class="filter-btn fbtn-rf" onclick="setFilter('rf',this)">RF Scanner</button>
+</div>
+
+<div class="main" id="mainContent"></div>
+
+<script>
+const data = [
+  // ── INTRODUCTION / NAVIGATION ──────────────────────────────────────────────
+  {
+    cmd: "SIGN-ON",
+    title: "AS400 Sign-On",
+    cat: "intro",
+    desc: "Log into AS400 using your warehouse's generic or personal profile. Generic profiles are based on your warehouse number.",
+    steps: [
+      "Warehouse (1-2 digit): User = WHSEINXX, Password = EDP0XX",
+      "Warehouse (3 digit): User = WHSEINXXX, Password = EDPXXX",
+      "Warehouse (4 digit): User = WIN0XXXX, Password = EDP0XXXX",
+      "Never share personal management profiles — use generics for general access"
+    ],
+    tip: "Demo supervisors use WXXXDMO / WXXXXDMO profiles with restricted access."
+  },
+  {
+    cmd: "F-KEYS",
+    title: "Function Keys (F1–F24)",
+    cat: "intro",
+    desc: "AS400 is keyboard-driven. Function keys control navigation throughout every screen.",
+    steps: [
+      "F1 = Help — screen-specific info",
+      "F3 = Exit — go back to previous menu",
+      "F4 = Search / Prompt field options",
+      "F12 = Cancel — previous screen",
+      "F21 = Print",
+      "F13-F24 = Shift + F1 through F12"
+    ],
+    tip: "Blue items on screen can be double-clicked as an alternative to keying."
+  },
+  {
+    cmd: "F1 HELP",
+    title: "F1 Help Screen",
+    cat: "intro",
+    desc: "Press F1 on any screen to see definitions, function key list, and usage tips specific to that option.",
+    steps: ["Press F1 from any AS400 screen", "Read field definitions and available F-key actions"],
+  },
+  {
+    cmd: "F4 SEARCH",
+    title: "F4 Search / Prompt",
+    cat: "intro",
+    desc: "Press F4 with cursor in the Option field to get a searchable list of all available menu options.",
+    steps: [
+      "Place cursor in the Option field",
+      "Press F4 to open the search menu",
+      "Search by Menu Option or Description",
+      "Page Up/Down on main screen shows all options"
+    ]
+  },
+  {
+    cmd: "SESSIONS",
+    title: "Toggle Between Sessions",
+    cat: "intro",
+    desc: "You can run two AS400 sessions simultaneously from one login.",
+    steps: [
+      "Press ESC from current session",
+      "Key 1 next to 'Start New Session', press ENTER",
+      "Repeat to toggle back to original session"
+    ]
+  },
+  {
+    cmd: "CUSTOM VIEW",
+    title: "Custom Home Screen (F15/F18)",
+    cat: "intro",
+    desc: "Create a personalized AS400 home screen with your most-used options.",
+    steps: [
+      "Type desired option in the Option field",
+      "Press F15 (Shift+F3) to add it to custom menu",
+      "Press F18 (Shift+F6) to toggle between default and custom menus",
+      "Press F15 again while in an option to remove it from custom menu"
+    ],
+    tip: "System defaults to custom view once any custom options are added."
+  },
+  {
+    cmd: "NEW WINDOW",
+    title: "Open Session in New Window",
+    cat: "intro",
+    desc: "If AS400 sessions open in the same window and can't be moved, change the default setting.",
+    steps: [
+      "Go to Options > Rumba+ Desktop Options > Tabs",
+      "Check 'Open Session Profile in new window'"
+    ]
+  },
+
+  // ── PASSWORDS ──────────────────────────────────────────────────────────────
+  {
+    cmd: "EPRFM",
+    title: "EPRFM — Assign Profiles",
+    cat: "passwords",
+    desc: "Set up AS400 profiles for Optical, Inventory Audit, RTV, Sales Audit, and Vault employees. Staff managers and above only.",
+    steps: [
+      "Enter option EPRFM",
+      "Press F4 to see available position types",
+      "Enter employee number, press ENTER",
+      "Press F6 to assign user",
+      "Tab to User Template field, press F4 to pick template",
+      "Press F8 to finalize",
+      "To disable: enter position type + employee number, press F23 twice"
+    ],
+    tip: "Verify employee's JTS job code is entered — this auto-triggers Costco U training."
+  },
+  {
+    cmd: "EPRFD",
+    title: "EPRFD — View Profiles",
+    cat: "passwords",
+    desc: "Inquiry-only option to view profiles that were assigned through EPRFM.",
+    steps: ["Enter option EPRFD", "Look up assigned profiles — view only, no edits"]
+  },
+  {
+    cmd: "RPWD",
+    title: "RPWD — Reset Role Password",
+    cat: "passwords",
+    desc: "Reset a role-based AS400 profile password. Available to staff managers and above.",
+    steps: [
+      "Enter option RPWD",
+      "Enter the user profile to reset and reason",
+      "A temporary password will be issued",
+      "Employee must set new password on first login"
+    ]
+  },
+  {
+    cmd: "WPM",
+    title: "WPM — Warehouse Password Maintenance",
+    cat: "passwords",
+    desc: "Add, change, or delete users and passwords for protected warehouse programs. AWM and WM access only.",
+    steps: [
+      "Enter option WPM",
+      "Press F6 to add new user",
+      "Enter User ID (max 10 chars) and User Name",
+      "Have employee set their own password (5-10 chars, letters/numbers only, no special characters)",
+      "Assign access options: APR (Refund Audit), EPC (Emergency Price Change), TCP (Tire Center), TSH (Trash)"
+    ],
+    tip: "Use PWMI to view who has passwords for these options."
+  },
+
+  // ── ITEM LOOKUP ───────────────────────────────────────────────────────────
+  {
+    cmd: "IAI",
+    title: "IAI — Item Alpha Inquiry",
+    cat: "items",
+    desc: "Search for items by keyword/description. Most common way to look up items in the warehouse.",
+    steps: [
+      "Enter keywords in Description field",
+      "Optionally filter by Dept number",
+      "Location defaults to home warehouse",
+      "Display On Hand: Y = in-stock only, N = all items ever carried",
+      "Press Field Enter (+) to search",
+      "From results: key 8 = ITMW (most used), 1 = regional on-hand, 3 = IIL sales by region, 4 = receiving history, 5 = sign info, 6 = print sign, 0 = HAZMAT info"
+    ],
+    tip: "Key 8 next to multiple items to open ITMW for each one."
+  },
+  {
+    cmd: "IGM",
+    title: "IGM — Item Group Maintenance",
+    cat: "items",
+    desc: "Create and maintain item groups for reporting and comparison purposes.",
+    steps: [
+      "Enter warehouse number and group name, press ENTER",
+      "Add or remove item numbers from the group",
+      "Press ENTER to confirm",
+      "Press F23 to delete the group"
+    ],
+    tip: "Only active items in the warehouse can be added."
+  },
+  {
+    cmd: "IRCI",
+    title: "IRCI — Instant Rebate Coupon Inquiry",
+    cat: "items",
+    desc: "View active, expired, or future instant rebate coupons. Use to find coupon numbers for adjustments and refunds.",
+    steps: [
+      "Filter by location, department, or item number",
+      "Place X next to Active, Expired, or Future",
+      "For expired IRCs: enter a start date",
+      "For future IRCs: enter start AND end date (start date must be in future)",
+      "Screen shows item #, coupon number, IRC amount, quantity limit, start/end dates"
+    ],
+    tip: "When keying a coupon number from IRCI on the register: drop the last digit OR precede with </>"
+  },
+  {
+    cmd: "ISI",
+    title: "ISI — Item Sales Inquiry",
+    cat: "items",
+    desc: "View sales info for individual items or groups of items.",
+    steps: [
+      "Enter individual item numbers on the lines, OR",
+      "Enter an IGM group name to pull all items in that group",
+      "View sales data by item"
+    ],
+    tip: "Groups are created and edited in option IGM."
+  },
+  {
+    cmd: "ITMW",
+    title: "ITMW — Item Inquiry for Warehouse",
+    cat: "items",
+    desc: "Detailed item info for a specific warehouse — the most-used item lookup. Shows on-hand, price, on-order, next delivery, and real-time today's sales.",
+    steps: [
+      "Enter item number, press ENTER",
+      "Screen shows: units on hand, dept, sell price, units on order, expected arrival, NSI on hand, today's sales (real-time)",
+      "F9 = rebates on this item",
+      "F14 = taxes",
+      "F21 = print sign",
+      "F22 = EBT eligibility and environmental fees"
+    ],
+    tip: "Today's sales updates in real time — the timestamp shows how recent the data is."
+  },
+  {
+    cmd: "IXI",
+    title: "IXI — Item/UPC Cross Reference",
+    cat: "items",
+    desc: "Cross-reference an item number with all associated UPCs. Use when an item won't scan at the register.",
+    steps: [
+      "Enter item number",
+      "Screen lists all UPCs tied to that item",
+      "If UPC is set up but not scanning, run an EPC download to push the fix"
+    ]
+  },
+  {
+    cmd: "ITMG",
+    title: "ITMG — Item Group Maintenance",
+    cat: "items",
+    desc: "Create a user-defined group of item numbers for use in option COMP for performance comparison.",
+    steps: [
+      "Press F6 to add a new group",
+      "Choose to create, edit, or link to other user groups",
+      "Use the group in COMP to compare item performance"
+    ],
+    tip: "Useful for tracking multi-item programs like charity donation items."
+  },
+
+  // ── TRANSACTION LOOKUP ────────────────────────────────────────────────────
+  {
+    cmd: "SHOPPING HISTORY",
+    title: "Shopping History — Privacy Rules",
+    cat: "trans",
+    desc: "Member transaction history rules (US). History is limited to 10 years from original transaction date.",
+    steps: [
+      "Member can request THEIR OWN history — only with valid state ID verified in person",
+      "Spouses/household members CANNOT get each other's history",
+      "Business affiliates CANNOT get history for other affiliates",
+      "NEVER turn the screen to show a member any information",
+      "History 10+ years old shows with member # 99"
+    ],
+    tip: "Refer to the Shopping History – US memorandum for full policy details."
+  },
+  {
+    cmd: "EOI / CNI",
+    title: "EOI/CNI — Ecommerce Order Inquiry",
+    cat: "trans",
+    desc: "Research Costco.com / Costco.ca online orders and check in curbside/warehouse pickup orders.",
+    steps: [
+      "Filter by Order # (9-10 digits) or Bill to Membership #",
+      "Press ENTER to see Order Detail screen",
+      "Screen shows all items, order #, member #, order date, and total",
+      "Key 5 or X next to an item to drill into item detail (price, S&H, tax, coupon)"
+    ],
+    tip: "Unlike in-warehouse, coupons on Ecom are treated as tender — they show in item details."
+  },
+  {
+    cmd: "BDOI",
+    title: "BDOI — Business Delivery Order Inquiry",
+    cat: "trans",
+    desc: "View detailed info for business delivery orders. Similar to EOI.",
+    steps: [
+      "Search by order number or membership number",
+      "View items, order totals, and adjustments",
+      "Key 5 or X next to an item to drill into details",
+      "F14 = payment method",
+      "F19 = refunds on the order"
+    ]
+  },
+  {
+    cmd: "KOM",
+    title: "KOM — Kiosk Order Maintenance",
+    cat: "trans",
+    desc: "View Department 44 (Special Events) purchase info. Used mainly for processing refunds when the vendor picks up merchandise.",
+    steps: [
+      "Filter by order number, membership #, phone #, item #, or warehouse #",
+      "For Dept 44 refunds where member has nothing to return: look up in KOM first"
+    ]
+  },
+  {
+    cmd: "RLG",
+    title: "RLG — Member Refund Log",
+    cat: "trans",
+    desc: "View refund transaction details. Defaults to home warehouse and previous day.",
+    steps: [
+      "Apply filters as needed (warehouse, date range, etc.)",
+      "Press ENTER to display matching refunds",
+      "Y in Dept Ring column = refund as department ring",
+      "* = department ring converted to inline item",
+      "Key X next to operator number to see full refund details"
+    ],
+    tip: "Tracking number column only shows when NOT viewing same-day data."
+  },
+  {
+    cmd: "SAST",
+    title: "SAST — Sales Audit",
+    cat: "trans",
+    desc: "Find transactions on a specific register for a date range. Filter by transaction type or tender. Can also be accessed from WII.",
+    steps: [
+      "Set filters (register, date range, transaction type, tender type)",
+      "Press ENTER to list matching transactions",
+      "TAB to a transaction, press Field ENTER to drill in",
+      "Note: SAST groups items by dept/item number, not scan order"
+    ],
+    tip: "To see exact scan sequence, use the EDP controller — SAST doesn't preserve register order."
+  },
+  {
+    cmd: "TAXI",
+    title: "TAXI — Sales Tax Inquiry",
+    cat: "trans",
+    desc: "Display the total sales tax a member paid in the previous calendar year. For members requesting tax deduction info.",
+    steps: [
+      "Enter member number",
+      "View prior calendar year sales tax total"
+    ],
+    tip: "Refer to the Sales Tax Inquiry – US memorandum for full details."
+  },
+  {
+    cmd: "WII",
+    title: "WII — Warehouse Item Sales Inquiry",
+    cat: "trans",
+    desc: "Look up transactions for a specific member or warehouse. Includes refunds and department rings.",
+    steps: [
+      "Enter Member # plus either Dept or Item # (required)",
+      "Adjust start/end dates as needed",
+      "Results show all matching purchases and refunds (refunds show as negative ext sell price)",
+      "F11 = Fold — adds item descriptions (helpful for refunds without item #)",
+      "Press ENTER on a transaction to see full details",
+      "F21 = print a transaction"
+    ],
+    tip: "White-highlighted items had an IRC when purchased. Press ENTER to see coupon details."
+  },
+
+  // ── MERCHANDISING ─────────────────────────────────────────────────────────
+  {
+    cmd: "EDSR",
+    title: "EDSR — Electronic Data Sign Request",
+    cat: "merch",
+    desc: "Print a sign when you know the item number and don't need manual changes.",
+    steps: [
+      "Enter option EDSR",
+      "Select sign size (M = medium, L = large most common)",
+      "Enter up to 45 item numbers (UPCs also work)",
+      "Press F21 (Shift+F9) to print",
+      "Select printer 1 (main sign printer) or 2 (mobile sign printer)"
+    ]
+  },
+  {
+    cmd: "EDMP",
+    title: "EDMP — Print Daily Maintenance",
+    cat: "merch",
+    desc: "Print all signs with buyer maintenance changes (price changes, etc.). Updated daily at 3:00am — do not run before that.",
+    steps: [
+      "Enter option EDMP after 3:00am",
+      "Filter by on-hand items or price changes",
+      "Date is auto-populated (change for holiday planning)",
+      "Set Print = Y, choose size (default M), press F21",
+      "Signs auto-send to sign printer 1"
+    ],
+    tip: "Signs MUST be printed and hung before opening every day."
+  },
+  {
+    cmd: "ESPC",
+    title: "ESPC — Sign Print Configuration",
+    cat: "merch",
+    desc: "Configure default settings for EDMP (sign size, which depts print, etc.).",
+    steps: [
+      "Enter option ESPC",
+      "Press F10 (Change) to adjust default settings",
+      "Set department default sign sizes and print-with-daily-maintenance toggles"
+    ]
+  },
+  {
+    cmd: "EDSM",
+    title: "EDSM — Sign Maintenance / Custom Signs",
+    cat: "merch",
+    desc: "Customize a sign manually — use for 'last one display', price corrections, or description changes that haven't downloaded yet.",
+    steps: [
+      "Enter item number, size, and quantity",
+      "Edit description, price, or other fields as needed",
+      "Leave item number blank for a blank free-form sign",
+      "Signs print after you exit (F3) — not immediately"
+    ],
+    tip: "If you change sell price, unit price per oz/bottle won't auto-update — do the math manually."
+  },
+  {
+    cmd: "EPC",
+    title: "EPC — Emergency Price Change",
+    cat: "merch",
+    desc: "Mark down items or correct a price for the day. Access is typically limited to staff managers.",
+    steps: [
+      "Enter option EPC, enter User ID and password",
+      "Press F6 to add a new EPC",
+      "Enter item number, new price, and reason",
+      "Press ENTER to apply",
+      "To copy an EPC from a previous day: change the date, key 3 next to the EPC to copy"
+    ],
+    tip: "To restore original price after an EPC, you must run an Item Download (not another EPC)."
+  },
+  {
+    cmd: "ITEM DOWNLOAD",
+    title: "Item Download (via EPC)",
+    cat: "merch",
+    desc: "Force a price or maintenance sync between AS400 and the register. Also used to restore price after an EPC.",
+    steps: [
+      "Access option EPC",
+      "Press F15 to access Item Downloads",
+      "Enter required fields",
+      "Press F8 to update"
+    ],
+    tip: "Also needed when buyer adds a fee or link to an item mid-day."
+  },
+  {
+    cmd: "EPCI",
+    title: "EPCI — Price Change Inquiry",
+    cat: "merch",
+    desc: "Inquiry-only view of EPCs, item downloads, and blocked items in AS400.",
+    steps: ["Enter option EPCI", "View all active EPCs, downloads, and blocks — no editing"]
+  },
+  {
+    cmd: "BLOCKED ITEMS",
+    title: "Item Blocks (via EPC)",
+    cat: "merch",
+    desc: "Block items from selling at the register — used for recalls or item number changes.",
+    steps: [
+      "Enter EPC, press F18 to see blocked items",
+      "K = key flick required, P = item prohibited from sale",
+      "Press F6 to add a new block, enter K or P and reason",
+      "To delete a block: follow same steps but key D next to the item"
+    ],
+    tip: "If a register shows 'NOT FOR SALE', check EPC for an active block."
+  },
+  {
+    cmd: "SNM",
+    title: "SNM — Serial Number Maintenance",
+    cat: "merch",
+    desc: "Record all high-end watch transactions: receivings, sales, refunds, and RTD shipments.",
+    steps: [
+      "Enter option SNM",
+      "Select transaction code",
+      "Enter item #, serial #, or membership #",
+      "All watch movement must be recorded here — replaced the Watch Tracking Log"
+    ]
+  },
+  {
+    cmd: "SNI",
+    title: "SNI — Serial Number Inquiry",
+    cat: "merch",
+    desc: "Audit tool for serial number maintenance. Find discrepancies between SNM movement and actual on-hand.",
+    steps: [
+      "Enter option SNI",
+      "Select 'Discrepancy View' (most common)",
+      "Review any mismatches between SNM records and current inventory"
+    ]
+  },
+  {
+    cmd: "IATOP",
+    title: "IATOP — Top Items Report",
+    cat: "merch",
+    desc: "View and compare top items for sales, refunds, adjustments, D&D, and markups/markdowns. Compare single location or two locations.",
+    steps: [
+      "Enter warehouse, Dept (leave blank for all depts), and date range",
+      "Default shows top 10 — change as needed",
+      "Add Fiscal Period/Year to filter by period",
+      "F19/F20 toggle between comparing top ranks and top items across warehouses"
+    ],
+    tip: "Add Category Code with a dept to narrow results (e.g., top TV sales in dept 24)."
+  },
+  {
+    cmd: "DASH",
+    title: "DASH — Receiving Dashboard",
+    cat: "merch",
+    desc: "View and process receiving appointments. Used by Receiving to manage incoming inventory — other depts can view their incoming stock here too.",
+    steps: [
+      "Enter option DASH",
+      "View scheduled appointments and status",
+      "Refer to Receiving Manual for full processing instructions"
+    ]
+  },
+  {
+    cmd: "DGM",
+    title: "DGM — Department Group Maintenance",
+    cat: "merch",
+    desc: "Configure which departments appear on the hot sheet and in what order.",
+    steps: [
+      "Assign sequence numbers 1-4 to departments (1 prints first)",
+      "Enter 0 to remove a department from the hot sheet"
+    ]
+  },
+
+  // ── WAREHOUSE SALES ───────────────────────────────────────────────────────
+  {
+    cmd: "DSI",
+    title: "DSI — Daily Sales/Inventory Inquiry",
+    cat: "sales",
+    desc: "View department sales and inventory by dept, warehouse, region, or company. Daily/weekly/period/YTD totals. NOT real-time — shows next day.",
+    steps: [
+      "Enter option DSI",
+      "View by Warehouse (see all depts for one location) OR by Department (compare locations)",
+      "Enter date in Date field",
+      "See daily, weekly, period, and year-to-date sales + inventory"
+    ],
+    tip: "Viewing by Dept is great for quick comparison against neighboring warehouses."
+  },
+  {
+    cmd: "DFI",
+    title: "DFI — Daily Flash Sales Inquiry",
+    cat: "sales",
+    desc: "Flash sales summary — daily, weekly, period-to-date, YTD for each warehouse. Not real-time (next day).",
+    steps: [
+      "Enter option DFI",
+      "View flash sales by warehouse",
+      "Use F-key prompts at bottom for additional views"
+    ]
+  },
+  {
+    cmd: "ISO",
+    title: "ISO — Item Sales by Operator",
+    cat: "sales",
+    desc: "View sales for a specific item broken down by each clerk (operator ID) for a date range.",
+    steps: [
+      "Enter warehouse, item number, and date range",
+      "Results show each operator's units sold and dollars for that item"
+    ]
+  },
+  {
+    cmd: "IAWD",
+    title: "IAWD — Warehouse Dashboard",
+    cat: "sales",
+    desc: "Summarized warehouse stats — inventory, membership, sales, front-end productivity. Daily/weekly/period/YTD. NOT same-day.",
+    steps: [
+      "Enter option IAWD",
+      "View 00 = Main screen (major warehouse statistics)",
+      "View 01 = Inventory (on-hand and sales by dept, YOY)",
+      "View 02 = Sales (all depts, comp vs last year)",
+      "View 03 = Front End Productivity (simplified IAFEP)"
+    ],
+    tip: "Change the View: field to toggle between the four views."
+  },
+  {
+    cmd: "IAIMI",
+    title: "IAIMI — Inventory Movement Summary",
+    cat: "sales",
+    desc: "View stock status summary by company, region, warehouse, and department level.",
+    steps: [
+      "Enter dept number with company/region/warehouse",
+      "To view UPC activity: select an item, press F15 for Sales/UPC",
+      "See how many times item was hand-keyed vs. each UPC scanned"
+    ]
+  },
+  {
+    cmd: "STK",
+    title: "STK — Sales Tracking Inquiry",
+    cat: "sales",
+    desc: "View item sales and D&D in units over a 4-week period. Used daily in fresh depts (meat, bakery, deli) for production planning.",
+    steps: [
+      "Enter fiscal year, period, and week",
+      "Enter location or location group",
+      "Enter department number",
+      "View 4 weeks of unit sales and D&D",
+      "F19/F20 = scroll left/right",
+      "F21 = print full report",
+      "F22 = export to Excel"
+    ],
+    tip: "This is your go-to for meat production planning — shows exactly how many units you moved each week."
+  },
+  {
+    cmd: "IAD",
+    title: "IAD — Item Activity by Department",
+    cat: "sales",
+    desc: "View on-hand adjustments or D&D (damaged & destroyed) items in dollars for a department.",
+    steps: [
+      "Enter department, fiscal year, period, and/or week",
+      "View each item's net landing cost, sell cost, and total for adjustments or D&D"
+    ]
+  },
+
+  // ── LABOR SCHEDULING ──────────────────────────────────────────────────────
+  {
+    cmd: "LSDT",
+    title: "LSDT — Labor Schedule Today",
+    cat: "labor",
+    desc: "Check hours scheduled vs. hours needed in near real-time. Shows current day's sales vs. plan. Available to anyone with an AS400 sign-on.",
+    steps: [
+      "Enter option LSDT",
+      "View shows home warehouse only",
+      "Actl Lane = registers currently open",
+      "Sched Lane = lanes scheduled based on cashiers on schedule",
+      "Sls Diff = cumulative actual vs. plan sales difference",
+      "Change intervals to 15, 30, or 60 minutes"
+    ]
+  },
+  {
+    cmd: "LSCM",
+    title: "LSCM — Labor Schedule Control File",
+    cat: "labor",
+    desc: "Set the control values used for forecasting — dollars per labor hour, number of registers, opening/closing hours. Staff managers and above.",
+    steps: [
+      "Enter option LSCM",
+      "Set $/labor hour, register count, opening and closing hours",
+      "Update for holiday hours to reflect changes in open/close time"
+    ]
+  },
+  {
+    cmd: "LSWM",
+    title: "LSWM — Enter Projected Sales",
+    cat: "labor",
+    desc: "Enter planned sales dollars for future dates. Updates suggested scheduled hours in LSDT. GMs, AGMs, FRNs, ADMs only.",
+    steps: [
+      "Enter option LSWM",
+      "Enter projected sales for each day",
+      "Red # in 'Imp Flg' = a large purchase impacted last year's sales that day",
+      "To adjust for early closure (Christmas Eve, etc.): key 6 next to date, change Plan to 3, update selected date to prior year's equivalent date"
+    ]
+  },
+  {
+    cmd: "LSDC",
+    title: "LSDC — Door Count Entry",
+    cat: "labor",
+    desc: "Enter door counts throughout the day so supervisors know how many lanes should be open.",
+    steps: ["Enter option LSDC", "Key door counts at regular intervals throughout the day"]
+  },
+  {
+    cmd: "LSIM",
+    title: "LSIM — Sales Impact Entry",
+    cat: "labor",
+    desc: "Record unusual sales impacts (large orders, big returns, etc.) to help future sales planning.",
+    steps: [
+      "Enter option LSIM",
+      "Press F6 to add an impact",
+      "Enter reason and dollar amount",
+      "Auto-populated: resale, refunds, kiosk orders, gasoline, jewelry, special events, coupons"
+    ]
+  },
+  {
+    cmd: "LSRM",
+    title: "LSRM — Labor Schedule Rule Maintenance",
+    cat: "labor",
+    desc: "Set dollar limits per department — transactions over that limit are excluded from sales forecasting (won't skew lane recommendations).",
+    steps: [
+      "Enter option LSRM",
+      "Create rules with dollar caps per department",
+      "Note: excluded transactions still show in LSDT/LSWT as real sales"
+    ]
+  },
+  {
+    cmd: "LSSI",
+    title: "LSSI — Lane and Shift Coverage",
+    cat: "labor",
+    desc: "View forecasted lanes needed vs. lanes scheduled for a specific day and time.",
+    steps: [
+      "Enter option LSSI",
+      "Compare forecasted vs. scheduled lane coverage",
+      "Note: system counts all Service Clerks as cashiers"
+    ]
+  },
+
+  // ── MEMBERSHIP ────────────────────────────────────────────────────────────
+  {
+    cmd: "MBA9",
+    title: "MBA9 — Membership Inquiry",
+    cat: "member",
+    desc: "Quick view-only lookup of membership info — find membership numbers, member details, or forecast renewal fees.",
+    steps: [
+      "Enter option MBA9",
+      "Toggle search type with F11: member #, last/first name, 'sounds like', ID type, phone, or address",
+      "Once found, press F4 for action code options"
+    ]
+  },
+  {
+    cmd: "WBS9",
+    title: "WBS9 — Business Membership Inquiry",
+    cat: "member",
+    desc: "Same as MBA9 but for Business Memberships.",
+    steps: [
+      "Enter option WBS9",
+      "Toggle with F11: business name, phone, or business address",
+      "Press F4 once found for action codes"
+    ]
+  },
+  {
+    cmd: "IMIN",
+    title: "IMIN — International Membership Inquiry",
+    cat: "member",
+    desc: "View basic membership info for international memberships (outside US and Canada). View only — no changes.",
+    steps: [
+      "Enter membership number AND country of issuance",
+      "View limited membership info — cannot make changes"
+    ]
+  },
+  {
+    cmd: "MRC",
+    title: "MRC — Membership Report Card",
+    cat: "member",
+    desc: "Membership dashboard showing income and renewal trends for a company, region/state, or warehouse.",
+    steps: [
+      "Enter option MRC",
+      "View income this year vs. last year and % change by date, period, and YTD",
+      "Press F11 to toggle to Captured Renewal Rate and Renewal Trend view"
+    ]
+  },
+  {
+    cmd: "WAM",
+    title: "WAM — Warehouse Ancillary Membership",
+    cat: "member",
+    desc: "Create membership cards for Gas Station or Car Wash access.",
+    steps: [
+      "Enter 1 in Gas/Car Wash Attendant field before entering option",
+      "Enter option WAM",
+      "Press F4 for action code prompts",
+      "Refer to Non-Member Membership Cards – Ancillary Cards job aid"
+    ]
+  },
+
+  // ── ACCOUNTING ────────────────────────────────────────────────────────────
+  {
+    cmd: "MCE",
+    title: "MCE — Manual Check Entry",
+    cat: "account",
+    desc: "Enter manual checks issued from the warehouse. Tracks all manual checks and communicates with central accounting.",
+    steps: [
+      "Enter option MCE",
+      "Code check to a specific account",
+      "Press F12 to see Display G/L Accounts for account codes"
+    ]
+  },
+  {
+    cmd: "MCI",
+    title: "MCI — Manual Check Inquiry",
+    cat: "account",
+    desc: "Review information for manual checks that have been issued.",
+    steps: ["Enter option MCI", "Look up manual check details — view only"]
+  },
+
+  // ── REPORTS ───────────────────────────────────────────────────────────────
+  {
+    cmd: "IAFEP",
+    title: "IAFEP — Front End Productivity",
+    cat: "reports",
+    desc: "View productivity stats for Front End and Self-Checkout registers. Not real-time — current day/timeframe cannot be selected.",
+    steps: [
+      "Enter option IAFEP",
+      "Enter warehouse number for specific location",
+      "Press Field ENTER on a location to drill in",
+      "F19/F20 toggle: Main > Data Screen > Time Screen",
+      "For Self-Checkout: enter Y in Self-Checkout field before drilling in",
+      "F1 = detailed help explaining every statistic"
+    ]
+  },
+  {
+    cmd: "WFBRP",
+    title: "WFBRP — Front End Block Report",
+    cat: "reports",
+    desc: "Shows blocked renewals by cashier ID — accepted renewals, voids, FE signups, member #99.",
+    steps: [
+      "This report can ONLY be viewed by printing — not accessible on-screen in AS400",
+      "Specify date range when requested"
+    ]
+  },
+  {
+    cmd: "MACR",
+    title: "MACR — Merchandise Audit Count List",
+    cat: "reports",
+    desc: "Generate a count list showing on-hand inventory for a department and/or category.",
+    steps: [
+      "Enter option MACR",
+      "Enter department number",
+      "Optionally add category code to filter (e.g., TVs in dept 24)",
+      "View item #, description, category, on-hand, and NSI on-hand"
+    ]
+  },
+  {
+    cmd: "OUTQ",
+    title: "OUTQ — Print Outqueue",
+    cat: "reports",
+    desc: "Manage all print jobs in the warehouse. Each printer has its own outqueue.",
+    steps: [
+      "Enter option OUTQ to access main outqueue",
+      "Enter SOUTQ for sign printer outqueue",
+      "Press F19 (Shift+F7) to view and switch between outqueues",
+      "Press F18 (Shift+F6) to jump to bottom of queue (newest reports)",
+      "Key 2 = Change (move to different printer, change copies or start page)",
+      "Key 4 = Delete (cannot be undone)",
+      "Key 5 = Display (view without printing)",
+      "Key 6 = Release (print the job)"
+    ],
+    tip: "Main printer outqueue name format: PRINT[location#] (e.g., PRINT110). Remove suffix letters (like RC) to reroute to main office printer."
+  },
+  {
+    cmd: "RDPRT / SPRT",
+    title: "RDPRT/SPRT — Reroute/Reset Printer",
+    cat: "reports",
+    desc: "Reroute or reset a sign printer's outqueue without calling the Service Desk.",
+    steps: [
+      "REROUTE: Enter RDPRT > select Source Printer (key 1) > select Destination Printer (key 1) > confirm > enter SPRT to restart Printer 1 > test",
+      "RESET: Enter RDPRT > select Source Printer > key 6 next to it > enter SPRT to restart > test"
+    ],
+    tip: "Reset only undoes the LAST reroute. For multiple reroutes, contact Service Desk."
+  },
+
+  // ── ANCILLARY ─────────────────────────────────────────────────────────────
+  {
+    cmd: "FCP",
+    title: "FCP — Food Court Printer Config",
+    cat: "ancill",
+    desc: "Program specific item numbers to the Food Court printer (used to send whole pizza orders to the kitchen).",
+    steps: [
+      "Enter option FCP",
+      "Program item numbers to the printer",
+      "Press F22 to delete item numbers no longer in use"
+    ]
+  },
+  {
+    cmd: "CDCSI",
+    title: "CDCSI — Cost Dept Category Sales Inquiry",
+    cat: "ancill",
+    desc: "View cost department margin components by location, dept, and category. Primarily used to view initial markup percent (IMU).",
+    steps: ["Enter option CDCSI", "Filter by location, department, and category", "View IMU % for specific items"]
+  },
+  {
+    cmd: "COMP",
+    title: "COMP — Comparison Analysis",
+    cat: "ancill",
+    desc: "Compare sales history by item, item group, dept, vendor, location, or date range over the last 3 fiscal years.",
+    steps: [
+      "Enter option COMP",
+      "Select comparison type (item, group, dept, etc.)",
+      "Set location and date range",
+      "View side-by-side sales history"
+    ]
+  },
+  {
+    cmd: "TCP",
+    title: "TCP — Tire Center Password Maintenance",
+    cat: "ancill",
+    desc: "Assign torque/release codes to Tire Center employees. Entering a TCP password confirms a vehicle's service is complete.",
+    steps: [
+      "Enter option TCP",
+      "Enter employee number, press F6",
+      "Enter name, have employee set their own password, press F8",
+      "Press F4 from main screen to view all employees with passwords",
+      "Press F10 to delete a selected employee"
+    ],
+    tip: "Access to TCP must be limited to WM, AWM, and Operations Managers — assigned via WPM."
+  },
+  {
+    cmd: "TPR",
+    title: "TPR — Tire Center Productivity Report",
+    cat: "ancill",
+    desc: "View average wait times for the Tire Center by company, region, or warehouse for a specified timeframe.",
+    steps: ["Enter option TPR", "Select company, region, or warehouse", "Enter timeframe to view average wait times"]
+  },
+  {
+    cmd: "TAR",
+    title: "TAR — Tire Activity Report",
+    cat: "ancill",
+    desc: "All Tire Center sales for depts 22, 87, and Ecommerce. Shows region and company totals.",
+    steps: [
+      "Enter option TAR",
+      "View initial screen for region and company totals",
+      "Key 1 next to a region to drill into individual warehouse data",
+      "Use F-key prompts at bottom for additional views"
+    ]
+  },
+  {
+    cmd: "ETINQ",
+    title: "ETINQ — Ecommerce Tire Inquiry",
+    cat: "ancill",
+    desc: "Search special order tires ordered online (SOTO). Use Ecommerce order number.",
+    steps: [
+      "Enter Ecommerce order number",
+      "If unknown, press F4 to select from a list of possible entries"
+    ]
+  },
+  {
+    cmd: "STA",
+    title: "STA — Ecommerce Tire Audit",
+    cat: "ancill",
+    desc: "View status and history of Special Order Tires Online (SOTO) orders. Also search for orders by multiple filters.",
+    steps: [
+      "Filter by available options (cannot combine filters)",
+      "Press F4 if status or item number is unknown",
+      "White font item number = comments exist on that order"
+    ]
+  },
+  {
+    cmd: "SPOT1",
+    title: "SPOT1 — Special Order Tires Tracking",
+    cat: "ancill",
+    desc: "View status of Tire Center special orders.",
+    steps: [
+      "Enter option SPOT1",
+      "Apply search filters to refine results",
+      "View current status of each special order tire"
+    ]
+  },
+  {
+    cmd: "WWPO",
+    title: "WWPO — Work With Purchase Orders",
+    cat: "ancill",
+    desc: "View open purchase orders, standard distributions, and transfer requests. Tire Center uses this to track incoming tires by PO.",
+    steps: [
+      "Enter option WWPO",
+      "View 1 = Summary View",
+      "View 2 = Status View",
+      "View 3 = Item View",
+      "View 4 = Freight/Budgeting View",
+      "Apply filters to refine results within each view"
+    ]
+  },
+  {
+    cmd: "FFI / INVENTORY",
+    title: "Ancillary Inventory Options",
+    cat: "ancill",
+    desc: "Ancillary depts conduct physical inventory on the first day of each fiscal period using these options.",
+    steps: [
+      "Refer to the AS400 Options for Fresh Foods Inventory guide on the Inventory Audit page",
+      "RF Scanner option 63 = FFI (Fresh Foods Inventory input counts)"
+    ]
+  },
+
+  // ── RF SCANNER ────────────────────────────────────────────────────────────
+  {
+    cmd: "RF 07",
+    title: "RF 07 — Print Depot Labels",
+    cat: "rf",
+    desc: "Print custom pallet labels using the RF scanner.",
+    steps: [
+      "Select option 07 on RF scanner",
+      "Select printer: 1 = Receiving, 2 = RTV",
+      "Enter free-form text in one of the fields",
+      "Enter number of tags to print"
+    ]
+  },
+  {
+    cmd: "RF 11",
+    title: "RF 11 — Item Inquiry",
+    cat: "rf",
+    desc: "Most-used RF option. Display item details by scanning a barcode or entering an item number.",
+    steps: [
+      "Select option 11",
+      "Scan barcode or enter item number",
+      "View dept and on-hand quantities (sorted by dollars and units)"
+    ]
+  },
+  {
+    cmd: "RF 13",
+    title: "RF 13 — Item Alpha Inquiry",
+    cat: "rf",
+    desc: "Look up items by description on the RF scanner (like IAI). Minimum 3 characters per field.",
+    steps: [
+      "Select option 13",
+      "Enter item description (min 3 characters) and/or dept number",
+      "View matching items"
+    ]
+  },
+  {
+    cmd: "RF 16",
+    title: "RF 16 — UPC Inquiry",
+    cat: "rf",
+    desc: "Look up an item's description and item number by scanning or entering a UPC barcode.",
+    steps: [
+      "Select option 16",
+      "Scan or key the UPC barcode",
+      "View item description and item number"
+    ]
+  },
+  {
+    cmd: "RF 18",
+    title: "RF 18 — Item Sales Report",
+    cat: "rf",
+    desc: "Create an item sales report from the RF scanner.",
+    steps: [
+      "Select option 18",
+      "Enter warehouse number and optional date",
+      "Scan or key all items needed",
+      "Press F21 to print the report"
+    ]
+  },
+  {
+    cmd: "RF 19",
+    title: "RF 19 — Item Group Code Maintenance",
+    cat: "rf",
+    desc: "Create and maintain item groups on the RF scanner.",
+    steps: [
+      "Enter group name or press F4 to select an existing group",
+      "Press F4 and scan/key UPC or item number to add items",
+      "Press F10 to review the item list",
+      "Key 4 next to an item to remove it, press ENTER"
+    ]
+  },
+  {
+    cmd: "RF 20",
+    title: "RF 20 — Merchandise Audit Entry",
+    cat: "rf",
+    desc: "Scan or key merchandise counts during inventory audit. Multiple counts per item and multiple depts allowed.",
+    steps: [
+      "Select option 20",
+      "Scan or key item numbers and enter count",
+      "Multiple entries for the same item are accepted"
+    ]
+  },
+  {
+    cmd: "RF 21",
+    title: "RF 21 — Clear Audit Count List",
+    cat: "rf",
+    desc: "Clear all counts entered in RF option 20.",
+    steps: ["Select option 21", "Confirm to clear all merchandise audit counts from option 20"]
+  },
+  {
+    cmd: "RF 22",
+    title: "RF 22 — Print Merchandise Audit Report",
+    cat: "rf",
+    desc: "Print the counts entered in RF option 20. Can be done on the RF scanner or on the AS400. Same as option MADR.",
+    steps: ["Select option 22", "Print from the RF scanner or from the AS400 terminal"]
+  },
+  {
+    cmd: "RF 23",
+    title: "RF 23 — EDP Sign Requests",
+    cat: "rf",
+    desc: "Print merchandise signs from the RF scanner.",
+    steps: [
+      "Select option 23",
+      "Enter letter for size",
+      "Enter item number(s) or scan UPC(s)",
+      "Press F10 to review entered items",
+      "Key 4 next to an item to remove it",
+      "Press F21 to print",
+      "Select printer and press ENTER"
+    ]
+  },
+  {
+    cmd: "RF 36",
+    title: "RF 36 — Print Pallet Tag",
+    cat: "rf",
+    desc: "Print pallet tags to identify merchandise.",
+    steps: [
+      "Select option 36",
+      "Select printer: 1 = RCV, 2 = RTV",
+      "Enter item number or scan UPC",
+      "Enter quantity",
+      "Enter PO number and receiver initials (optional)",
+      "Press ENTER to print"
+    ]
+  },
+  {
+    cmd: "RF 72",
+    title: "RF 72 — Scan Trash",
+    cat: "rf",
+    desc: "Remove damaged/disposed items from inventory. Requires WPM username and password.",
+    steps: [
+      "Select option 72",
+      "Enter username and password (issued by WM/AWM via WPM)",
+      "Scan or key items to remove from inventory",
+      "Same-day reversal: key a negative amount in Sell Unit field",
+      "Older reversals: use RTV option NSE18"
+    ],
+    tip: "Use AS400 option TSH to research entries made in Scan Trash."
+  },
+  {
+    cmd: "RF 88",
+    title: "RF 88 — Item/UPC Cross Reference",
+    cat: "rf",
+    desc: "Cross-reference item number with all associated UPCs on the RF scanner (same as AS400 option IXI).",
+    steps: [
+      "Select option 88",
+      "Enter item number",
+      "View all UPCs tied to that item — if UPC is set up, run EPC download to fix scanning issue"
+    ]
+  },
+  {
+    cmd: "RF 98",
+    title: "RF 98 — Item/UPC Check",
+    cat: "rf",
+    desc: "View item details including description, item number, UPC, and sell price. Shows individual pricing for multi-pack sell units.",
+    steps: [
+      "Select option 98",
+      "Scan or enter UPC or item number",
+      "View description, item #, UPC, and sell price (including per-unit pricing for multipacks)"
+    ]
+  }
+];
+
+let activeFilter = 'all';
+
+const categoryNames = {
+  intro: 'Navigation',
+  passwords: 'Passwords',
+  items: 'Item Lookup',
+  trans: 'Transactions',
+  merch: 'Merchandising',
+  sales: 'Warehouse Sales',
+  labor: 'Labor Scheduling',
+  member: 'Membership',
+  account: 'Accounting',
+  reports: 'Reports',
+  ancill: 'Ancillary',
+  rf: 'RF Scanner'
+};
+
+function buildCard(item) {
+  const stepsHtml = item.steps && item.steps.length
+    ? `<div class="card-steps">
+        <div class="card-steps-title">How to use</div>
+        <ul>${item.steps.map(s => `<li>${s}</li>`).join('')}</ul>
+       </div>` : '';
+  const tipHtml = item.tip
+    ? `<div class="tip">💡 ${item.tip}</div>` : '';
+  return `
+    <div class="card cat-${item.cat}" data-cat="${item.cat}" data-search="${(item.cmd + ' ' + item.title + ' ' + item.desc + ' ' + (item.steps||[]).join(' ')).toLowerCase()}">
+      <div class="card-top">
+        <span class="cmd-badge bg-${item.cat}">${item.cmd}</span>
+        <span class="card-title">${item.title.replace(/^[A-Z0-9/\s]+ — /, '')}</span>
+      </div>
+      <div class="card-desc">${item.desc}</div>
+      ${stepsHtml}
+      ${tipHtml}
+    </div>`;
+}
+
+function render() {
+  const query = document.getElementById('searchInput').value.toLowerCase().trim();
+  const main = document.getElementById('mainContent');
+
+  const groups = {};
+  let total = 0;
+
+  data.forEach(item => {
+    if (activeFilter !== 'all' && item.cat !== activeFilter) return;
+    if (query && !item['data-search'] && !(item.cmd + ' ' + item.title + ' ' + item.desc + ' ' + (item.steps||[]).join(' ')).toLowerCase().includes(query)) return;
+    if (query) {
+      const searchable = (item.cmd + ' ' + item.title + ' ' + item.desc + ' ' + (item.steps||[]).join(' ')).toLowerCase();
+      if (!searchable.includes(query)) return;
+    }
+    if (!groups[item.cat]) groups[item.cat] = [];
+    groups[item.cat].push(item);
+    total++;
+  });
+
+  if (total === 0) {
+    main.innerHTML = '<div class="no-results">No results found. Try a different search term.</div>';
+    document.getElementById('result-count').textContent = '0 results';
+    return;
+  }
+
+  document.getElementById('result-count').textContent = `${total} option${total !== 1 ? 's' : ''} found`;
+
+  const catOrder = ['intro','passwords','items','trans','merch','sales','labor','member','account','reports','ancill','rf'];
+  let html = '';
+  catOrder.forEach(cat => {
+    if (!groups[cat] || groups[cat].length === 0) return;
+    html += `<div class="section-header">${categoryNames[cat]}</div><div class="cards-grid">`;
+    groups[cat].forEach(item => { html += buildCard(item); });
+    html += `</div>`;
+  });
+  main.innerHTML = html;
+}
+
+function filterCards() { render(); }
+
+function setFilter(cat, btn) {
+  activeFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (cat === 'all') {
+    btn.style.background = '#003087';
+    btn.style.color = 'white';
+    document.querySelectorAll('.filter-btn:not(.fbtn-all)').forEach(b => {
+      b.style.background = '';
+      b.style.color = '';
+    });
+  }
+  render();
+}
+
+// init
+render();
+</script>
+</body>
+</html>

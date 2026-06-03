@@ -1,0 +1,16 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude
+.claude/
+
+# Temp
+*.tmp
+*.temp
+~$*
+
+# Archives (keep schedule zip, ignore others)
+*.zip
+!schedule/*.zip

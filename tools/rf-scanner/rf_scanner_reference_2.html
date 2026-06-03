@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COSTCO \ RF SCANNER — AS400 FIELD REFERENCE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap');
+
+  :root {
+    --red: #E31837;
+    --red-dim: #9c1025;
+    --blue: #0060A9;
+    --gold: #F5A623;
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #18181f;
+    --surface3: #1f1f28;
+    --border: #2a2a35;
+    --border-bright: #3a3a48;
+    --text: #f0f0f5;
+    --text-dim: #8888aa;
+    --text-muted: #555566;
+    --mono: 'JetBrains Mono', monospace;
+    --display: 'Barlow Condensed', sans-serif;
+    --body: 'Barlow', sans-serif;
+    --green: #00c878;
+    --amber: #ffb347;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── PRINT STYLES ────────────────────────────────── */
+  @media print {
+    body { background: white; color: black; font-size: 11px; }
+    .header { background: #E31837 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .no-print { display: none; }
+    .option-card { break-inside: avoid; border: 1px solid #ccc !important; background: white !important; }
+    .tag { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    a { color: black; }
+    .section-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  /* ── HEADER ─────────────────────────────────────── */
+  .header {
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a0005 40%, var(--red) 100%);
+    border-bottom: 3px solid var(--red);
+    padding: 36px 40px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 300px; height: 100%;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 8px,
+      rgba(255,255,255,0.02) 8px,
+      rgba(255,255,255,0.02) 16px
+    );
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    max-width: 900px;
+  }
+  .costco-badge {
+    background: var(--red);
+    color: white;
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    padding: 8px 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .header-divider {
+    color: rgba(255,255,255,0.3);
+    font-size: 32px;
+    font-weight: 100;
+    flex-shrink: 0;
+  }
+  .header-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .header-title h1 {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 32px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: white;
+    line-height: 1;
+  }
+  .header-title h1 span { color: var(--gold); }
+  .header-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+  .header-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    margin-top: 2px;
+  }
+
+  /* ── LAYOUT ──────────────────────────────────────── */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px 60px;
+  }
+
+  /* ── INTRO BOX ───────────────────────────────────── */
+  .intro-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold);
+    padding: 20px 24px;
+    margin-bottom: 36px;
+  }
+  .intro-box p {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .intro-box strong { color: var(--text); }
+
+  /* ── SECTION HEADER ──────────────────────────────── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 40px 0 20px;
+  }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--red);
+    background: rgba(227,24,55,0.12);
+    border: 1px solid rgba(227,24,55,0.3);
+    padding: 4px 10px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .section-title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── OPTION CARDS ────────────────────────────────── */
+  .option-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .option-card:hover { border-color: var(--border-bright); }
+
+  .card-header {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+  .option-card:not(.open) .card-header { border-bottom: none; }
+  .option-num {
+    font-family: var(--mono);
+    font-weight: 800;
+    font-size: 26px;
+    color: white;
+    background: var(--blue);
+    padding: 14px 20px;
+    min-width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+  .option-num.elevated { background: var(--red-dim); }
+  .option-num.fresh { background: #006633; }
+
+  .card-title-block {
+    padding: 12px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+  }
+  .card-title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: white;
+    line-height: 1.1;
+  }
+  .card-subtitle {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+  }
+  .card-tags {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 16px;
+    flex-shrink: 0;
+  }
+  .tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid;
+  }
+  .tag-meat { color: var(--red); border-color: rgba(227,24,55,0.4); background: rgba(227,24,55,0.08); }
+  .tag-critical { color: var(--gold); border-color: rgba(245,166,35,0.4); background: rgba(245,166,35,0.08); }
+  .tag-daily { color: var(--green); border-color: rgba(0,200,120,0.4); background: rgba(0,200,120,0.08); }
+  .tag-access { color: var(--amber); border-color: rgba(255,179,71,0.4); background: rgba(255,179,71,0.1); }
+  .tag-inventory { color: #a78bfa; border-color: rgba(167,139,250,0.4); background: rgba(167,139,250,0.08); }
+
+  .card-body { padding: 18px 20px; display: none; }
+  .option-card.open .card-body { display: block; }
+
+  .card-chevron {
+    display: flex;
+    align-items: center;
+    padding: 0 18px 0 8px;
+    color: var(--text-muted);
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, color 0.15s;
+    line-height: 1;
+  }
+  .option-card:hover .card-chevron { color: var(--text-dim); }
+  .option-card.open .card-chevron { transform: rotate(180deg); color: var(--gold); }
+
+  .what-it-does {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .what-it-does strong { color: var(--text); }
+
+  .steps-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .steps {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .steps li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .step-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--blue);
+    background: rgba(0,96,169,0.15);
+    border: 1px solid rgba(0,96,169,0.3);
+    padding: 2px 6px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    min-width: 28px;
+    text-align: center;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gold);
+    background: rgba(245,166,35,0.1);
+    padding: 1px 5px;
+    border: 1px solid rgba(245,166,35,0.2);
+  }
+
+  .meat-note {
+    background: rgba(227,24,55,0.06);
+    border: 1px solid rgba(227,24,55,0.2);
+    border-left: 3px solid var(--red);
+    padding: 12px 14px;
+    margin-top: 14px;
+  }
+  .meat-note-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 6px;
+  }
+  .meat-note p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .meat-note p strong { color: var(--text); }
+
+  .warning-box {
+    background: rgba(255,179,71,0.06);
+    border: 1px solid rgba(255,179,71,0.25);
+    border-left: 3px solid var(--amber);
+    padding: 12px 14px;
+    margin-top: 14px;
+  }
+  .warning-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 6px;
+  }
+  .warning-box p { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+  .warning-box p strong { color: white; }
+
+  .reversal-box {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    margin-top: 10px;
+  }
+  .reversal-box .rl { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+  .reversal-box ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .reversal-box li { font-size: 12px; color: var(--text-dim); padding-left: 14px; position: relative; }
+  .reversal-box li::before { content: '→'; position: absolute; left: 0; color: var(--text-muted); }
+
+  /* ── QUICK REF TABLE ─────────────────────────────── */
+  .qr-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 12px;
+    margin-top: 8px;
+  }
+  .qr-table thead tr {
+    background: var(--surface3);
+  }
+  .qr-table th {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border-bright);
+  }
+  .qr-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    vertical-align: top;
+  }
+  .qr-table tr:hover td { background: var(--surface2); }
+  .qr-table td:first-child {
+    font-weight: 700;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+  .qr-table td:nth-child(2) { color: var(--text); }
+  .qr-table .row-critical td { background: rgba(227,24,55,0.04); }
+  .qr-table .row-elevated td:nth-child(3) { color: var(--amber); }
+  .badge-wpm {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--amber);
+    background: rgba(255,179,71,0.1);
+    border: 1px solid rgba(255,179,71,0.3);
+    padding: 1px 5px;
+  }
+
+  /* ── CAREER CALLOUTS ─────────────────────────────── */
+  .priority-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  @media (max-width: 600px) { .priority-grid { grid-template-columns: 1fr; } }
+
+  .priority-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 16px;
+  }
+  .priority-rank {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 42px;
+    line-height: 1;
+    color: var(--border-bright);
+    margin-bottom: 4px;
+  }
+  .priority-rank.rank-1 { color: var(--red); }
+  .priority-rank.rank-2 { color: var(--gold); }
+  .priority-rank.rank-3 { color: var(--blue); }
+  .priority-code {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .priority-why { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+  /* ── SEQUENCE BOX ────────────────────────────────── */
+  .sequence-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 20px;
+    margin-top: 8px;
+  }
+  .seq-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .seq-row:last-child { margin-bottom: 0; }
+  .seq-num {
+    font-family: var(--mono);
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--gold);
+    min-width: 36px;
+    text-align: right;
+  }
+  .seq-arrow {
+    font-size: 18px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .seq-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .seq-desc strong { color: var(--text); }
+
+  /* ── FOOTER ──────────────────────────────────────── */
+  .footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 20px 40px;
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .footer-left { font-family: var(--mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.08em; }
+  .footer-right { font-family: var(--mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.08em; }
+
+  /* ── PRINT BUTTON ────────────────────────────────── */
+  .print-bar {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 40px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-print { background: var(--red); color: white; }
+  .btn-print:hover { background: var(--red-dim); }
+</style>
+</head>
+<body>
+
+<div class="print-bar no-print">
+  <button class="btn btn-print" onclick="window.print()">⎙ Print / Save PDF</button>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="costco-badge">COSTCO</div>
+    <div class="header-divider">\</div>
+    <div class="header-title">
+      <h1>RF SCANNER — <span>AS400</span> FIELD REFERENCE</h1>
+      <div class="header-meta">Dept 61 · Meat Department · Warehouse Operations</div>
+      <div class="header-sub">All confirmed RF option codes · February 2026 Guide · Personal Use Only</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- INTRO -->
+  <div class="intro-box">
+    <p>The RF scanner is a <strong>full wireless AS400 session</strong> — same system, same data as the manager's office terminal, on your hip. Most floor staff use it as a barcode lookup. <strong>Supervisors use it as a running dashboard.</strong> Every option below is a skill gap between you and the next person on the floor. Data entry note: the numeric keypad Enter key blanks the rest of a field and tabs forward — faster than space-tab. <strong>Shift+F1–F12 = F13–F24.</strong></p>
+  </div>
+
+  <!-- SECTION: ALL OPTIONS -->
+  <div class="section-header">
+    <div class="section-num">Section 01</div>
+    <div class="section-title">All RF Scanner Options</div>
+    <div class="section-line"></div>
+  </div>
+
+  <!-- RF 07 -->
+  <div class="option-card open">
+    <div class="card-header">
+      <div class="option-num">07</div>
+      <div class="card-title-block">
+        <div class="card-title">Print Depot Labels</div>
+        <div class="card-subtitle">Free-form text pallet labels</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-meat">MEAT</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">Prints custom free-form text on pallet labels. You control what goes on the label. Used for staging, holds, and custom identification in the cooler.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>07</code> on the scanner</li>
+        <li><span class="step-num">02</span>Select printer: <code>1</code> = Receiving (RCV) &nbsp;/&nbsp; <code>2</code> = RTV</li>
+        <li><span class="step-num">03</span>Enter free-form text in the field</li>
+        <li><span class="step-num">04</span>Enter number of tags to print → ENTER</li>
+      </ul>
+      <div class="meat-note">
+        <div class="meat-note-label">⬛ Meat Dept Use</div>
+        <p>Label production holds, staged primal boxes, or overnight cut-prep. If a box of sub-primals is being held for a specific cut run, this label prevents it from being moved or confused with floor stock.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 11 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num">11</div>
+      <div class="card-title-block">
+        <div class="card-title">Item Inquiry</div>
+        <div class="card-subtitle">Most-used option — on-hand, sales, ordered, sell price</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-critical">CRITICAL</div>
+        <div class="tag tag-daily">DAILY</div>
+        <div class="tag tag-meat">MEAT</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">Displays item detail by scanning a barcode or entering the item number. Shows department, on-hand in <strong>dollars and units</strong>, current week vs. previous week sales, ordered quantity, in-transfer, RTV, and sell price.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>11</code></li>
+        <li><span class="step-num">02</span>Scan barcode OR enter item number manually</li>
+        <li><span class="step-num">03</span>Read the screen — all on-hand and sales data populates immediately</li>
+      </ul>
+      <div class="steps-label" style="margin-top:14px">What the screen shows</div>
+      <ul class="steps">
+        <li><span class="step-num" style="background:rgba(245,166,35,0.1);color:var(--gold);border-color:rgba(245,166,35,0.3)">Dept</span>Department number</li>
+        <li><span class="step-num" style="background:rgba(245,166,35,0.1);color:var(--gold);border-color:rgba(245,166,35,0.3)">CWk</span>Current week sales — dollars + units</li>
+        <li><span class="step-num" style="background:rgba(245,166,35,0.1);color:var(--gold);border-color:rgba(245,166,35,0.3)">PWk</span>Previous week — comparison baseline</li>
+        <li><span class="step-num" style="background:rgba(245,166,35,0.1);color:var(--gold);border-color:rgba(245,166,35,0.3)">OH</span>On-hand — current inventory in dollars + units</li>
+        <li><span class="step-num" style="background:rgba(245,166,35,0.1);color:var(--gold);border-color:rgba(245,166,35,0.3)">Ord</span>On order — what's coming in</li>
+        <li><span class="step-num" style="background:rgba(245,166,35,0.1);color:var(--gold);border-color:rgba(245,166,35,0.3)">Trn</span>In-transfer from another location</li>
+        <li><span class="step-num" style="background:rgba(245,166,35,0.1);color:var(--gold);border-color:rgba(245,166,35,0.3)">RTV</span>Return to vendor quantity</li>
+        <li><span class="step-num" style="background:rgba(245,166,35,0.1);color:var(--gold);border-color:rgba(245,166,35,0.3)">SEL</span>Current sell price</li>
+      </ul>
+      <div class="meat-note">
+        <div class="meat-note-label">⬛ Meat Dept Use — YOUR PRODUCTION COMPASS</div>
+        <p>Run RF 11 on your top 5–10 movers before every shift. <strong>On-hand vs. current week units tells you if you're overstocked or running thin.</strong> If on-hand is high relative to this week's movement, cut less. If current week is burning through on-hand fast by mid-week, cut more and flag it. This is how a supervisor thinks — not just cutting by feel.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 13 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num">13</div>
+      <div class="card-title-block">
+        <div class="card-title">Item Alpha Inquiry</div>
+        <div class="card-subtitle">Search by item description — no barcode needed</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-meat">MEAT</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">Look up items by description and/or department number. Two search fields, minimum 3 characters each required. Returns a list of matching items with department and item numbers.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>13</code></li>
+        <li><span class="step-num">02</span>Enter description keyword(s) — <strong>minimum 3 characters per field</strong></li>
+        <li><span class="step-num">03</span>Optionally enter department number to narrow results</li>
+        <li><span class="step-num">04</span>Review the list and select your item</li>
+      </ul>
+      <div class="meat-note">
+        <div class="meat-note-label">⬛ Meat Dept Use</div>
+        <p>New seasonal items, roadshow products, anything without a scannable barcode. Also useful for verifying a new item has been correctly set up in the system before first production.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 16 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num">16</div>
+      <div class="card-title-block">
+        <div class="card-title">UPC Inquiry</div>
+        <div class="card-subtitle">Barcode → item number lookup</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-meat">MEAT</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">Scan or key a UPC barcode and get back the item description and item number. First step in diagnosing register scanning failures.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>16</code></li>
+        <li><span class="step-num">02</span>Scan the UPC barcode OR key it manually</li>
+        <li><span class="step-num">KEY</span><strong>Drop the last digit when keying manually</strong> — that's the check digit</li>
+      </ul>
+      <div class="meat-note">
+        <div class="meat-note-label">⬛ Meat Dept Use</div>
+        <p>When a package won't scan at the register or a scale label kicks back an error. Scan RF 16, verify the UPC is in the system and tied to the correct item. <strong>If the UPC is set up but still not scanning → EPC download from the AS400 terminal pushes the fix.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 18 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num">18</div>
+      <div class="card-title-block">
+        <div class="card-title">Item Sales Report</div>
+        <div class="card-subtitle">Print a sales report from the floor</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-meat">MEAT</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">Creates and prints an item sales report for any set of items you specify. Scan or key each item you want on the report, then print it on F21.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>18</code></li>
+        <li><span class="step-num">02</span>Enter warehouse number</li>
+        <li><span class="step-num">03</span>Enter date — optional, leave blank for current</li>
+        <li><span class="step-num">04</span>Scan or key each item number you want included</li>
+        <li><span class="step-num">F21</span>Press <code>F21</code> to print</li>
+      </ul>
+      <div class="meat-note">
+        <div class="meat-note-label">⬛ Meat Dept Use</div>
+        <p>Pull a quick report on your high-velocity items at end of shift. Write today's on-hand counts on the printout. <strong>Keep a folder. That paper trail is what you show management when you talk production planning and when you push for advancement.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 19 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num">19</div>
+      <div class="card-title-block">
+        <div class="card-title">Item Group Code Maintenance</div>
+        <div class="card-subtitle">Build scan groups — batch your top items</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-critical">UNDERUSED</div>
+        <div class="tag tag-meat">MEAT</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">Create and maintain item groups — custom bundles of items you query together repeatedly. Build it once, use it forever. Eliminates scanning the same 20 items individually every single day.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>19</code></li>
+        <li><span class="step-num">02</span>Enter a group name OR press <code>F4</code> to select an existing group</li>
+        <li><span class="step-num">03</span>Press <code>F4</code> to add items — scan or key UPC or item number</li>
+        <li><span class="step-num">04</span>Press <code>F10</code> to review the current item list</li>
+        <li><span class="step-num">05</span>Key <code>4</code> next to any item to remove it → press ENTER</li>
+      </ul>
+      <div class="meat-note">
+        <div class="meat-note-label">⬛ Meat Dept Use — MASSIVELY UNDERUSED</div>
+        <p>Create a group for your department's top 20 movers. <strong>Your daily on-hand check becomes a one-session scan instead of scanning 20 barcodes one by one.</strong> Most wrappers don't know this exists. Supervisors who use it look like they own the data.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 20 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num fresh">20</div>
+      <div class="card-title-block">
+        <div class="card-title">Merchandise Audit Entry</div>
+        <div class="card-subtitle">Physical inventory count input</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-inventory">INVENTORY</div>
+        <div class="tag tag-critical">CRITICAL</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">Scan or key item counts during physical inventory. Accepts multiple count entries per item and allows counts across multiple departments in one session.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>20</code></li>
+        <li><span class="step-num">02</span>Scan or key each item number</li>
+        <li><span class="step-num">03</span>Enter your count for each item</li>
+        <li><span class="step-num">04</span>Multiple entries for the same item are accepted — they stack</li>
+      </ul>
+      <div class="meat-note">
+        <div class="meat-note-label">⬛ Meat Dept Use — CRITICAL ON COUNT DAY</div>
+        <p>Costco runs <strong>13 physical inventory counts per year</strong> — one per 4-week fiscal period. Count day in meat is controlled chaos. The wrappers who know RF 20 get handed the scanner by the supervisor. Every count discrepancy that shows up later comes back to whoever was on the scanner. <strong>Own RF 20, own the count.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 21 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num fresh">21</div>
+      <div class="card-title-block">
+        <div class="card-title">Clear Merchandise Audit Count List</div>
+        <div class="card-subtitle">Wipes ALL counts from RF 20 — irreversible</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-access">⚠ IRREVERSIBLE</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">Clears ALL counts entered in option RF 20. No partial clear. Everything or nothing.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>21</code></li>
+        <li><span class="step-num">02</span>Confirm to clear — counts are immediately gone</li>
+      </ul>
+      <div class="warning-box">
+        <div class="warning-label">⚠ Critical Warning</div>
+        <p><strong>Never hit RF 21 until RF 22 has printed and you have confirmed the report is correct.</strong> Firing this mid-count or before the report prints means the count is gone. You will have to recount. This mistake has burned people. The correct sequence is always: <strong>RF 20 → RF 22 → RF 21</strong> (if clearing is needed at all).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 22 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num fresh">22</div>
+      <div class="card-title-block">
+        <div class="card-title">Print Merchandise Audit Report</div>
+        <div class="card-subtitle">Print the count from RF 20 — same output as MADR</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-inventory">INVENTORY</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">Prints the count report from your RF 20 entries. Can print directly from the scanner or from the AS400 terminal. Produces the same report as AS400 option <code>MADR</code>.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>22</code></li>
+        <li><span class="step-num">02</span>Print from the RF scanner directly OR move to the AS400 terminal</li>
+      </ul>
+      <div class="sequence-box">
+        <div class="rl" style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.15em;color:var(--text-muted);margin-bottom:12px;">MANDATORY SEQUENCE</div>
+        <div class="seq-row">
+          <div class="seq-num">RF 20</div><div class="seq-arrow">→</div><div class="seq-desc">Enter all counts</div>
+        </div>
+        <div class="seq-row">
+          <div class="seq-num">RF 22</div><div class="seq-arrow">→</div><div class="seq-desc">Print report — <strong>verify it's correct before moving on</strong></div>
+        </div>
+        <div class="seq-row">
+          <div class="seq-num">RF 21</div><div class="seq-arrow">→</div><div class="seq-desc">Clear list — only if required and only AFTER the report is confirmed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 23 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num">23</div>
+      <div class="card-title-block">
+        <div class="card-title">EDP Sign Requests</div>
+        <div class="card-subtitle">Print merchandise signs from the floor</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-meat">MEAT</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">Print standard EDP price signs directly from the scanner without going back to the AS400 terminal. Specify sign size, scan items, send to printer.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>23</code></li>
+        <li><span class="step-num">02</span>Enter the letter for sign size — <strong>standard is <code>S</code> (small)</strong> unless directed otherwise</li>
+        <li><span class="step-num">03</span>Enter item number(s) OR scan UPC(s)</li>
+        <li><span class="step-num">F10</span>Press <code>F10</code> to review your item list before printing</li>
+        <li><span class="step-num">04</span>Key <code>4</code> next to any item to remove it</li>
+        <li><span class="step-num">F21</span>Press <code>F21</code> to print</li>
+        <li><span class="step-num">05</span>Select the appropriate printer → ENTER</li>
+      </ul>
+      <div class="meat-note">
+        <div class="meat-note-label">⬛ Meat Dept Use</div>
+        <p>Price changes on markdown items, sign corrections during promotion events. Run your own sign prints from the cooler without tying up someone at the office terminal. That kind of self-sufficiency gets noticed.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 36 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num">36</div>
+      <div class="card-title-block">
+        <div class="card-title">Print Pallet Tag</div>
+        <div class="card-subtitle">Pallet ID tags — receiving and RTV</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-meat">MEAT</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">Prints pallet identification tags with item info, quantity, optional PO number, and receiver initials.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>36</code></li>
+        <li><span class="step-num">02</span>Select printer: <code>1</code> = RCV &nbsp;/&nbsp; <code>2</code> = RTV</li>
+        <li><span class="step-num">03</span>Enter item number OR scan UPC</li>
+        <li><span class="step-num">04</span>Enter quantity</li>
+        <li><span class="step-num">05</span>Enter PO number and initials — <em>optional but strongly recommended</em></li>
+        <li><span class="step-num">ENT</span>Press ENTER to print</li>
+      </ul>
+      <div class="meat-note">
+        <div class="meat-note-label">⬛ Meat Dept Use</div>
+        <p>Any primal shipment receiving or staging for RTV. <strong>PO number and your initials on every tag = an accountability chain.</strong> When a vendor dispute comes up — wrong count, wrong weight, wrong item — your tag is your proof. Supervisors who receive clean have far fewer disputes.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 63 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num fresh">63</div>
+      <div class="card-title-block">
+        <div class="card-title">Fresh Foods Inventory (FFI)</div>
+        <div class="card-subtitle">Fresh dept physical inventory — 13× per year</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-inventory">INVENTORY</div>
+        <div class="tag tag-critical">CRITICAL</div>
+        <div class="tag tag-meat">MEAT</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">RF scanner access point for <code>FFI</code> (Fresh Foods Inventory — input counts). Specifically for fresh ancillary departments: Meat, Deli, Bakery, Seafood. The AS400 terminal equivalent is the <code>FFI</code> option. Prompts for an Aisle designation then walks through count entry.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>63</code></li>
+        <li><span class="step-num">02</span>Enter the Aisle identifier — <strong>cannot be blank, system will error</strong></li>
+        <li><span class="step-num">03</span>Enter counts by item</li>
+        <li><span class="step-num">F11</span>Press <code>F11</code> to print from the RF scanner screen</li>
+      </ul>
+      <div class="meat-note">
+        <div class="meat-note-label">⬛ Meat Dept Use — THIS ONE COUNTS TOWARD YOUR ADVANCEMENT</div>
+        <p>The fresh department physical count runs <strong>13 times per year</strong>. Every variance between your RF 63 entries and the system's expected on-hand shows up directly in the department P&L. <strong>Supervisors are evaluated on shrink and inventory accuracy.</strong> If you own the count and the department's variance is tight, that is a direct, documentable win to put in front of management when you ask about advancement. Refer to the AS400 Options for Fresh Foods Inventory guide on the Inventory Audit page for the full fresh-dept count workflow.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 72 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num elevated">72</div>
+      <div class="card-title-block">
+        <div class="card-title">Shrink</div>
+        <div class="card-subtitle">Remove damaged / expired items from inventory</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-access">WPM PASSWORD REQUIRED</div>
+        <div class="tag tag-critical">HIGHEST CONSEQUENCE</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">Removes items from the warehouse's live inventory count when they are damaged, expired, or being disposed of. <strong>Requires a separate WPM-issued username and password</strong> — not your standard AS400 login. Credentials issued by WM or AWM only.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>72</code></li>
+        <li><span class="step-num">02</span>Enter WPM-issued username and password</li>
+        <li><span class="step-num">03</span>Scan or key items being removed from inventory</li>
+        <li><span class="step-num">04</span>Enter quantity in the Sell Unit field</li>
+      </ul>
+      <div class="reversal-box">
+        <div class="rl">Reversals</div>
+        <ul>
+          <li><strong>Same-day reversal:</strong> Key a <strong>negative amount</strong> in the Sell Unit field in the same session</li>
+          <li><strong>Older reversals:</strong> Go through RTV using AS400 option <code>NSE18</code></li>
+          <li><strong>Research past entries:</strong> AS400 option <code>TSH</code></li>
+        </ul>
+      </div>
+      <div class="meat-note">
+        <div class="meat-note-label">⬛ Meat Dept Use — HIGHEST CONSEQUENCE OPTION ON THIS LIST</div>
+        <p>Every pound scanned out here hits your department's shrink number <strong>directly</strong>. In a high-volume meat department running thousands of pounds a week, shrink entries compound fast. That number shows up in the department P&L and managers see it. Running this option clean — with documentation on what you scanned and why — is exactly the kind of supervisor-level behavior that gets you promoted.</p>
+      </div>
+      <div class="warning-box" style="margin-top:12px;">
+        <div class="warning-label">Hard Rules</div>
+        <p>
+          <strong>Never</strong> scan out a pulled item without a physical tray or box in your hand.<br>
+          <strong>Never</strong> reverse a shrink entry without understanding its effect on inventory.<br>
+          <strong>Never</strong> let anyone else use your shrink credentials.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 88 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num">88</div>
+      <div class="card-title-block">
+        <div class="card-title">Item / UPC Cross Reference</div>
+        <div class="card-subtitle">All UPCs tied to one item — same as AS400 IXI</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-meat">MEAT</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">Enter an item number and see every UPC currently associated with it. Same function as AS400 option <code>IXI</code>. Primarily used when an item isn't scanning at the register.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>88</code></li>
+        <li><span class="step-num">02</span>Enter the item number</li>
+        <li><span class="step-num">03</span>View all UPCs tied to that item</li>
+        <li><span class="step-num">KEY</span>If UPC is set up but not scanning → run <code>EPC</code> download from the AS400 terminal to push the fix</li>
+      </ul>
+      <div class="meat-note">
+        <div class="meat-note-label">⬛ Meat Dept Use</div>
+        <p>Variable-weight meat items often have multiple PLUs and UPCs by pack size, grade, or label type. Tray of ribeyes won't scan at the register? RF 88 tells you immediately whether the UPC is in the system. <strong>Not set up = item master issue → WM or buyer. Set up but not scanning = EPC download.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RF 98 -->
+  <div class="option-card">
+    <div class="card-header">
+      <div class="option-num">98</div>
+      <div class="card-title-block">
+        <div class="card-title">Item / UPC Check</div>
+        <div class="card-subtitle">Item detail + sell price + multipack pricing</div>
+      </div>
+      <div class="card-tags">
+        <div class="tag tag-meat">MEAT</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="what-it-does">View item description, item number, associated UPC, and sell price. If the item contains multiple sell units (multipacks), shows the individual per-unit pricing as well.</div>
+      <div class="steps-label">How to run</div>
+      <ul class="steps">
+        <li><span class="step-num">01</span>Select option <code>98</code></li>
+        <li><span class="step-num">02</span>Scan or enter UPC OR item number</li>
+        <li><span class="step-num">03</span>Read screen — description, item #, UPC, sell price, per-unit price for multipacks</li>
+      </ul>
+      <div class="meat-note">
+        <div class="meat-note-label">⬛ Meat Dept Use</div>
+        <p>Quick price verification before a member escalates a complaint. Verify multipack pricing is set correctly — a 2-pack of Choice ribeyes should show both the total price and per-pack breakdown. <strong>Any discrepancy between what the sign says and what RF 98 shows goes to the office immediately.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── QUICK REFERENCE TABLE ───────────────────────── -->
+  <div class="section-header">
+    <div class="section-num">Section 02</div>
+    <div class="section-title">Quick Reference Table</div>
+    <div class="section-line"></div>
+  </div>
+
+  <table class="qr-table">
+    <thead>
+      <tr>
+        <th>Option</th>
+        <th>Name</th>
+        <th>Access</th>
+        <th>Primary Use</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-critical"><td>RF 07</td><td>Print Depot Labels</td><td>Standard</td><td>Custom pallet labels — free-form text</td></tr>
+      <tr class="row-critical"><td>RF 11</td><td>Item Inquiry</td><td>Standard</td><td>Daily on-hand & sales check — use constantly</td></tr>
+      <tr><td>RF 13</td><td>Item Alpha Inquiry</td><td>Standard</td><td>Find item by description keyword</td></tr>
+      <tr><td>RF 16</td><td>UPC Inquiry</td><td>Standard</td><td>Barcode → item number lookup</td></tr>
+      <tr><td>RF 18</td><td>Item Sales Report</td><td>Standard</td><td>Print floor-level sales report</td></tr>
+      <tr class="row-critical"><td>RF 19</td><td>Item Group Maintenance</td><td>Standard</td><td>Build batch scan groups for top movers</td></tr>
+      <tr><td>RF 20</td><td>Merchandise Audit Entry</td><td>Standard</td><td>Physical inventory count input</td></tr>
+      <tr><td>RF 21</td><td>Clear Audit Count List</td><td>Standard</td><td><strong>WIPE counts — run AFTER RF 22 only</strong></td></tr>
+      <tr><td>RF 22</td><td>Print Merchandise Audit Report</td><td>Standard</td><td>Print count report — always before RF 21</td></tr>
+      <tr><td>RF 23</td><td>EDP Sign Requests</td><td>Standard</td><td>Print price signs from the floor</td></tr>
+      <tr><td>RF 36</td><td>Print Pallet Tag</td><td>Standard</td><td>Pallet ID tags — receiving and RTV</td></tr>
+      <tr class="row-critical"><td>RF 63</td><td>Fresh Foods Inventory (FFI)</td><td>Standard</td><td>Meat / fresh dept inventory counts 13× / year</td></tr>
+      <tr class="row-elevated"><td>RF 72</td><td>Shrink</td><td><span class="badge-wpm">WPM REQUIRED</span></td><td>Remove damaged / expired from live inventory</td></tr>
+      <tr><td>RF 88</td><td>Item / UPC Cross Reference</td><td>Standard</td><td>All UPCs tied to one item → same as IXI</td></tr>
+      <tr><td>RF 98</td><td>Item / UPC Check</td><td>Standard</td><td>Item detail + sell price + multipack pricing</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ── CAREER PRIORITY ─────────────────────────────── -->
+  <div class="section-header">
+    <div class="section-num">Section 03</div>
+    <div class="section-title">Career Priority — Meat Dept Track</div>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="priority-grid">
+    <div class="priority-card">
+      <div class="priority-rank rank-1">01</div>
+      <div class="priority-code">RF 11 — DAILY</div>
+      <div class="priority-why">Run on your top items before every shift. Know the numbers before a manager asks. On-hand vs. current week = your production decision, made with data not instinct.</div>
+    </div>
+    <div class="priority-card">
+      <div class="priority-rank rank-1">02</div>
+      <div class="priority-code">RF 63 + RF 20 — COUNT DAY</div>
+      <div class="priority-why">Own the inventory count. Be the person the supervisor hands the scanner to. A tight count is a direct, documentable win for your advancement conversation.</div>
+    </div>
+    <div class="priority-card">
+      <div class="priority-rank rank-2">03</div>
+      <div class="priority-code">RF 72 — PUSH FOR ACCESS</div>
+      <div class="priority-why">Every dept has someone running Shrink. That person has elevated access and accountability. That's a supervisory function — push for it when trusted.</div>
+    </div>
+    <div class="priority-card">
+      <div class="priority-rank rank-2">04</div>
+      <div class="priority-code">RF 19 — BUILD YOUR GROUPS</div>
+      <div class="priority-why">Build a top-20 meat item group once. Your daily check becomes one scan session. This is visible efficiency that supervisors and merchandise managers notice.</div>
+    </div>
+    <div class="priority-card">
+      <div class="priority-rank rank-3">05</div>
+      <div class="priority-code">RF 36 + RF 07 — RECEIVE CLEAN</div>
+      <div class="priority-why">PO numbers and initials on every receiving tag. When vendor disputes happen, your documentation wins. Clean receiving = far fewer problems upstream.</div>
+    </div>
+    <div class="priority-card">
+      <div class="priority-rank" style="color:var(--text-muted)">06</div>
+      <div class="priority-code">RF 18, 22, 23 — LEARN, USE</div>
+      <div class="priority-why">Useful but secondary at this stage. Know them. Use them when needed. Not your primary differentiators in the first 6 months.</div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-left">COSTCO MEAT DEPT 61 · RF SCANNER FIELD REFERENCE · AS400 GUIDE FEB 2026</div>
+  <div class="footer-right">PERSONAL USE ONLY · NOT OFFICIAL COSTCO DOCUMENTATION</div>
+</div>
+
+<script>
+  document.querySelectorAll('.option-card').forEach(card => {
+    // Inject chevron after card-tags
+    const tags = card.querySelector('.card-tags');
+    if (tags) {
+      const chevron = document.createElement('div');
+      chevron.className = 'card-chevron';
+      chevron.innerHTML = '&#9660;';
+      tags.insertAdjacentElement('afterend', chevron);
+    }
+    // Toggle open/closed on header click
+    const header = card.querySelector('.card-header');
+    if (header) {
+      header.addEventListener('click', () => card.classList.toggle('open'));
+    }
+  });
+</script>
+</body>
+</html>
