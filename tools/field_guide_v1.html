@@ -1,0 +1,2316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Costco Meat Dept & AS400 Toolkit</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg: #0a0c0f;
+    --surface: #111417;
+    --surface2: #181c21;
+    --border: #1e2430;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #39e96b;
+    --warn: #ffb800;
+    --text: #d4dce8;
+    --text-dim: #6b7a8d;
+    --text-bright: #f0f5ff;
+    --prime: #f0c040;
+    --choice: #a0c8ff;
+    --red: #ff4a6e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0d1520 0%, #0a0c12 50%, #0f1a0d 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 24px 32px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 32px rgba(0,212,255,0.15);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 4px;
+  }
+
+  .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: var(--accent);
+    color: #000;
+    padding: 3px 8px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  .badge.warn { background: var(--warn); }
+  .badge.green { background: var(--accent3); }
+
+  header h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: -0.5px;
+  }
+
+  header h1 span { color: var(--accent); }
+
+  .header-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  /* NAV TABS */
+  nav {
+    display: flex;
+    gap: 2px;
+    padding: 0 32px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  nav::-webkit-scrollbar { display: none; }
+
+  nav button {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 12px 16px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    text-transform: uppercase;
+  }
+
+  nav button:hover { color: var(--text); }
+  nav button.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* LAYOUT */
+  main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 28px 32px;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* SECTION HEADERS */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header h2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: -0.3px;
+  }
+
+  .section-header .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 2px 6px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+  }
+
+  /* GRID LAYOUTS */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+  @media (max-width: 900px) {
+    .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    main { padding: 16px; }
+    nav { padding: 0 12px; }
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+  }
+
+  .card-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  /* COMMAND BLOCKS */
+  .cmd-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+  }
+
+  .cmd-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 12px 14px;
+    transition: border-color 0.15s, background 0.15s;
+    cursor: default;
+  }
+
+  .cmd-card:hover {
+    background: #1a1f2a;
+    border-left-color: var(--accent2);
+  }
+
+  .cmd-card.meat { border-left-color: var(--accent3); }
+  .cmd-card.sales { border-left-color: var(--warn); }
+  .cmd-card.mgmt { border-left-color: var(--accent2); }
+  .cmd-card.critical { border-left-color: var(--red); }
+
+  .cmd-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+
+  .cmd-subtitle {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .cmd-card.meat .cmd-subtitle { color: var(--accent3); }
+  .cmd-card.sales .cmd-subtitle { color: var(--warn); }
+  .cmd-card.mgmt .cmd-subtitle { color: var(--accent2); }
+  .cmd-card.critical .cmd-subtitle { color: var(--red); }
+
+  .cmd-desc {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .cmd-tips {
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+    margin-top: 4px;
+  }
+
+  .tip-item {
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 2px 0;
+    padding-left: 12px;
+    position: relative;
+  }
+
+  .tip-item::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .cmd-card.meat .tip-item::before { color: var(--accent3); }
+  .cmd-card.sales .tip-item::before { color: var(--warn); }
+  .cmd-card.mgmt .tip-item::before { color: var(--accent2); }
+
+  /* TABLES */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+
+  .data-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--surface2);
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  .data-table td {
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  .data-table tr:hover td { background: var(--surface2); }
+
+  .data-table .mono {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-bright);
+    font-weight: 600;
+  }
+
+  .data-table .plu {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .grade-prime {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    background: var(--prime);
+    color: #000;
+    padding: 1px 5px;
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  .grade-choice {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    background: var(--choice);
+    color: #000;
+    padding: 1px 5px;
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  .grade-wagyu {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #ff6b35, #ffb800);
+    color: #000;
+    padding: 1px 5px;
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  /* CUT SPEC CARDS */
+  .spec-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+
+  .spec-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .spec-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  .spec-plu {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--border);
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+
+  .spec-steps {
+    list-style: none;
+    counter-reset: steps;
+  }
+
+  .spec-steps li {
+    counter-increment: steps;
+    font-size: 12px;
+    color: var(--text);
+    padding: 4px 0 4px 28px;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .spec-steps li:last-child { border-bottom: none; }
+
+  .spec-steps li::before {
+    content: counter(steps);
+    position: absolute;
+    left: 0;
+    top: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent2);
+    background: rgba(255,107,53,0.15);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 18px;
+    padding-left: 0;
+  }
+
+  /* CAREER LADDER */
+  .ladder {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    padding-left: 32px;
+  }
+
+  .ladder::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent3), var(--accent), var(--warn), var(--accent2));
+  }
+
+  .ladder-step {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 16px;
+    position: relative;
+  }
+
+  .ladder-step.current {
+    border-color: var(--accent3);
+    background: rgba(57,233,107,0.05);
+  }
+
+  .ladder-step.target {
+    border-color: var(--accent);
+    background: rgba(0,212,255,0.05);
+  }
+
+  .ladder-step::before {
+    content: '';
+    position: absolute;
+    left: -26px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--bg);
+  }
+
+  .ladder-step.current::before { background: var(--accent3); border-color: var(--accent3); }
+  .ladder-step.target::before { background: var(--accent); border-color: var(--accent); }
+
+  .ladder-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+
+  .ladder-meta {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .ladder-actions {
+    font-size: 11px;
+    color: var(--text);
+  }
+
+  .ladder-actions li {
+    padding: 2px 0 2px 14px;
+    position: relative;
+  }
+
+  .ladder-actions li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent3);
+    font-size: 10px;
+  }
+
+  /* METRIC BLOCKS */
+  .metric-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .metric {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .metric-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* CHECKLIST */
+  .checklist {
+    list-style: none;
+  }
+
+  .checklist li {
+    padding: 8px 0 8px 28px;
+    position: relative;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .checklist li:last-child { border-bottom: none; }
+
+  .checklist li::before {
+    content: '☐';
+    position: absolute;
+    left: 0;
+    font-size: 16px;
+    color: var(--text-dim);
+    top: 7px;
+  }
+
+  .checklist li.done::before { content: '☑'; color: var(--accent3); }
+
+  .checklist li .sub {
+    display: block;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* ALERT BOXES */
+  .alert {
+    border-left: 4px solid var(--warn);
+    background: rgba(255,184,0,0.06);
+    padding: 12px 14px;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 14px;
+    font-size: 12px;
+  }
+
+  .alert.danger {
+    border-left-color: var(--red);
+    background: rgba(255,74,110,0.06);
+  }
+
+  .alert.info {
+    border-left-color: var(--accent);
+    background: rgba(0,212,255,0.06);
+  }
+
+  .alert.success {
+    border-left-color: var(--accent3);
+    background: rgba(57,233,107,0.06);
+  }
+
+  .alert-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    color: var(--warn);
+  }
+
+  .alert.danger .alert-title { color: var(--red); }
+  .alert.info .alert-title { color: var(--accent); }
+  .alert.success .alert-title { color: var(--accent3); }
+
+  /* FKEY TABLE */
+  .fkey-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+  }
+
+  .fkey {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 12px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .fkey-key {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #000;
+    background: var(--text-dim);
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+    min-width: 36px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .fkey-desc {
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  /* CHAIN INQUIRY */
+  .chain-flow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  .chain-step {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-bright);
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 4px 10px;
+    border-radius: 3px;
+  }
+
+  .chain-arrow {
+    color: var(--text-dim);
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .chain-note {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-style: italic;
+    width: 100%;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+
+  /* COMPARISON TABLE */
+  .compare-table th:first-child { color: var(--red); }
+  .compare-table td:nth-child(2) { color: var(--text-dim); font-style: italic; }
+  .compare-table td:nth-child(3) { color: var(--accent3); }
+
+  /* POULTRY TABLE */
+  .vendor-header {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent2);
+    background: rgba(255,107,53,0.1);
+    padding: 6px 12px;
+    border-left: 3px solid var(--accent2);
+    margin: 12px 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* SEARCH/FILTER */
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .search-input {
+    flex: 1;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text-dim); }
+
+  .filter-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-dim);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+  }
+
+  /* MISC */
+  .mb-16 { margin-bottom: 16px; }
+  .mb-24 { margin-bottom: 24px; }
+  .mt-16 { margin-top: 16px; }
+  .small { font-size: 11px; color: var(--text-dim); }
+  .highlight { color: var(--accent); font-weight: 700; }
+  .highlight2 { color: var(--accent2); font-weight: 700; }
+  .highlight3 { color: var(--accent3); font-weight: 700; }
+  .warn-text { color: var(--warn); }
+  .red-text { color: var(--red); }
+
+  p { margin-bottom: 10px; font-size: 13px; line-height: 1.7; }
+  h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin: 16px 0 8px;
+    letter-spacing: -0.3px;
+  }
+
+  .scroll-table { overflow-x: auto; }
+
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 7px;
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+  }
+  .tag.blue { color: var(--accent); border-color: var(--accent); background: rgba(0,212,255,0.08); }
+  .tag.orange { color: var(--accent2); border-color: var(--accent2); background: rgba(255,107,53,0.08); }
+  .tag.green { color: var(--accent3); border-color: var(--accent3); background: rgba(57,233,107,0.08); }
+  .tag.yellow { color: var(--warn); border-color: var(--warn); background: rgba(255,184,0,0.08); }
+
+  /* SCHEDULE */
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 16px;
+  }
+
+  .sched-day {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px;
+    text-align: center;
+    min-height: 70px;
+  }
+
+  .sched-day .day-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .sched-day .day-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+
+  .sched-day .shift {
+    font-size: 10px;
+    color: var(--accent3);
+    line-height: 1.3;
+  }
+
+  .sched-day .off {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 16px;
+  }
+
+  .sched-day.today { border-color: var(--accent); }
+  .sched-day.work { background: rgba(57,233,107,0.05); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <span class="badge">INTERNAL</span>
+    <h1>Costco <span>//</span> Meat Dept &amp; AS400 Field Toolkit</h1>
+  </div>
+  <div class="header-meta">STARTED: MAR 25 2026 &nbsp;|&nbsp; ROLE: MEAT WRAPPER → TARGET: SUPERVISOR / MERCH MGR &nbsp;|&nbsp; SOURCE: AS400 Guide Feb 2026 + PLU Sheets + Cut Specs</div>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('as400')">AS400 Commands</button>
+  <button onclick="showTab('meat')">Meat-Dept Screens</button>
+  <button onclick="showTab('plu-beef')">Beef &amp; Pork PLUs</button>
+  <button onclick="showTab('plu-poultry')">Poultry PLUs</button>
+  <button onclick="showTab('cut-specs')">Cut Specs</button>
+  <button onclick="showTab('career')">Career Plan</button>
+  <button onclick="showTab('daily')">Daily Routines</button>
+  <button onclick="showTab('fkeys')">F-Keys &amp; Tips</button>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════════ AS400 COMMANDS -->
+<div id="as400" class="tab-content active">
+  <div class="section-header">
+    <h2>Complete AS400 Command Reference</h2>
+    <span class="tag blue">CONFIRMED — AS400 Guide Feb 2026</span>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" class="search-input" id="cmdSearch" placeholder="Search commands... (e.g. IAI, sales, receiving)" onkeyup="filterCmds()">
+    <button class="filter-btn active" onclick="filterCmdCategory('all', this)">ALL</button>
+    <button class="filter-btn" onclick="filterCmdCategory('item', this)">ITEM</button>
+    <button class="filter-btn" onclick="filterCmdCategory('sales', this)">SALES</button>
+    <button class="filter-btn" onclick="filterCmdCategory('meat', this)">MEAT</button>
+    <button class="filter-btn" onclick="filterCmdCategory('mgmt', this)">MGMT</button>
+    <button class="filter-btn" onclick="filterCmdCategory('labor', this)">LABOR</button>
+  </div>
+
+  <div class="cmd-grid" id="cmdGrid">
+
+    <!-- ITEM LOOKUP -->
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">IAI</div>
+      <div class="cmd-subtitle">Item Alpha Inquiry</div>
+      <div class="cmd-desc">Gateway to ~80% of merchandise data. Search by description, item#, dept, or UPC. Enter partial descriptions to get a list.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Opt 1 = on-hand by warehouse (overnight data — warn members)</div>
+        <div class="tip-item">Opt 3 = IIL: sales by region or company</div>
+        <div class="tip-item">Opt 4 = RHI: receiving history</div>
+        <div class="tip-item">Opt 5 = Sign inquiry (no print)</div>
+        <div class="tip-item">Opt 6 = Print sign</div>
+        <div class="tip-item">Opt 8 = ITMW: your warehouse detail (most-used drill)</div>
+        <div class="tip-item">Opt 0 = STOP: HAZMAT/disposal info</div>
+        <div class="tip-item">Set Display On Hand = N to see inactive items</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">ITMW</div>
+      <div class="cmd-subtitle">Item Inquiry for Warehouse</div>
+      <div class="cmd-desc">Your warehouse only. Shows on-hand, dept#, sell price, on-order, ETA, NSI, and Today's Sales in real time (updated ~10 min).</div>
+      <div class="cmd-tips">
+        <div class="tip-item">F9 = associated rebates</div>
+        <div class="tip-item">F14 = taxes on item</div>
+        <div class="tip-item">F21 = print sign from this screen</div>
+        <div class="tip-item">F22 = EBT eligibility + fees</div>
+        <div class="tip-item">Faster than IAI when you know the item#</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">IIL</div>
+      <div class="cmd-subtitle">Multi-Warehouse Inventory</div>
+      <div class="cmd-desc">On-hand across multiple warehouses. Default = your region. Use *MW, *NW, *USALL etc. Also shows sales rankings between warehouses.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">CRITICAL: refreshes OVERNIGHT only — never promise real-time</div>
+        <div class="tip-item">Used to redirect members or find stock for transfers</div>
+        <div class="tip-item">Use *USALL for the broadest search</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">IGM</div>
+      <div class="cmd-subtitle">Item Group Maintenance</div>
+      <div class="cmd-desc">Create and maintain item groups for tracking sets of SKUs together (e.g., your top-10 meat items, CMN donations, etc.).</div>
+      <div class="cmd-tips">
+        <div class="tip-item">F23 = delete the group</div>
+        <div class="tip-item">Groups must be active items in your warehouse</div>
+        <div class="tip-item">Used with ISI and COMP for comparison analysis</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">ISI</div>
+      <div class="cmd-subtitle">Item Sales Inquiry</div>
+      <div class="cmd-desc">Item sales for a single item or a group (created in IGM). View specific item sales patterns or compare item groups.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Enter item numbers directly OR select a saved group</div>
+        <div class="tip-item">Key report for planning cut lists in meat</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">IRCI</div>
+      <div class="cmd-subtitle">Instant Rebate Coupon Inquiry</div>
+      <div class="cmd-desc">View active, expired, and FUTURE IRC coupons. Shows item#, discount amount, start/end dates, manufacturer vs. Costco funded, qty limit.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Drop the last (check) digit when entering coupon# — Costco convention</div>
+        <div class="tip-item">Mark Active, Expired, or Future with (x)</div>
+        <div class="tip-item">Enter start date to view expired IRCs</div>
+        <div class="tip-item">Both start AND end date needed for future IRCs</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">IXI</div>
+      <div class="cmd-subtitle">Item ↔ UPC Cross-Reference</div>
+      <div class="cmd-desc">Cross-reference an item number with all associated UPCs. Use when item won't scan at the register to verify if the UPC is set up.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">If UPC is set up but not scanning: do an EPC download</div>
+        <div class="tip-item">RF Scanner Option 88 does the same thing handheld</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">RHI</div>
+      <div class="cmd-subtitle">Receiving History Inquiry</div>
+      <div class="cmd-desc">Every PO/delivery received for an item: date, vendor, PO#, quantity, cost. Critical for receiving errors and variance investigation.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Run same-day after every meat delivery — catch shorts 5x easier</div>
+        <div class="tip-item">Cross-reference against physical pallet count</div>
+        <div class="tip-item">Accessible via Opt 4 from IAI</div>
+      </div>
+    </div>
+
+    <!-- SALES SCREENS -->
+    <div class="cmd-card sales" data-cat="sales">
+      <div class="cmd-name">DSI</div>
+      <div class="cmd-subtitle">Daily Sales / Inventory Inquiry</div>
+      <div class="cmd-desc">Department sales and inventory for your warehouse, region, or company — daily, weekly, period, and YTD. The morning scoreboard. NOT same-day.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">View by warehouse = all depts for selected date</div>
+        <div class="tip-item">View by dept = all warehouses vs. your location</div>
+        <div class="tip-item">Start every shift here — know your numbers before your manager does</div>
+      </div>
+    </div>
+
+    <div class="cmd-card sales" data-cat="sales">
+      <div class="cmd-name">DFI</div>
+      <div class="cmd-subtitle">Daily Flash Sales Inquiry</div>
+      <div class="cmd-desc">Daily, weekly, period-to-date and YTD flash sales by warehouse. Similar to DSI. Not same-day — pulls next day.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Use F prompts at bottom for additional detail views</div>
+        <div class="tip-item">Pair with DSI — one gives totals, one gives flash breakdown</div>
+      </div>
+    </div>
+
+    <div class="cmd-card sales" data-cat="sales">
+      <div class="cmd-name">IAWD</div>
+      <div class="cmd-subtitle">Warehouse Dashboard</div>
+      <div class="cmd-desc">Summarized inventory, membership, sales, and front-end productivity for warehouse/region/company. Multiple views with View code field.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">View 00 = main warehouse stats (default)</div>
+        <div class="tip-item">View 01 = dept-level on-hand + receivings + D&D vs LY</div>
+        <div class="tip-item">View 02 = sales by dept, comp %, penetration</div>
+        <div class="tip-item">View 03 = Front End productivity (simplified IAFEP)</div>
+        <div class="tip-item">No same-day data — previous day only</div>
+      </div>
+    </div>
+
+    <div class="cmd-card sales" data-cat="sales">
+      <div class="cmd-name">IATOP</div>
+      <div class="cmd-subtitle">Top Items by Department</div>
+      <div class="cmd-desc">Ranks SKUs by sales $, units, refunds, D&D, or markdowns for a chosen period. Prep tool for buyer/regional walk-throughs.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Leave Dept blank = top items for entire warehouse</div>
+        <div class="tip-item">F19/F20 = toggle comparison between warehouses or regions</div>
+        <div class="tip-item">Filter by category code to narrow (e.g. ribeye only)</div>
+        <div class="tip-item">Pair with IIL: if you're #1 in sales but low on-hand → incoming OOS</div>
+        <div class="tip-item">Top D&D view shows your worst shrink items</div>
+      </div>
+    </div>
+
+    <div class="cmd-card sales" data-cat="sales">
+      <div class="cmd-name">STK</div>
+      <div class="cmd-subtitle">Sales Tracking Inquiry</div>
+      <div class="cmd-desc">Item sales AND D&D in units for a 4-week period by dept. Most used in fresh depts for production planning. THE daily production reference.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">F19/F20 = toggle left/right through data</div>
+        <div class="tip-item">F21 = print full report</div>
+        <div class="tip-item">F22 = export to Excel — build your own production sheet</div>
+        <div class="tip-item">Key input for your daily cut list decisions</div>
+      </div>
+    </div>
+
+    <div class="cmd-card sales" data-cat="sales">
+      <div class="cmd-name">IAD</div>
+      <div class="cmd-subtitle">Item Activity by Department</div>
+      <div class="cmd-desc">On-hand adjustments or destroyed items in dollars for a selected dept, fiscal year, period, and week. Extended cost and sell amounts per item.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Shows net landing cost + sell cost per shrink item</div>
+        <div class="tip-item">Use to build your shrink-dollar case for reducing over-production</div>
+      </div>
+    </div>
+
+    <div class="cmd-card sales" data-cat="sales">
+      <div class="cmd-name">IAIMI</div>
+      <div class="cmd-subtitle">Inventory Movement Summary</div>
+      <div class="cmd-desc">Stock status summary by company, region, warehouse, and dept. Also shows UPC activity — how many times an item was hand-keyed vs. scanned.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">F15 = Sales/UPC view: see hand-key vs. scan ratio per item</div>
+        <div class="tip-item">High hand-key rate on a meat item = label issue or UPC problem</div>
+      </div>
+    </div>
+
+    <div class="cmd-card sales" data-cat="sales">
+      <div class="cmd-name">ISO</div>
+      <div class="cmd-subtitle">Item Sales by Operator ID</div>
+      <div class="cmd-desc">Sales by warehouse and item number broken down by individual cashier/clerk operator. Total units + dollars per operator for a date range.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Used for front-end audits and training reviews</div>
+        <div class="tip-item">Can spot if a specific item is being dept-ringed instead of scanned</div>
+      </div>
+    </div>
+
+    <div class="cmd-card sales" data-cat="sales">
+      <div class="cmd-name">COMP</div>
+      <div class="cmd-subtitle">Comparison Analysis</div>
+      <div class="cmd-desc">Review sales history by item, group, dept, vendor, location, or date range for the last 3 fiscal years. Build your year-over-year story here.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Works with item groups created in IGM</div>
+        <div class="tip-item">3-year view = the most powerful trend tool at your level</div>
+      </div>
+    </div>
+
+    <!-- MERCHANDISING -->
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">DASH</div>
+      <div class="cmd-subtitle">Receiving Dashboard</div>
+      <div class="cmd-desc">All inbound trucks and appointments for the day: PO#, vendor, ETA, status, door assignment. Receiving lives on this screen.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Cross-reference with RHI for a stocked-out SKU</div>
+        <div class="tip-item">Check before assuming a product won't arrive today</div>
+        <div class="tip-item">More detail in the full Receiving Manual</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">EDSR</div>
+      <div class="cmd-subtitle">Electronic Data Sign Request</div>
+      <div class="cmd-desc">Print a price sign when you know the item# and need no manual changes. Select size (M/L are most common in the warehouse).</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Shift+F9 (F21) = print; select printer 1 (main) or 2 (mobile)</div>
+        <div class="tip-item">Walk the floor with EDSR printout before opening daily</div>
+        <div class="tip-item">Can also enter item UPC instead of item#</div>
+        <div class="tip-item">Accessible via Opt 6 from IAI</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">EDMP</div>
+      <div class="cmd-subtitle">Print Daily Maintenance</div>
+      <div class="cmd-desc">All buyer-side sign/price maintenance affecting signs for the day. Updated at 3:00 AM local time — do not run before then.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Filter: on-hand items only OR items with price changes</div>
+        <div class="tip-item">Signs MUST be printed and hung before opening every day</div>
+        <div class="tip-item">Change date for holiday pre-staging</div>
+        <div class="tip-item">Default sign size M (medium)</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">EDSM</div>
+      <div class="cmd-subtitle">Sign Maintenance (Custom)</div>
+      <div class="cmd-desc">Customize signs manually. Use for "last one display," immediate price/description corrections before overnight buyer updates.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Leave item# blank = Free Form blank sign</div>
+        <div class="tip-item">Signs print AFTER you exit (F3) — not immediately</div>
+        <div class="tip-item">Note: unit price (per oz etc.) doesn't auto-update with price change</div>
+      </div>
+    </div>
+
+    <div class="cmd-card mgmt" data-cat="mgmt">
+      <div class="cmd-name">EPC</div>
+      <div class="cmd-subtitle">Emergency Price Change</div>
+      <div class="cmd-desc">Mark down items or correct prices at the warehouse level for the day. Requires WPM password. Access typically limited to staff managers.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">F6 = add new price change; enter item# and new price + reason</div>
+        <div class="tip-item">Copy prior-day EPC: change date, place 3 next to EPC to copy</div>
+        <div class="tip-item">F15 = Item Downloads (after EPC, to restore original price)</div>
+        <div class="tip-item">F18 = Blocked Items (K = key flick, P = prohibit sale)</div>
+        <div class="tip-item">This is your markdown tool for end-of-life meat</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">EPCI</div>
+      <div class="cmd-subtitle">EPC Inquiry (Read-Only)</div>
+      <div class="cmd-desc">View-only: shows all EPCs, item downloads, and blocked items entered in the system. No password required to view.</div>
+    </div>
+
+    <div class="cmd-card meat" data-cat="meat">
+      <div class="cmd-name">STK</div>
+      <div class="cmd-subtitle">Sales Tracking — Meat Focus</div>
+      <div class="cmd-desc">Your primary cut-planning tool. 4-week unit sales + D&D by item for your dept. F22 exports to Excel for custom production sheets.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Run every morning before building your cut list</div>
+        <div class="tip-item">Dept = your meat dept# (usually Dept 17 cooler + related)</div>
+        <div class="tip-item">F22 export → build your own yield/cover tracking spreadsheet</div>
+      </div>
+    </div>
+
+    <div class="cmd-card meat" data-cat="meat">
+      <div class="cmd-name">MACR</div>
+      <div class="cmd-subtitle">Merchandise Audit Count List</div>
+      <div class="cmd-desc">Full dept inventory listing: every item with on-hand and NSI (non-saleable inventory). Used for cycle counts and pre-buyer visit prep.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Add category code to filter (e.g. ribeye items only)</div>
+        <div class="tip-item">Print before every physical inventory count</div>
+        <div class="tip-item">RF Scanner Option 22 prints same report handheld</div>
+      </div>
+    </div>
+
+    <div class="cmd-card meat" data-cat="meat">
+      <div class="cmd-name">IATOP</div>
+      <div class="cmd-subtitle">Top Items — Meat D&D View</div>
+      <div class="cmd-desc">Filter to your meat dept and select D&D sort — shows your highest-shrink items. If the same SKU keeps showing up week after week, it's a production problem.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Run weekly. If ribeye keeps hitting top 5 D&D, you're over-cutting</div>
+        <div class="tip-item">Bring IATOP D&D + STK sales data to show the fix = credibility</div>
+      </div>
+    </div>
+
+    <!-- LABOR -->
+    <div class="cmd-card" data-cat="labor">
+      <div class="cmd-name">LSDT</div>
+      <div class="cmd-subtitle">Daily Labor Tracking</div>
+      <div class="cmd-desc">Near real-time view of today's sales vs. plan PLUS hours scheduled vs. used. Supervisor's decision tool for calling people in or sending them home.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Available to all AS400 sign-ons — home warehouse only</div>
+        <div class="tip-item">View in 15/30/60 min intervals</div>
+        <div class="tip-item">Actl Lane vs. Sched Lane = are you running hot or cold?</div>
+        <div class="tip-item">Sls Diff = cumulative actual vs. plan — your real-time gap</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="labor">
+      <div class="cmd-name">LSDC</div>
+      <div class="cmd-subtitle">Door Count Entry</div>
+      <div class="cmd-desc">Enter door counts throughout the day so supervisors know how many lanes to open. Manual entry at defined intervals.</div>
+    </div>
+
+    <div class="cmd-card" data-cat="labor">
+      <div class="cmd-name">LSIM</div>
+      <div class="cmd-subtitle">Sales Impact Entry</div>
+      <div class="cmd-desc">Log unusual sales impacts (large resale orders, big jewelry purchases, large returns). F6 to add — requires reason + dollar amount.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">These feed into NEXT year's sales planning — affects scheduling forecasts</div>
+        <div class="tip-item">Resale, refunds, kiosks, gas, jewelry auto-populate without manual entry</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="labor">
+      <div class="cmd-name">LSCM</div>
+      <div class="cmd-subtitle">Labor Schedule Control File</div>
+      <div class="cmd-desc">Set dollars per labor hour, register count, and opening/closing hours. Drives schedule recommendations. Staff managers+ access.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Update for holiday hours to get accurate schedule suggestions</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="labor">
+      <div class="cmd-name">LSWM</div>
+      <div class="cmd-subtitle">Weekly Sales Plan Entry</div>
+      <div class="cmd-desc">Enter projected sales — feeds LSDT planned figures and drives scheduled hours suggestions. GMs, AGMs, FRNs, ADMs access only.</div>
+    </div>
+
+    <!-- MEMBERSHIP -->
+    <div class="cmd-card" data-cat="mgmt">
+      <div class="cmd-name">MBA9</div>
+      <div class="cmd-subtitle">Membership Lookup (View-Only)</div>
+      <div class="cmd-desc">View-only membership lookup. Search by: membership#, last/first name, sounds-like, ID type, 7-digit phone, or mailing address. Toggle with F11.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">F11 = toggle search method</div>
+        <div class="tip-item">F4 = action code prompts (on found member)</div>
+        <div class="tip-item">Safer for routine verification — cannot edit</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="mgmt">
+      <div class="cmd-name">WII</div>
+      <div class="cmd-subtitle">Warehouse Item Sales Inquiry</div>
+      <div class="cmd-desc">Member purchase history + transactions. The refund desk tool. Requires membership# PLUS item# or dept# (not both at once).</div>
+      <div class="cmd-tips">
+        <div class="tip-item">F11 = toggle to show item descriptions (not just item#)</div>
+        <div class="tip-item">Refunds show as negative Ext Sell price</div>
+        <div class="tip-item">White highlighted items = had an IRC when purchased</div>
+        <div class="tip-item">CRITICAL: does NOT include Costco.com orders (use EOI)</div>
+        <div class="tip-item">10-year history limit per privacy laws</div>
+        <div class="tip-item">F21 = print transaction for member</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="mgmt">
+      <div class="cmd-name">MRC</div>
+      <div class="cmd-subtitle">Membership Report Card</div>
+      <div class="cmd-desc">Membership dashboard: income vs. LY and plan, new sign-ups, renewals, Executive upgrades. By company, region/state, or warehouse.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">F11 = toggle to Captured Renewal Rate and Renewal Trend</div>
+        <div class="tip-item">Know your renewal rate — managers bring this to every leadership meeting</div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="cmd-card mgmt" data-cat="mgmt">
+      <div class="cmd-name">EPRFM</div>
+      <div class="cmd-subtitle">Employee Profile Maintenance</div>
+      <div class="cmd-desc">Set up AS400 user profiles. Assigns specialty access: Optical, Inventory Audit, RTV, Sales Audit, Vault. STAFF MANAGERS AND ABOVE ONLY.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">F4 = list available position types</div>
+        <div class="tip-item">F6 = assign user; F8 = finalize; F23 = disable profile</div>
+        <div class="tip-item">For combo employee: select Sales Audit first — exposes multi-dept option</div>
+        <div class="tip-item">Full-time Sales Auditors cannot carry any other profile</div>
+        <div class="tip-item">Assigned JTS triggers Costco U training automatically</div>
+      </div>
+    </div>
+
+    <div class="cmd-card mgmt" data-cat="mgmt">
+      <div class="cmd-name">EPRFD</div>
+      <div class="cmd-subtitle">Employee Profile Display</div>
+      <div class="cmd-desc">Read-only view of profiles set up via EPRFM. Use to audit access levels and troubleshoot "I can't see X" issues.</div>
+    </div>
+
+    <div class="cmd-card mgmt" data-cat="mgmt">
+      <div class="cmd-name">WPM</div>
+      <div class="cmd-subtitle">Warehouse Password Maintenance</div>
+      <div class="cmd-desc">Add/change/delete users for protected programs: APR (Refund Audit), EPC, TCP (Tire), TSH (Trash Scan). AWM and WM access only.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">F6 = add new user; 5–10 char password, no special characters</div>
+        <div class="tip-item">PWMI = view who has passwords for each option</div>
+        <div class="tip-item">TSH access = who can scan trash (destroy inventory)</div>
+        <div class="tip-item">EPC access = who can change prices day-of</div>
+      </div>
+    </div>
+
+    <div class="cmd-card mgmt" data-cat="mgmt">
+      <div class="cmd-name">RPWD</div>
+      <div class="cmd-subtitle">Role-Based Password Reset</div>
+      <div class="cmd-desc">Reset a role-based AS400 profile password. Staff managers+ access. Employee must set their own new password on first login after reset.</div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="cmd-card" data-cat="sales">
+      <div class="cmd-name">IAFEP</div>
+      <div class="cmd-subtitle">Front-End Productivity</div>
+      <div class="cmd-desc">Items per minute, members per hour, dollars per sign-on hour per cashier/register. Also shows Self-Checkout stats separately.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">F19/F20 = toggle between Data view and Time view</div>
+        <div class="tip-item">Enter Y in Self-Checkout field for SCO-specific stats</div>
+        <div class="tip-item">F1 Help = detailed breakdown of every metric and its calculation</div>
+        <div class="tip-item">IAWD View 03 = simplified version of this screen</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="sales">
+      <div class="cmd-name">OUTQ / SOUTQ</div>
+      <div class="cmd-subtitle">Print Queue Management</div>
+      <div class="cmd-desc">Manage print jobs in the output queue. View, hold, release, reroute, or delete reports. Signs use SOUTQ (separate from document queues).</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Opt 2 = change (reroute printer, copies, start page)</div>
+        <div class="tip-item">Opt 4 = delete (irreversible)</div>
+        <div class="tip-item">Opt 5 = view without printing</div>
+        <div class="tip-item">Opt 6 = release to print</div>
+        <div class="tip-item">F18 (Shift+F6) = jump to bottom of queue (most recent)</div>
+        <div class="tip-item">F19 (Shift+F7) = list other outqueues</div>
+        <div class="tip-item">Sign print jobs vanish after printing (unlike document jobs)</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="item">
+      <div class="cmd-name">RDPRT / SPRT</div>
+      <div class="cmd-subtitle">Reroute / Restart Printer</div>
+      <div class="cmd-desc">Reroute sign printer from Printer 1 to Printer 2 without calling the Service Desk. SPRT restarts a printer. Reduces sign-printing downtime.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">RDPRT → select source → select destination → SPRT to restart</div>
+        <div class="tip-item">Reset option (Opt 6) only undoes the LAST reroute</div>
+      </div>
+    </div>
+
+    <!-- TRANSACTION LOOKUP -->
+    <div class="cmd-card" data-cat="mgmt">
+      <div class="cmd-name">RLG</div>
+      <div class="cmd-subtitle">Member Refund Log</div>
+      <div class="cmd-desc">View refund transaction info with multiple filters. Defaults to home warehouse, previous day. Y = dept ring refund. * = dept ring converted to inline item.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Enter X next to operator# to see specific return details</div>
+        <div class="tip-item">Tracking# column not visible same day</div>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cat="mgmt">
+      <div class="cmd-name">SAST</div>
+      <div class="cmd-subtitle">Transaction Audit Search</div>
+      <div class="cmd-desc">Find multiple transactions on a specific register for a date range. Filter by transaction type, tender type. Multiple filters simultaneously.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Items grouped by dept and item# ascending — not scan order</div>
+        <div class="tip-item">For exact scan sequence: use the EDP controller</div>
+        <div class="tip-item">TAB to transaction → Field ENTER to drill in</div>
+      </div>
+    </div>
+
+    <!-- ANCILLARY / FINANCIAL -->
+    <div class="cmd-card" data-cat="mgmt">
+      <div class="cmd-name">CDCSI</div>
+      <div class="cmd-subtitle">Cost Dept Category Sales Inquiry</div>
+      <div class="cmd-desc">View cost department margin components by location, dept, and category. Primarily shows Initial Markup % (IMU) for specific items.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">IMU = your department's gross margin foundation per category</div>
+        <div class="tip-item">Key for understanding why your dept P&L looks the way it does</div>
+      </div>
+    </div>
+
+    <div class="cmd-card meat" data-cat="meat">
+      <div class="cmd-name">WWPO</div>
+      <div class="cmd-subtitle">Work With Purchase Orders</div>
+      <div class="cmd-desc">View open POs, standard distributions, auto-distributions, and transfer requests. 4 views: Summary, Status, Item, Freight/Budget.</div>
+      <div class="cmd-tips">
+        <div class="tip-item">Check this to verify a meat delivery PO before the truck arrives</div>
+        <div class="tip-item">Tire Center uses this for incoming tire POs primarily</div>
+      </div>
+    </div>
+
+  </div><!-- end cmd-grid -->
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ MEAT DEPT SCREENS -->
+<div id="meat" class="tab-content">
+  <div class="section-header">
+    <h2>Meat Department AS400 Workflow</h2>
+    <span class="tag green">HIGH PRIORITY</span>
+  </div>
+
+  <div class="metric-row">
+    <div class="metric">
+      <div class="metric-val">~5.7%</div>
+      <div class="metric-label">Industry Meat Shrink</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">0.11%</div>
+      <div class="metric-label">Costco Company Shrink</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">12–13×</div>
+      <div class="metric-label">Annual Inventory Turn</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">13×</div>
+      <div class="metric-label">Physical Inventories/Year</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">70–85%</div>
+      <div class="metric-label">Sub-Primal Yield Target</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">±0.5%</div>
+      <div class="metric-label">Catch-Weight Receive Variance</div>
+    </div>
+  </div>
+
+  <div class="alert danger">
+    <div class="alert-title">⚠ Costco Shrink Standard</div>
+    Costco's company-wide shrink is 0.11–0.12% of sales vs. retail average of 1.33%. Even a 0.05% creep in your dept is large in absolute dollars. Every piece of trim, every expired tray, every over-cut primal hits your numbers. This is where you build your reputation or lose it.
+  </div>
+
+  <div class="grid-2 mb-24">
+    <div>
+      <h3>Morning Data Pull (Before First Cut)</h3>
+      <div class="card">
+        <div class="chain-flow">
+          <div class="chain-step">STK</div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-step">IAI/ITMW</div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-step">IATOP</div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-step">RHI</div>
+          <div class="chain-note">STK = 4-week sales/D&D trend → ITMW = today's on-hand → IATOP = top shrink items → RHI = confirm last receive posted correctly</div>
+        </div>
+        <p class="small">5 screens, under 3 minutes. You know more about the dept than 90% of your peers before the first cut.</p>
+      </div>
+
+      <h3>Receiving a Meat Truck</h3>
+      <div class="card">
+        <ul class="checklist">
+          <li>Check DASH for PO#, vendor, ETA before truck arrives</li>
+          <li>On receipt: verify PO vs. invoice vs. actual physical count</li>
+          <li>Catch-weight reconciliation: scanned weight must equal invoice ±0.5%</li>
+          <li>Verify COOL declaration on master case matches AS400 item master
+            <span class="sub">Required on: lamb, goat, chicken muscle cuts. Beef/pork exempt since 2016.</span>
+          </li>
+          <li>Run RHI same-day to confirm posting — do NOT wait until next day</li>
+          <li>Flag any variance immediately — same-day resolution is 5× easier</li>
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <h3>Shrink Management — Reason Codes</h3>
+      <div class="card">
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Reason Code</th>
+                <th>When to Use</th>
+                <th>Watch Signal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="mono">Out-of-Date / Expired</td><td>Tray past pull date</td><td>Spike = over-producing</td></tr>
+              <tr><td class="mono">Spoilage</td><td>Product quality failure</td><td>Check cooler temps</td></tr>
+              <tr><td class="mono">Trim / Fat / Bone</td><td>Cutting room waste</td><td>Largest single bucket — track yield</td></tr>
+              <tr><td class="mono">Contamination</td><td>Cross-contact, foreign material</td><td>Immediate documentation</td></tr>
+              <tr><td class="mono">Damage</td><td>Vacuum-pack failure, leakers</td><td>Check vendor packaging</td></tr>
+              <tr><td class="mono">Theft / Unknown</td><td>Variance with no cause</td><td>Persistent = surveillance issue</td></tr>
+              <tr><td class="mono">Sample / Demo</td><td>Member samples given</td><td>Log every one — auditors check</td></tr>
+              <tr><td class="mono">Markdown / Donation</td><td>Feeding America donation</td><td>Must be logged before it leaves</td></tr>
+              <tr><td class="mono">Recall / Hold</td><td>USDA recall or hold order</td><td>Immediate escalation</td></tr>
+              <tr><td class="mono">Internal Use</td><td>Ground beef → deli stuffed peppers, etc.</td><td>Key as component transfer, not shrink</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h3>Days of Supply (DOS) Formula</h3>
+      <div class="card">
+        <p style="font-family:'IBM Plex Mono',monospace; font-size:15px; color:var(--accent); margin-bottom:10px;">
+          DOS = On-Hand ÷ Avg Daily Movement
+        </p>
+        <p class="small">Get On-Hand from ITMW. Get Avg Daily Movement from STK (4-week total ÷ 28). When DOS exceeds the pull-date window → markdown now (EPC), not tomorrow.</p>
+        <div class="alert info" style="margin-top:10px; margin-bottom:0;">
+          <div class="alert-title">Action Rule</div>
+          DOS &gt; pull-date window → mark down immediately. Still unsold at pull date → shrink out as "Out-of-Date." Members can request freeze-before-checkout on marked-down meat.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Production Tracking — Sub-Primal to Retail Cut</h3>
+  <div class="card mb-24">
+    <p>Cut-in-store production is logged on a paper production sheet (cut, weight, trays, cutter initials) and keyed into AS400 at end-of-shift.</p>
+    <div class="grid-3">
+      <div class="metric" style="border-color:var(--accent3);">
+        <div class="metric-val" style="font-size:14px; color:var(--accent3);">DECREASE</div>
+        <div class="metric-label">Sub-Primal On-Hand (bulk input)</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val" style="font-size:14px;">INCREASE</div>
+        <div class="metric-label">Retail Cut On-Hand (saleable output)</div>
+      </div>
+      <div class="metric" style="border-color:var(--warn);">
+        <div class="metric-val" style="font-size:14px; color:var(--warn);">DIFFERENCE</div>
+        <div class="metric-label">Trim / Fat / Bone Shrink</div>
+      </div>
+    </div>
+    <p class="small mt-16">Yield = Saleable Cut Weight ÷ Input Sub-Primal Weight. Typical beef sub-primal: 70–85% retail cuts depending on grade and trim spec. Know your numbers — if you're consistently hitting 68%, something is wrong in your trim habits.</p>
+  </div>
+
+  <h3>AS400 Chain Inquiry for a Stocked-Out Meat Item</h3>
+  <div class="chain-flow mb-24">
+    <div class="chain-step">IAI</div>
+    <div class="chain-arrow">→</div>
+    <div class="chain-step">Opt 8 → ITMW</div>
+    <div class="chain-arrow">→</div>
+    <div class="chain-step">Opt 4 → RHI</div>
+    <div class="chain-arrow">→</div>
+    <div class="chain-step">IIL *USALL</div>
+    <div class="chain-arrow">→</div>
+    <div class="chain-step">DASH</div>
+    <div class="chain-note">ITMW = confirm today's on-hand → RHI = check last receive date → IIL = find sister warehouse stock for transfer → DASH = is the next truck already incoming?</div>
+  </div>
+
+  <h3>Pre-Inventory Checklist (13× Per Year)</h3>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">3 Days Before Count</div>
+      <ul class="checklist">
+        <li>Reconcile all RHI receivings for the period</li>
+        <li>Post all damages, donations, and transfers</li>
+        <li>Reconcile in-transit pallets</li>
+        <li>Print MACR for expected on-hand of every active SKU</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Count Day + Day After</div>
+      <ul class="checklist">
+        <li>Print expected on-hand from IAI Opt 1 for every dept SKU</li>
+        <li>Conduct physical count; key variances (RF Scanner Option 20)</li>
+        <li>Print audit report (RF Option 22 / MADR)</li>
+        <li>Review shrink % vs. 0.11–0.12% company target</li>
+        <li>Document root cause for every variance over threshold</li>
+        <li>Print period DSL + turn calc + shrink summary one-pager for AGM/GM</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ BEEF & PORK PLUs -->
+<div id="plu-beef" class="tab-content">
+  <div class="section-header">
+    <h2>Beef &amp; Pork PLU / Item Number Reference</h2>
+    <span class="tag yellow">SOURCE: OFFICIAL PLU SHEET</span>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" class="search-input" id="beefSearch" placeholder="Search cut... (e.g. ribeye, tri tip, brisket)" onkeyup="filterTable('beefTable', 'beefSearch')">
+  </div>
+
+  <div class="scroll-table">
+    <table class="data-table" id="beefTable">
+      <thead>
+        <tr>
+          <th>Grade</th>
+          <th>Cut Description</th>
+          <th>Item #</th>
+          <th>PLU #</th>
+          <th>CS Sell / Cryo Item #</th>
+          <th>CS PLU</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- USDA PRIME -->
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Boneless Beef Top Sirloin – Cap Off</td><td class="mono">29192</td><td class="plu">542</td><td class="mono">44495 (cryo)</td><td class="plu">1509</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Top Sirloin Cap Steak (Coulotte)</td><td class="mono">44504</td><td class="plu">1514</td><td class="mono">44509 (cryo)</td><td class="plu">1519</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>New York Steak</td><td class="mono">34316</td><td class="plu">278</td><td class="mono">34318 (cryo)</td><td class="plu">325</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Center Cut New York Steak</td><td class="mono">10254</td><td class="plu">1025</td><td class="mono">10261 (cryo)</td><td class="plu">1026</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Ribeye Steak</td><td class="mono">34323</td><td class="plu">333</td><td class="mono">34326 (cryo)</td><td class="plu">349</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Ribeye Roast</td><td class="mono">34325</td><td class="plu">341</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Eye of Ribeye Steak</td><td class="mono">12234</td><td class="plu">1775</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Ribeye Cap Steak</td><td class="mono">15151</td><td class="plu">1779</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Bone In Rib Steak</td><td class="mono">34732</td><td class="plu">378</td><td class="mono">41869 (cryo)</td><td class="plu">54</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Bone In Rib Roast</td><td class="mono">34230</td><td class="plu">717</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Bone In Frenched Rib Steak</td><td class="mono">12233</td><td class="plu">1773</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Bone In Frenched Rib Roast</td><td class="mono">17503</td><td class="plu">7503</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Tenderloin Steak (PSMO)</td><td class="mono">34289</td><td class="plu">336</td><td class="mono">34314 (cryo)</td><td class="plu">343</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Tenderloin – Extreme Side Muscle Off</td><td class="mono">55553</td><td class="plu">299</td><td class="mono">36204 case</td><td class="plu">448</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Porterhouse Steak</td><td class="mono">10326</td><td class="plu">1036</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>T-Bone Steak</td><td class="mono">38701</td><td class="plu">970</td><td class="mono">38713 (cryo)</td><td class="plu">980</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Top Sirloin Steak (Alt)</td><td class="mono">38706</td><td class="plu">957</td><td class="mono">38723 (cryo)</td><td class="plu">975</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Tri Tip Steak</td><td class="mono">43259</td><td class="plu">1270</td><td class="mono">43286 (cryo)</td><td class="plu">1272</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Tri Tip Roast</td><td class="mono">43273</td><td class="plu">1271</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Back Rib Steak</td><td class="mono">23221</td><td class="plu">871</td><td class="mono">23220 (cryo)</td><td class="plu">872</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Teres Major Steak</td><td class="mono">23186</td><td class="plu">868</td><td class="mono">23189 (cryo)</td><td class="plu">869</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Flat Iron (Cryo)</td><td class="mono">25814</td><td class="plu">424</td><td class="mono">25871 case</td><td class="plu">444</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Outside Skirt (Cryo)</td><td class="mono">25796</td><td class="plu">420</td><td class="mono">25843 case</td><td class="plu">440</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Inside Skirt Steak</td><td class="mono">30016</td><td class="plu">1234</td><td class="mono">30019 (cryo)</td><td class="plu">3019</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Boneless Short Rib</td><td class="mono">42737</td><td class="plu">1336</td><td class="mono">43306 (cryo)</td><td class="plu">1337</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Bone In Chuck Short Rib</td><td class="mono">12239</td><td class="plu">1777</td><td class="mono">12329 (cryo)</td><td class="plu">1778</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Commodity Brisket Trimmed</td><td class="mono">45086</td><td class="plu">1535</td><td class="mono">44816 (cryo)</td><td class="plu">1482</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Chuck Roast</td><td class="mono">45324</td><td class="plu">1637</td><td class="mono">45329 (cryo)</td><td class="plu">1647</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Chuck Roll Steak</td><td class="mono">15780</td><td class="plu">849</td><td class="mono">15803 (cryo)</td><td class="plu">886</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Flank Steak</td><td class="mono">23287</td><td class="plu">976</td><td class="mono">23298 (cryo)</td><td class="plu">977</td></tr>
+        <!-- PRIME (original grade list) -->
+        <tr><td><span class="grade-prime">PRIME</span></td><td>New York Steak (Alt#)</td><td class="mono">33593</td><td class="plu">2</td><td class="mono">33601 (cryo)</td><td class="plu">71</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Ribeye Steak (Alt#)</td><td class="mono">33666</td><td class="plu">5</td><td class="mono">33684 (cryo)</td><td class="plu">73</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Tenderloin Steak (Alt#)</td><td class="mono">33605</td><td class="plu">1</td><td class="mono">45553 (cryo)</td><td class="plu">8</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Loin Tip Steak / Flap Meat</td><td class="mono">91385</td><td class="plu">7</td><td class="mono">98199 (cryo)</td><td class="plu">433</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Flank Steaks</td><td class="mono">33977</td><td class="plu">13</td><td class="mono">42470 (cryo)</td><td class="plu">1470</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Brisket Trimmed</td><td class="mono">76224</td><td class="plu">50</td><td class="mono">84281 (cryo)</td><td class="plu">78</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Boneless Short Rib (Alt#)</td><td class="mono">48360</td><td class="plu">47</td><td class="mono">34044 (cryo)</td><td class="plu">1004</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Boneless Short Rib Korean Style</td><td class="mono">46008</td><td class="plu">1601</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Bone In Short Rib</td><td class="mono">33981</td><td class="plu">17</td><td class="mono">43201 (cryo)</td><td class="plu">1365</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Stew Meat</td><td class="mono">33734</td><td class="plu">20</td><td class="mono">43137 (cryo)</td><td class="plu">1420</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Inside Skirt Steak (Alt#)</td><td class="mono">29787</td><td class="plu">881</td><td class="mono">44572 (cryo)</td><td class="plu">4572</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>London Broil</td><td class="mono">21101</td><td class="plu">4</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Sirloin Tip Roast</td><td class="mono">88906</td><td class="plu">57</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Bottom Round Roast</td><td class="mono">33910</td><td class="plu">706</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Chuck Roast (Alt#)</td><td class="mono">33712</td><td class="plu">51</td><td class="mono">34450 (cryo)</td><td class="plu">338</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Ribeye Roast (Alt#)</td><td class="mono">33670</td><td class="plu">53</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Bone In Rib Roast (Alt#)</td><td class="mono">33692</td><td class="plu">52</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Eye of Round Roast</td><td class="mono">33906</td><td class="plu">56</td><td class="mono">13914 (cryo)</td><td class="plu">284</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Tri Tip Roast (Alt#)</td><td class="mono">33708</td><td class="plu">60</td><td class="mono">44784 (cryo)</td><td class="plu">75</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Top Round Roast</td><td class="mono">33716</td><td class="plu">61</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Plate Short Ribs</td><td class="mono">14579</td><td class="plu">865</td><td class="mono">14610 (cryo)</td><td class="plu">866</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Beef Back Rib</td><td class="mono">20934</td><td class="plu">681</td><td class="mono">20867 (cryo)</td><td class="plu">683</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Marinated Skirt Steak</td><td class="mono">34669</td><td class="plu">520</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Peeled Eye Steak</td><td class="mono">23241</td><td class="plu">948</td><td class="mono">23243 (cryo)</td><td class="plu">949</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Clod Heart Steak</td><td class="mono">23653</td><td class="plu">982</td><td class="mono">23544 (cryo)</td><td class="plu">980</td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Beef Cube Steak</td><td class="mono">33606</td><td class="plu">124</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Beef Shank</td><td class="mono">34940</td><td class="plu">4940</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Flat Iron Steak (Cryo)</td><td class="mono">38949</td><td class="plu">8949</td><td></td><td></td></tr>
+        <tr><td><span class="grade-prime">PRIME</span></td><td>Sirloin Flap Steak</td><td class="mono">23261</td><td class="plu">841</td><td class="mono">23274 (cryo)</td><td class="plu">842</td></tr>
+        <!-- GROUND BEEF -->
+        <tr><td></td><td>Ground Beef – Bulk</td><td class="mono">33724</td><td class="plu">90</td><td></td><td></td></tr>
+        <tr><td></td><td>Ground Beef – Patties</td><td class="mono">69509</td><td class="plu">93</td><td></td><td></td></tr>
+        <tr><td></td><td>Ground Beef – 10 lb Chubs</td><td class="mono">13057</td><td class="plu">157</td><td></td><td></td></tr>
+        <tr><td></td><td>Ground Beef 10lb Tube 90/10</td><td class="mono">46159</td><td class="plu">1542</td><td class="mono">97980</td><td class="plu">1543</td></tr>
+        <tr><td></td><td>Ground Beef 10lb Tube 80/20</td><td class="mono">44939</td><td class="plu">1531</td><td class="mono">44944</td><td class="plu">1532</td></tr>
+        <tr><td></td><td>Ground Beef 10lb Tube 73/27</td><td class="mono">44945</td><td class="plu">1533</td><td class="mono">44946</td><td class="plu">1534</td></tr>
+        <!-- WAGYU -->
+        <tr><td><span class="grade-wagyu">A5 WAGYU</span></td><td>Ribeye Steak</td><td class="mono">29620</td><td class="plu">9620</td><td class="mono">29643 (cryo)</td><td class="plu">9643</td></tr>
+        <tr><td><span class="grade-wagyu">A5 WAGYU</span></td><td>New York Strip Steak</td><td class="mono">29673</td><td class="plu">9673</td><td class="mono">29679 (cryo)</td><td class="plu">9679</td></tr>
+        <tr><td><span class="grade-wagyu">CLASSIC WAGYU</span></td><td>Ribeye Steak</td><td class="mono">45704</td><td class="plu">1099</td><td class="mono">45713 (cryo)</td><td class="plu">1100</td></tr>
+        <tr><td><span class="grade-wagyu">CLASSIC WAGYU</span></td><td>Brisket Steak</td><td class="mono">16989</td><td class="plu">836</td><td class="mono">43790 (cryo)</td><td class="plu">1097</td></tr>
+        <tr><td><span class="grade-wagyu">CLASSIC WAGYU</span></td><td>CC Striploin Steak</td><td class="mono">45702</td><td class="plu">1089</td><td class="mono">45709 (cryo)</td><td class="plu">1090</td></tr>
+        <tr><td><span class="grade-wagyu">CLASSIC WAGYU</span></td><td>Tenderloin Steak</td><td class="mono">11650</td><td class="plu">1164</td><td class="mono">11653 (cryo)</td><td class="plu">1165</td></tr>
+        <tr><td><span class="grade-wagyu">CLASSIC WAGYU</span></td><td>Top Sirloin Steak</td><td class="mono">45708</td><td class="plu">1092</td><td class="mono">45717 (cryo)</td><td class="plu">1093</td></tr>
+        <tr><td><span class="grade-wagyu">CLASSIC WAGYU</span></td><td>Tri Tip Steak</td><td class="mono">45703</td><td class="plu">1094</td><td class="mono">45710 (cryo)</td><td class="plu">9144</td></tr>
+        <!-- OFFAL -->
+        <tr><td></td><td>Ox Tail</td><td class="mono">91655</td><td class="plu">82</td><td></td><td></td></tr>
+        <tr><td></td><td>Beef Tongue</td><td class="mono">91697</td><td class="plu">1274</td><td></td><td></td></tr>
+        <!-- PORK -->
+        <tr><td></td><td>Boneless Pork Chop</td><td class="mono">33955</td><td class="plu">217</td><td></td><td></td></tr>
+        <tr><td></td><td>Boneless Pork Roast</td><td class="mono">16141</td><td class="plu">216</td><td></td><td></td></tr>
+        <tr><td></td><td>Boneless Pork Loin (Cryo)</td><td class="mono">73616</td><td class="plu">810</td><td class="mono">97562 (case)</td><td class="plu">401</td></tr>
+        <tr><td></td><td>Boneless Loin Country Style Ribs</td><td class="mono">52756</td><td class="plu">204</td><td></td><td></td></tr>
+        <tr><td></td><td>Shoulder Country Style Ribs</td><td class="mono">33997</td><td class="plu">211</td><td></td><td></td></tr>
+        <tr><td></td><td>Boneless Pork Butt (Cryo)</td><td class="mono">62998</td><td class="plu">809</td><td class="mono">97645 (case)</td><td class="plu">404</td></tr>
+        <tr><td></td><td>Back Ribs</td><td class="mono">48002</td><td class="plu">680</td><td class="mono">33936 (cryo)</td><td class="plu">208</td></tr>
+        <tr><td></td><td>St. Louis Spare Ribs</td><td class="mono">47002</td><td class="plu">682</td><td class="mono">42527 (cryo)</td><td class="plu">1034</td></tr>
+        <tr><td></td><td>St. Louis Spare Ribs – Portions</td><td class="mono">11153</td><td class="plu">693</td><td></td><td></td></tr>
+        <tr><td></td><td>Pork Tenderloins</td><td class="mono">33965</td><td class="plu">203</td><td class="mono">97665 (case)</td><td class="plu">419</td></tr>
+        <tr><td></td><td>Rack of Pork</td><td class="mono">46371</td><td class="plu">214</td><td class="mono">97099 (case)</td><td class="plu">599</td></tr>
+        <tr><td></td><td>Pork Belly (Cryo)</td><td class="mono">10299</td><td class="plu">1613</td><td class="mono">10313 (case)</td><td class="plu">1614</td></tr>
+        <tr><td></td><td>Marinated Pork Loin Boneless</td><td class="mono">32612</td><td class="plu">2612</td><td class="mono">32616 (case)</td><td class="plu">2616</td></tr>
+        <tr><td></td><td>Bone In Pork Butt (Cryo)</td><td class="mono">37442</td><td class="plu">1810</td><td class="mono">27266 (case)</td><td class="plu">951</td></tr>
+        <tr><td></td><td>Pork Loin Rib and Loin Chops</td><td class="mono">44355</td><td class="plu">102</td><td></td><td></td></tr>
+        <tr><td></td><td>Ground Pork</td><td class="mono">75386</td><td class="plu">300</td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ POULTRY PLUs -->
+<div id="plu-poultry" class="tab-content">
+  <div class="section-header">
+    <h2>Poultry PLU / Item Number Reference</h2>
+    <span class="tag yellow">SOURCE: OFFICIAL PLU SHEET</span>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" class="search-input" id="poultrySearch" placeholder="Search... (e.g. breasts, LPP, organic, kosher)" onkeyup="filterTable('poultryTable', 'poultrySearch')">
+  </div>
+
+  <div class="scroll-table">
+    <table class="data-table" id="poultryTable">
+      <thead>
+        <tr>
+          <th>Vendor / Type</th>
+          <th>Product</th>
+          <th>Item #</th>
+          <th>PLU #</th>
+          <th>CS Sell #</th>
+          <th>CS PLU</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="tag blue">LPP Air Chilled</span></td><td>Party Wings</td><td class="mono">47725</td><td class="plu">4725</td><td class="mono">15089</td><td class="plu">1589</td></tr>
+        <tr><td><span class="tag blue">LPP Air Chilled</span></td><td>Tenderloins</td><td class="mono">47729</td><td class="plu">4729</td><td class="mono">15114</td><td class="plu">1511</td></tr>
+        <tr><td><span class="tag blue">LPP Air Chilled</span></td><td>B/S Thighs</td><td class="mono">47731</td><td class="plu">4731</td><td class="mono">15108</td><td class="plu">1510</td></tr>
+        <tr><td><span class="tag blue">LPP Air Chilled</span></td><td>Whole Fryers</td><td class="mono">47734</td><td class="plu">4734</td><td class="mono">15118</td><td class="plu">1518</td></tr>
+        <tr><td><span class="tag blue">LPP Air Chilled</span></td><td>B/S Breasts</td><td class="mono">47735</td><td class="plu">4735</td><td class="mono">15073</td><td class="plu">1503</td></tr>
+        <tr><td><span class="tag blue">LPP Air Chilled</span></td><td>Thighs</td><td class="mono">47737</td><td class="plu">4737</td><td class="mono">15119</td><td class="plu">5119</td></tr>
+        <tr><td><span class="tag blue">LPP Air Chilled</span></td><td>Drumsticks</td><td class="mono">47739</td><td class="plu">4739</td><td class="mono">15121</td><td class="plu">1521</td></tr>
+        <tr><td>Foster Farms</td><td>B/S Breasts</td><td class="mono">35057</td><td class="plu">861</td><td class="mono">10519</td><td class="plu">519</td></tr>
+        <tr><td>Foster Farms</td><td>Thighs</td><td class="mono">35059</td><td class="plu">864</td><td class="mono">10522</td><td class="plu">1522</td></tr>
+        <tr><td>Foster Farms</td><td>Drumsticks</td><td class="mono">35062</td><td class="plu">863</td><td class="mono">10530</td><td class="plu">529</td></tr>
+        <tr><td>Foster Farms</td><td>B/S Thighs</td><td class="mono">35064</td><td class="plu">862</td><td class="mono">10532</td><td class="plu">32</td></tr>
+        <tr><td>Foster Farms</td><td>Party Wings</td><td class="mono">47233</td><td class="plu">7233</td><td class="mono">10547</td><td class="plu">147</td></tr>
+        <tr><td>Foster Farms</td><td>Whole Fryers</td><td class="mono">47234</td><td class="plu">7234</td><td class="mono">10555</td><td class="plu">1555</td></tr>
+        <tr><td>Foster Farms</td><td>Tenderloins</td><td class="mono">47237</td><td class="plu">7237</td><td class="mono">10564</td><td class="plu">564</td></tr>
+        <tr><td>Foster Farms</td><td>Ground Turkey</td><td class="mono">15702</td><td class="plu">N/A</td><td class="mono">17400</td><td class="plu">N/A</td></tr>
+        <tr><td>Foster Farms</td><td>Turkeys (Toms)</td><td class="mono">57513</td><td class="plu">113</td><td class="mono">57515</td><td class="plu">5751</td></tr>
+        <tr><td>Foster Farms</td><td>Turkeys (Hens)</td><td class="mono">97705</td><td class="plu">114</td><td class="mono">97707</td><td class="plu">9707</td></tr>
+        <tr><td>Pilgrims (KS)</td><td>Party Wings</td><td class="mono">10597</td><td class="plu">5971</td><td class="mono">21883</td><td class="plu">386</td></tr>
+        <tr><td>Pilgrims (KS)</td><td>Tenderloins</td><td class="mono">11448</td><td class="plu">233</td><td class="mono">38487</td><td class="plu">280</td></tr>
+        <tr><td>Pilgrims (KS)</td><td>Whole Fryers</td><td class="mono">33825</td><td class="plu">100</td><td class="mono">13822</td><td class="plu">187</td></tr>
+        <tr><td>Pilgrims (KS)</td><td>B/S Breasts</td><td class="mono">33841</td><td class="plu">103</td><td class="mono">13823</td><td class="plu">188</td></tr>
+        <tr><td>Pilgrims (KS)</td><td>Thighs</td><td class="mono">33845</td><td class="plu">106</td><td class="mono">13825</td><td class="plu">190</td></tr>
+        <tr><td>Pilgrims (KS)</td><td>Drumsticks</td><td class="mono">33852</td><td class="plu">105</td><td class="mono">13824</td><td class="plu">189</td></tr>
+        <tr><td>Pilgrims (KS)</td><td>B/S Thighs</td><td class="mono">35410</td><td class="plu">609</td><td class="mono">13827</td><td class="plu">192</td></tr>
+        <tr><td>Pilgrims (KS)</td><td>B/S Drum Meat</td><td class="mono">42453</td><td class="plu">2453</td><td class="mono">42379</td><td class="plu">2379</td></tr>
+        <tr><td>Amick Air Chilled</td><td>Party Wings</td><td class="mono">23270</td><td class="plu">2101</td><td class="mono">21845</td><td class="plu">1845</td></tr>
+        <tr><td>Amick Air Chilled</td><td>B/S Thighs</td><td class="mono">24387</td><td class="plu">2102</td><td class="mono">15584</td><td class="plu">15584</td></tr>
+        <tr><td>Amick Air Chilled</td><td>Chicken Breast</td><td class="mono">24472</td><td class="plu">2103</td><td class="mono">25315</td><td class="plu">739</td></tr>
+        <tr><td>Amick Air Chilled</td><td>Drums</td><td class="mono">26731</td><td class="plu">1267</td><td></td><td></td></tr>
+        <tr><td>Amick Saddlepack</td><td>Party Wings</td><td class="mono">22764</td><td class="plu">—</td><td class="mono">22814</td><td class="plu">1225</td></tr>
+        <tr><td>Amick Saddlepack</td><td>B/S Thighs</td><td class="mono">22041</td><td class="plu">—</td><td class="mono">22805</td><td class="plu">1222</td></tr>
+        <tr><td>Amick Saddlepack</td><td>Chicken Breast</td><td class="mono">21897</td><td class="plu">—</td><td class="mono">22794</td><td class="plu">1221</td></tr>
+        <tr><td>Butterball</td><td>Ground Turkey</td><td class="mono">15698</td><td class="plu">818</td><td class="mono">20016</td><td class="plu">1999</td></tr>
+        <!-- ORGANIC -->
+        <tr><td><span class="tag green">ORG</span> Foster Farms</td><td>Organic Whole Fryers</td><td class="mono">15323</td><td class="plu">5323</td><td class="mono">19684</td><td class="plu">9684</td></tr>
+        <tr><td><span class="tag green">ORG</span> Foster Farms</td><td>Organic B/S Breasts</td><td class="mono">15390</td><td class="plu">5390</td><td class="mono">19692</td><td class="plu">9692</td></tr>
+        <tr><td><span class="tag green">ORG</span> Foster Farms</td><td>Organic B/S Thighs</td><td class="mono">16965</td><td class="plu">6965</td><td class="mono">19721</td><td class="plu">9721</td></tr>
+        <tr><td><span class="tag green">ORG</span> Foster Farms</td><td>Organic Drumsticks</td><td class="mono">15411</td><td class="plu">5411</td><td class="mono">19698</td><td class="plu">9698</td></tr>
+        <tr><td><span class="tag green">ORG</span> Pilgrims (KS)</td><td>Organic Whole Fryers</td><td class="mono">30430</td><td class="plu">3043</td><td class="mono">36050</td><td class="plu">110</td></tr>
+        <tr><td><span class="tag green">ORG</span> Pilgrims (KS)</td><td>Organic B/S Breasts</td><td class="mono">30471</td><td class="plu">3047</td><td class="mono">36124</td><td class="plu">725</td></tr>
+        <tr><td><span class="tag green">ORG</span> Pilgrims (KS)</td><td>Organic B/S Thighs</td><td class="mono">47266</td><td class="plu">7266</td><td class="mono">37637</td><td class="plu">1001</td></tr>
+        <tr><td><span class="tag green">ORG</span> Pitman Farms</td><td>Organic Whole Fryers</td><td class="mono">10392</td><td class="plu">1392</td><td class="mono">10801</td><td class="plu">801</td></tr>
+        <tr><td><span class="tag green">ORG</span> Pitman Farms</td><td>Organic B/S Breasts</td><td class="mono">10394</td><td class="plu">1394</td><td class="mono">10808</td><td class="plu">808</td></tr>
+        <tr><td><span class="tag green">ORG</span> Pitman Farms</td><td>Organic B/S Leg &amp; Thighs</td><td class="mono">10399</td><td class="plu">399</td><td class="mono">10813</td><td class="plu">813</td></tr>
+        <!-- KOSHER -->
+        <tr><td><span class="tag yellow">KOSHER</span> Empire</td><td>Kosher Whole Fryers</td><td class="mono">38681</td><td class="plu">930</td><td class="mono">39629</td><td class="plu">777</td></tr>
+        <tr><td><span class="tag yellow">KOSHER</span> Empire</td><td>Kosher B/S Breasts</td><td class="mono">46375</td><td class="plu">1711</td><td class="mono">39634</td><td class="plu">781</td></tr>
+        <tr><td><span class="tag yellow">KOSHER</span> Empire</td><td>Kosher Drumsticks</td><td class="mono">46379</td><td class="plu">1713</td><td class="mono">53169</td><td class="plu">877</td></tr>
+        <tr><td><span class="tag yellow">KOSHER</span> Empire</td><td>Kosher Thighs</td><td class="mono">46384</td><td class="plu">1714</td><td class="mono">53170</td><td class="plu">558</td></tr>
+        <tr><td><span class="tag yellow">KOSHER</span> Empire</td><td>Kosher Turkey Tenders</td><td class="mono">38686</td><td class="plu">935</td><td class="mono">53164</td><td class="plu">876</td></tr>
+        <tr><td><span class="tag yellow">KOSHER</span> Empire</td><td>Kosher Ground Turkey</td><td class="mono">46388</td><td class="plu">1715</td><td class="mono">42057</td><td class="plu">531</td></tr>
+        <tr><td><span class="tag yellow">KOSHER</span> Empire</td><td>Kosher Turkeys (Hens)</td><td class="mono">42789</td><td class="plu">1257</td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CUT SPECS -->
+<div id="cut-specs" class="tab-content">
+  <div class="section-header">
+    <h2>In-Store Cut Specifications</h2>
+    <span class="tag orange">SOURCE: OFFICIAL COSTCO CUT SPEC PDFs</span>
+  </div>
+
+  <div class="alert info">
+    <div class="alert-title">Spec Philosophy</div>
+    Same thickness across the tray beats one gorgeous steak. Straight parallel cuts beat creative cutting every time in a production case. The case sells confidence — a loaded tray with clean alignment reads "good value" instantly. Consistency = career advancement here.
+  </div>
+
+  <div class="spec-card">
+    <div class="spec-header">
+      <span class="grade-prime">PRIME</span>
+      <span class="spec-title">Boneless Beef Ribeye Steak (1pc)</span>
+      <span class="spec-plu">PLU #333 / Item #34323</span>
+    </div>
+    <ol class="spec-steps">
+      <li>Tenderize TWICE the whole Boneless Ribeye. Fat side down.</li>
+      <li>Trim any back strap. Remove bone chips, bone felt, or connective tissue.</li>
+      <li>Trim and remove all finger meat from bottom of Ribeye. DO NOT remove rib fat.</li>
+      <li>Scrape exposed ends to remove any bone dust.</li>
+      <li>Cut the whole Ribeye into steaks.</li>
+      <li>Trim the external fat to ¼ inch — follow the contour of the steak.</li>
+      <li>Wrap and label with USDA Prime sticker.</li>
+    </ol>
+  </div>
+
+  <div class="spec-card">
+    <div class="spec-header">
+      <span class="grade-prime">PRIME</span>
+      <span class="spec-title">Boneless Beef Top Sirloin – Cap Off</span>
+      <span class="spec-plu">PLU #1660 / Item #42357</span>
+    </div>
+    <ol class="spec-steps">
+      <li>Tenderize TWICE the whole Boneless Sirloin. Fat side down.</li>
+      <li>Remove any remaining fat, cartilage, or connective tissue down to the blue membrane.</li>
+      <li>Cut Sirloin into steaks. Cut PERPENDICULAR to Sciatic Nerve.</li>
+      <li>Follow angle of vendor break to ensure uniformity in steak thickness.</li>
+      <li>Steak cut from the nerve end MUST be split in 2 to allow full removal of Sciatic Nerve.</li>
+      <li>Split steaks containing Sciatic Nerve to completely remove nerve from ALL steaks. Examine BOTH sides of steak for nerve.</li>
+      <li>Steaks without nerve can be split or left whole.</li>
+      <li>Tray like-size steaks together.</li>
+      <li>Wrap and label with USDA Prime sticker.</li>
+    </ol>
+  </div>
+
+  <div class="spec-card">
+    <div class="spec-header">
+      <span class="grade-choice">CHOICE</span>
+      <span class="spec-title">Boneless Beef Top Sirloin – Cap Off</span>
+      <span class="spec-plu">PLU #542 / Item #29192</span>
+    </div>
+    <ol class="spec-steps">
+      <li>Tenderize ONCE (not twice like Prime) the whole Boneless Sirloin. Fat side down.</li>
+      <li>Remove any remaining fat, cartilage, or connective tissue down to the blue membrane.</li>
+      <li>Cut Sirloin into steaks. Cut perpendicular to Sciatic Nerve.</li>
+      <li>Follow angle of vendor break for uniformity.</li>
+      <li>Steak from nerve end MUST be split in 2 to fully remove Sciatic Nerve.</li>
+      <li>Split nerve steaks; examine both sides.</li>
+      <li>Tray like-size steaks together.</li>
+      <li>Wrap and label.</li>
+    </ol>
+    <div class="alert" style="margin-top:10px; margin-bottom:0; padding:8px 12px;">
+      <div class="alert-title">Prime vs. Choice Difference</div>
+      Prime sirloin = tenderize TWICE. Choice sirloin = tenderize ONCE. Simple spec difference that impacts texture. Don't mix them up.
+    </div>
+  </div>
+
+  <div class="spec-card">
+    <div class="spec-header">
+      <span class="grade-prime">PRIME</span>
+      <span class="spec-title">Boneless Beef Top Sirloin – Cap Steak (Coulotte)</span>
+      <span class="spec-plu">PLU #1670 / Item #42539</span>
+    </div>
+    <ol class="spec-steps">
+      <li>Tenderize TWICE the Coulotte (Cap). Fat side down.</li>
+      <li>Trim cap down to lean red meat.</li>
+      <li>Expose ¼ inch face on small end of cap muscle.</li>
+      <li>Cut into steaks, cutting ACROSS THE GRAIN.</li>
+      <li>Tray steaks horizontally in tray.</li>
+      <li>Wrap and label with USDA Prime sticker.</li>
+    </ol>
+  </div>
+
+  <div class="spec-card">
+    <div class="spec-header">
+      <span class="grade-prime">PRIME</span>
+      <span class="spec-title">Beef Tri-Tip Steak</span>
+      <span class="spec-plu">PLU #1270 / Item #43259</span>
+    </div>
+    <ol class="spec-steps">
+      <li>Tenderize TWICE the Tri-Tip.</li>
+      <li>Trim to blue membrane. Remove bone chips, bone felt, or connective tissue.</li>
+      <li>Remove any exposed glands.</li>
+      <li>Cut roasts into steaks.</li>
+      <li>Display with cut face UP in package.</li>
+      <li>Wrap and label with USDA Prime sticker.</li>
+    </ol>
+  </div>
+
+  <div class="card mt-16">
+    <div class="card-title">Key Cutter Principles (From Costco Cutter Pack)</div>
+    <div class="grid-2">
+      <div>
+        <h3>Yield Discipline</h3>
+        <ul class="checklist">
+          <li>Most cutters bleed margin through small repeated habits — not one big mistake
+            <span class="sub">Track your trim pile weight. If it's growing week-to-week, your habits are the issue.</span>
+          </li>
+          <li>Set trim routes BEFORE cutting: saleable trim / grind trim / fat-discard
+            <span class="sub">Do not decide at the end of the cut. Pre-sorted trim = faster + more accurate shrink entry.</span>
+          </li>
+          <li>Tenderize FAT SIDE DOWN on all specs that call for it</li>
+          <li>Spinalis (ribeye cap) = premium muscle. Handle primals accordingly — even if not separated for sale.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Speed and Workflow</h3>
+        <ul class="checklist">
+          <li>Stage the next primal before you finish the current tray cycle</li>
+          <li>Batch identical work — repeat one motion pattern rather than bouncing between products</li>
+          <li>Build tray + label rhythm INTO the cut flow — product sitting on table is dying</li>
+          <li>Read the case BEFORE cutting — hole-filling beats blind production</li>
+          <li>Brisket buyers want weight and flexibility — don't over-trim usable mass</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CAREER PLAN -->
+<div id="career" class="tab-content">
+  <div class="section-header">
+    <h2>Career Fast-Track Plan</h2>
+    <span class="tag green">STARTED: MAR 25, 2026</span>
+  </div>
+
+  <div class="alert success">
+    <div class="alert-title">Your Unfair Advantage</div>
+    You have SCT Whole Foods Meat Dept experience including supervision AND extensive cutting. Most wrappers starting at Costco have zero supervisory background and limited cutting. That's a real edge — but only if you make it visible through data, not just skill.
+  </div>
+
+  <div class="grid-2 mb-24">
+    <div>
+      <h3>The Costco Promotion Ladder</h3>
+      <div class="ladder">
+        <div class="ladder-step current">
+          <div class="ladder-title">Meat Wrapper</div>
+          <div class="ladder-meta">You Are Here — Started Mar 25, 2026</div>
+          <ul class="ladder-actions">
+            <li>Master wrapping, labeling, tray-pack, COOL compliance</li>
+            <li>Learn every AS400 screen in this toolkit</li>
+            <li>Start building data documentation NOW</li>
+            <li>Get TSH (Trash Scan) access to log shrink directly</li>
+          </ul>
+        </div>
+        <div class="ladder-step target">
+          <div class="ladder-title">Supervisor In Training (SIT)</div>
+          <div class="ladder-meta">TARGET #1 — Formal 12-Week Program</div>
+          <ul class="ladder-actions">
+            <li>Demonstrate AS400 mastery in front of a supervisor or AGM</li>
+            <li>Bring printed exception reports (not phone photos) to shift meetings</li>
+            <li>Reduce shrink in your zone — document it in DSL/IAD terms</li>
+            <li>Catch receiving errors and variances same-day</li>
+            <li>Train at least 2 coworkers on AS400 lookups (recognized promotion behavior)</li>
+            <li>Submit for SIT opening — 85% of Costco managers started as hourly</li>
+          </ul>
+        </div>
+        <div class="ladder-step">
+          <div class="ladder-title">Supervisor</div>
+          <div class="ladder-meta">~1–2 Years Post-SIT</div>
+          <ul class="ladder-actions">
+            <li>Own dept P&L conversations with the AGM/GM</li>
+            <li>Run LSDT to manage labor vs. plan every shift</li>
+            <li>Present a standing-order recommendation backed by DSL + IIL</li>
+          </ul>
+        </div>
+        <div class="ladder-step">
+          <div class="ladder-title">Merchandising Training Course (MTC)</div>
+          <div class="ladder-meta">12-Week Program — Merch Manager Path</div>
+          <ul class="ladder-actions">
+            <li>This is the equivalent of a Merchandising Manager fast-track</li>
+            <li>Enter with a documented track record of shrink reduction + sales growth</li>
+          </ul>
+        </div>
+        <div class="ladder-step">
+          <div class="ladder-title">Department Manager / AGM</div>
+          <div class="ladder-meta">Multi-Department Rotational Role</div>
+        </div>
+        <div class="ladder-step">
+          <div class="ladder-title">GM → Buyer → Regional</div>
+          <div class="ladder-meta">85% of corporate started as hourly — this is real</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3>What Separates You (Average vs. Top Performer)</h3>
+      <div class="scroll-table">
+        <table class="data-table compare-table">
+          <thead>
+            <tr>
+              <th>Situation</th>
+              <th style="color:var(--red)">Average Operator</th>
+              <th style="color:var(--accent3)">You (Top Performer)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Item out of stock</td>
+              <td>Reports it after manager notices</td>
+              <td>Caught same morning via IIL + ITMW; already checked DASH for next truck</td>
+            </tr>
+            <tr>
+              <td>Receiving a truck</td>
+              <td>Receives and moves on</td>
+              <td>Runs RHI same day; flags any catch-weight variance before manager sees it</td>
+            </tr>
+            <tr>
+              <td>Shrink discussion</td>
+              <td>"We had a lot of expired product"</td>
+              <td>"IATOP shows ribeye is our #1 D&D item 3 weeks straight. STK shows sales down 18% WoW. We're over-cutting by ~12 units/day. Recommend reducing cut list accordingly."</td>
+            </tr>
+            <tr>
+              <td>Production planning</td>
+              <td>Cuts what the manager said yesterday</td>
+              <td>Runs STK before every shift; builds cut list from actual 4-week trend + DOW factor</td>
+            </tr>
+            <tr>
+              <td>Performance review</td>
+              <td>"I work hard and learn fast"</td>
+              <td>Brings printed DSL, IAD shrink, and RHI data to the meeting with specific numbers</td>
+            </tr>
+            <tr>
+              <td>Slow-moving item</td>
+              <td>Leaves it until manager notices</td>
+              <td>Calculates DOS; if DOS &gt; pull window, initiates EPC markdown with documented reason</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>The Pitch That Moves Managers</h3>
+      <div class="card">
+        <p style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--text); line-height:1.8; background:var(--surface2); padding:12px; border-radius:4px; border-left:3px solid var(--accent);">
+          "Item #34323 [Ribeye], Dept 17. STK shows -18% YoY for the past 3 weeks. Current cover from ITMW is 8 days at last week's velocity. IAD shows $420 in D&D this period alone — that's the #2 shrink item in our dept. I recommend cutting the daily production by 6 steaks and adjusting Thursday's sub-primal order down by 1 case. Estimated shrink reduction: ~$140/week."
+        </p>
+        <p class="small mt-16">That's how a buyer or AGM talks internally. When you speak their language, you become visible as a candidate — not just a good cutter.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>SMART Goals — Meat Dept Specific</h3>
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title">Goal 1: Shrink Reduction</div>
+      <p><span class="highlight">Specific:</span> Reduce meat dept D&D from current rate to below 4% (vs. 5.7% industry avg) within 90 days.</p>
+      <p><span class="highlight">Measure:</span> IAD + IATOP weekly. Print and file period-end reports.</p>
+      <p><span class="highlight">Key levers:</span> Cut-list discipline via STK, same-day DOS monitoring via ITMW, immediate markdown (EPC) when DOS exceeds pull window.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Goal 2: AS400 Mastery Visible</div>
+      <p><span class="highlight">Specific:</span> Within 60 days, run the morning data pull (STK → ITMW → IATOP → RHI) independently and present findings at shift huddle without being asked.</p>
+      <p><span class="highlight">Measure:</span> Supervisor recognition in file. Train 2 coworkers by day 90.</p>
+      <p><span class="highlight">Why it matters:</span> Training others on AS400 is a confirmed promotion behavior in Costco employee reviews.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Goal 3: Receiving Accuracy</div>
+      <p><span class="highlight">Specific:</span> Zero unresolved receiving variances more than 24 hours old. All catch-weight discrepancies flagged same-day via RHI.</p>
+      <p><span class="highlight">Measure:</span> RHI vs. physical count log maintained in dept binder.</p>
+      <p><span class="highlight">Dollar framing:</span> One missed short-ship on a pork loin case is typically $180–$400. Over a year that's real money — and it builds your case for promotion.</p>
+    </div>
+  </div>
+
+  <h3>Performance Review Talking Points (Data-Driven)</h3>
+  <div class="card mt-16">
+    <table class="data-table">
+      <thead>
+        <tr><th>Claim</th><th>AS400 Source</th><th>How to Frame It</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Reduced shrink</td>
+          <td class="mono">IAD + IATOP</td>
+          <td>"Reduced dept D&D from X% to Y% over the period per IAD. Top D&D item dropped from #2 to #7 in IATOP ranking."</td>
+        </tr>
+        <tr>
+          <td>Sales growth vs. plan</td>
+          <td class="mono">DSI + IAWD View 02</td>
+          <td>"Dept sales ran +X% vs. plan and +Y% YoY per DSI week [W] through week [W]."</td>
+        </tr>
+        <tr>
+          <td>Receiving accuracy</td>
+          <td class="mono">RHI</td>
+          <td>"Caught a receiving error worth $___ on item #____ [date]. Resolved same-day per RHI — variance was corrected before period close."</td>
+        </tr>
+        <tr>
+          <td>Cover day management</td>
+          <td class="mono">ITMW + STK</td>
+          <td>"Reduced cover days on top movers from X to Y days using daily STK-informed cut lists, with zero OOS events on tracked items."</td>
+        </tr>
+        <tr>
+          <td>Trained others</td>
+          <td>AS400 (any screen)</td>
+          <td>"Trained [names] on AS400 item lookups, sign printing, and shrink entry. Both can now run the morning data pull independently."</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ DAILY ROUTINES -->
+<div id="daily" class="tab-content">
+  <div class="section-header">
+    <h2>Daily / Weekly / Period Routines</h2>
+    <span class="tag blue">FRESH DEPT STANDARD</span>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <h3>Before Doors Open — Meat Dept</h3>
+      <div class="card">
+        <ul class="checklist">
+          <li>Sign on AS400
+            <span class="sub">3-digit warehouse: WHSEINXXX / EDPXXX</span>
+          </li>
+          <li>Run STK — yesterday's 4-week sales + D&D by item. Build cut list.</li>
+          <li>Run ITMW on top 10 SKUs — verify on-hand is what you expect
+            <span class="sub">Check NSI (non-saleable) field — anything stuck there needs to be shrunk out</span>
+          </li>
+          <li>Run IAD or IATOP D&D sort — know your top shrink items before a manager asks</li>
+          <li>Run RHI for any item that received yesterday — confirm it posted correctly</li>
+          <li>Walk the floor with EDSR printout — verify all signs are accurate and hung</li>
+          <li>Check DASH — confirm today's meat truck ETA and PO#</li>
+          <li>Build huddle talking points: 1 win, 1 problem, 1 action</li>
+        </ul>
+      </div>
+
+      <h3>Mid-Shift</h3>
+      <div class="card">
+        <ul class="checklist">
+          <li>Re-check ITMW on fast movers — OOS risk assessment</li>
+          <li>IIL check if any SKU is running low — initiate transfer if needed</li>
+          <li>Log all trim/fat/bone shrink as production completes (paper log → AS400 entry)</li>
+          <li>Key any damage / leakers / vacuum failures as Damage shrink immediately</li>
+          <li>Monitor DOS on all marked-down items — if past pull date, shrink out as Out-of-Date</li>
+        </ul>
+      </div>
+
+      <h3>Closing</h3>
+      <div class="card">
+        <ul class="checklist">
+          <li>Final DSI/IAD read — know what the shift's shrink impact was</li>
+          <li>Key all write-offs/damages/donations into shrink module (RF Option 72 Scan Trash or TSH)</li>
+          <li>Key end-of-shift production sheet into AS400: bulk sub-primal → retail cuts, note trim weight</li>
+          <li>Clear and route the day's spool files via OUTQ</li>
+          <li>Sign off cleanly — SIGNOFF (not just close the window)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <h3>Weekly Routine</h3>
+      <div class="card">
+        <ul class="checklist">
+          <li><strong>Monday:</strong> Pull 7-day DSI by SKU. Rank top-25 and bottom-25 movers. Identify items with DOS &gt;5 days.</li>
+          <li><strong>Tuesday:</strong> RHI variance review for the week's truck cycle. Any quantity mismatch → investigate same week.</li>
+          <li><strong>Wednesday:</strong> IATOP D&D review for the week — is the same item appearing multiple weeks? Production pattern problem.</li>
+          <li><strong>Thursday:</strong> EDSR review for weekend pricing. Check for any upcoming IRC (IRCI) that affects meat items.</li>
+          <li><strong>Friday:</strong> Pre-weekend OOS sweep via IIL. Request transfers if needed for weekend volume items (ribeye, ground beef, etc.).</li>
+          <li><strong>Weekly:</strong> Print DSI spool. File in dept binder. Prep weekly variance commentary for supervisor meeting.</li>
+        </ul>
+      </div>
+
+      <h3>Period (4-Week) Routine</h3>
+      <div class="card">
+        <ul class="checklist">
+          <li><strong>3 days before close:</strong> Reconcile ALL RHI receivings for the period. Post all damages, donations, transfers. Reconcile in-transit pallets.</li>
+          <li><strong>Count day:</strong> Print expected on-hand from IAI Opt 1 for every active meat SKU. RF Scanner Option 20 for count entry. Option 22 to print audit report.</li>
+          <li><strong>Day after close:</strong> Review shrink % vs. company target (~0.11–0.12%). Document root cause for every variance over threshold. Print period DSL + turn calc + shrink summary one-pager.</li>
+          <li><strong>Day 1 of new period:</strong> Re-baseline cover days using fresh on-hand. Reset standing orders if YoY trend shifted ±10%+.</li>
+        </ul>
+      </div>
+
+      <h3>Your May 2026 Schedule</h3>
+      <div class="card">
+        <p class="small mb-16">Based on uploaded schedule — afternoon shifts dominate (1:30–10 PM). Key insight: you're on late shifts. That means you're closing the meat dept. Use that to your advantage — closing shrink entry, end-of-day markdowns, and production reconciliation are YOUR territory. Own them.</p>
+        <table class="data-table">
+          <thead><tr><th>Week</th><th>Days Working</th><th>Shift</th></tr></thead>
+          <tbody>
+            <tr><td>Apr 27 – May 3</td><td>Sat, Sun</td><td class="mono">9:30A–6P / 11:30A–8P</td></tr>
+            <tr><td>May 4 – 10</td><td>Mon, Tue, Wed</td><td class="mono">1:30P–10P</td></tr>
+            <tr><td>May 18 – 24</td><td>Mon, Thu, Fri, Sat, Sun</td><td class="mono">Mix: 12:30P–7P and 1:30P–10P</td></tr>
+          </tbody>
+        </table>
+        <div class="alert info" style="margin-top:12px; margin-bottom:0;">
+          <div class="alert-title">Closing Shift Strategy</div>
+          You're positioned to own the end-of-day numbers. Every night: key shrink, run IAD to confirm it posted, check ITMW to verify on-hand looks right for tomorrow's opener. Leave a note for the morning crew (or run the morning data pull yourself via the AS400 before you leave) — that's the behavior that gets noticed.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ F-KEYS & TIPS -->
+<div id="fkeys" class="tab-content">
+  <div class="section-header">
+    <h2>Function Keys, Navigation &amp; Power Tips</h2>
+    <span class="tag blue">AS400 GUIDE FEB 2026</span>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <h3>Standard Function Keys</h3>
+      <div class="fkey-grid">
+        <div class="fkey"><div class="fkey-key">F1</div><div class="fkey-desc">Help — field-level help for current option</div></div>
+        <div class="fkey"><div class="fkey-key">F3</div><div class="fkey-desc">Exit — leaves current option, returns to main menu</div></div>
+        <div class="fkey"><div class="fkey-key">F4</div><div class="fkey-desc">Search / Prompt — fillable form or lookup list; use on Option field to browse all available options</div></div>
+        <div class="fkey"><div class="fkey-key">F5</div><div class="fkey-desc">Refresh — refreshes current display</div></div>
+        <div class="fkey"><div class="fkey-key">F6</div><div class="fkey-desc">Print / Create — print in most inquiry screens; create new record in maintenance screens</div></div>
+        <div class="fkey"><div class="fkey-key">F9</div><div class="fkey-desc">Retrieve last command (IBM i standard)</div></div>
+        <div class="fkey"><div class="fkey-key">F10</div><div class="fkey-desc">Command line toggle; also Change in some screens (e.g. LSRM, ESPC)</div></div>
+        <div class="fkey"><div class="fkey-key">F11</div><div class="fkey-desc">Alternate view / toggle (e.g. MBA9 toggles search method, WII toggles to show descriptions)</div></div>
+        <div class="fkey"><div class="fkey-key">F12</div><div class="fkey-desc">Cancel — returns to previous screen without exiting the program</div></div>
+        <div class="fkey"><div class="fkey-key">F15</div><div class="fkey-desc">Shift+F3 — Add custom option to home screen; also Item Downloads from EPC</div></div>
+        <div class="fkey"><div class="fkey-key">F18</div><div class="fkey-desc">Shift+F6 — Toggle custom/default home screen; also jump to bottom of OUTQ</div></div>
+        <div class="fkey"><div class="fkey-key">F19</div><div class="fkey-desc">Shift+F7 — Toggle left in comparison screens (IATOP, STK, IAFEP); view other OUTQ queues</div></div>
+        <div class="fkey"><div class="fkey-key">F20</div><div class="fkey-desc">Shift+F8 — Toggle right in comparison screens</div></div>
+        <div class="fkey"><div class="fkey-key">F21</div><div class="fkey-desc">Shift+F9 — Print in most screens; Done on RF scanner option 8 pre-scan</div></div>
+        <div class="fkey"><div class="fkey-key">F22</div><div class="fkey-desc">Export to Excel (STK); Eligibility/fees from ITMW; Show Merchandise Audit (STK)</div></div>
+        <div class="fkey"><div class="fkey-key">F23</div><div class="fkey-desc">Disable profile (EPRFM); Delete group (IGM)</div></div>
+      </div>
+
+      <h3 class="mt-16">Sign-On Reference</h3>
+      <div class="card">
+        <table class="data-table">
+          <thead>
+            <tr><th>Warehouse #</th><th>Warehouse User</th><th>Password</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1–2 digits (XX)</td><td class="mono">WHSEINXX</td><td class="mono">EDP0XX</td></tr>
+            <tr><td>3 digits (XXX)</td><td class="mono">WHSEINXXX</td><td class="mono">EDPXXX</td></tr>
+            <tr><td>4 digits (XXXX)</td><td class="mono">WIN0XXXX</td><td class="mono">EDP0XXXX</td></tr>
+          </tbody>
+        </table>
+        <p class="small mt-16">Never share your personal profile. Generic profiles exist for general use. User-specific management profiles are individual and confidential.</p>
+        <div class="alert warn" style="margin-top:10px; margin-bottom:0;">
+          <div class="alert-title">Auto-Secure</div>
+          Terminals auto-secure after 90 seconds of idle. Signs out and shows "Terminal Secured." Sign back in — nothing is lost.
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3>Speed Tips — Power User Habits</h3>
+      <div class="card mb-16">
+        <ul class="checklist">
+          <li class="done"><strong>Two sessions simultaneously:</strong> Press ESC → put 1 next to "Start New Session" → ENTER. Run IAI in one, DSL in the other without losing context.</li>
+          <li class="done"><strong>Custom home screen:</strong> Enter desired option → F15 (Shift+F3) to add. F18 (Shift+F6) to toggle between default and custom. Fastest way to one-click your daily screens.</li>
+          <li class="done"><strong>Type-ahead:</strong> Once you know the path, key your option + ENTER without waiting on screen redraws. The system buffers keystrokes.</li>
+          <li class="done"><strong>Field Exit:</strong> Right-Ctrl (or numpad ENTER) — blanks the rest of a numeric field and tabs forward. FAR faster than space-tab when entering item numbers.</li>
+          <li><strong>F4 on Option field:</strong> Shows all options your profile can access. Huge for discovering screens you didn't know existed.</li>
+          <li><strong>Double-click blue items:</strong> Any blue text on screen can be double-clicked to auto-select. Enables text copy with Options → Edit → Double Click Auto Selection.</li>
+          <li><strong>OUTQ management:</strong> Always check OUTQ after printing a large report. Opt 5 = view before printing. Opt 6 = release. Don't waste paper on a report you already have.</li>
+        </ul>
+      </div>
+
+      <h3>Error Codes — What To Do</h3>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Error</th><th>Cause</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">CPF5032</td><td>Record locked to this job</td><td>F12 to back out. Sign off + on. Or manager uses WRKOBJLCK.</td></tr>
+            <tr><td class="mono">CPF4101</td><td>File not found / level check</td><td>Check library list with DSPLIBL. Usually IT needs to push a fix.</td></tr>
+            <tr><td class="mono">CPF5027</td><td>Record in use by another job</td><td>Wait and retry. IT can ENDJOB the offender if blocking.</td></tr>
+            <tr><td class="mono">CPF2189</td><td>Not authorized to library</td><td>Your profile lacks access — manager calls IT.</td></tr>
+            <tr><td class="mono">CPF9999</td><td>Function check / unhandled error</td><td>F3/Enter to recover. Capture CPF from DSPJOBLOG. Send to IT.</td></tr>
+            <tr><td class="mono">X II</td><td>Input Inhibited (frozen screen)</td><td>Press Reset key (left-Ctrl on 5250). If still stuck: ESC → 2 → Enter.</td></tr>
+            <tr><td>Job already exists</td><td>Session collision</td><td>ESC → 4 from second session to end old job.</td></tr>
+            <tr><td>Password disabled</td><td>3 bad sign-ons or 90+ days inactive</td><td>Manager calls IT for QSECOFR-level reset.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>RF Scanner Quick Reference</h3>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Option</th><th>Function</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">11</td><td>Item Inquiry (most-used) — scan barcode or enter item# to see on-hand</td></tr>
+            <tr><td class="mono">13</td><td>Item Alpha Inquiry — search by description (min 3 chars)</td></tr>
+            <tr><td class="mono">16</td><td>UPC Inquiry — scan UPC to get item# and description</td></tr>
+            <tr><td class="mono">18</td><td>Item Sales Report — print sales report for scanned items</td></tr>
+            <tr><td class="mono">20</td><td>Merchandise Audit Entry — scan counts for physical inventory</td></tr>
+            <tr><td class="mono">21</td><td>Clear Merchandise Audit Count List</td></tr>
+            <tr><td class="mono">22</td><td>Print Merchandise Audit Report (same as MADR on main AS400)</td></tr>
+            <tr><td class="mono">23</td><td>EDP Sign Requests — print signs from the floor</td></tr>
+            <tr><td class="mono">36</td><td>Print Pallet Tag — label incoming pallets</td></tr>
+            <tr><td class="mono">63</td><td>FFI — Fresh Foods Inventory input counts (physical inventory entry for fresh)</td></tr>
+            <tr><td class="mono">72</td><td>Scan Trash — remove damaged/destroyed items from inventory (needs TSH password)</td></tr>
+            <tr><td class="mono">88</td><td>Item/UPC Cross-Reference (same as IXI on main system)</td></tr>
+            <tr><td class="mono">98</td><td>Item/UPC Check — view item#, UPC, sell price including multi-pack items</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function filterCmds() {
+  const query = document.getElementById('cmdSearch').value.toLowerCase();
+  document.querySelectorAll('.cmd-card').forEach(card => {
+    card.style.display = card.textContent.toLowerCase().includes(query) ? '' : 'none';
+  });
+}
+
+function filterCmdCategory(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('cmdSearch').value = '';
+  document.querySelectorAll('.cmd-card').forEach(card => {
+    if (cat === 'all') { card.style.display = ''; return; }
+    const cardCat = card.dataset.cat;
+    card.style.display = (cardCat === cat) ? '' : 'none';
+  });
+}
+
+function filterTable(tableId, inputId) {
+  const query = document.getElementById(inputId).value.toLowerCase();
+  const rows = document.getElementById(tableId).querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+  });
+}
+</script>
+
+</body>
+</html>
