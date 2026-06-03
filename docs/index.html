@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Costco Toolkit — Dept 61</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --border: #222;
+      --text: #f0f0f0;
+      --text-dim: #555;
+      --red: #cc0000;
+      --blue: #0055a5;
+      --amber: #e07b00;
+      --teal: #007a6e;
+      --green: #2e7d42;
+      --purple: #5a3f8a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow Condensed', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--surface);
+      border-bottom: 3px solid var(--red);
+      padding: 18px 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .costco-badge {
+      background: var(--red);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 9px 3px;
+      border-radius: 3px;
+    }
+
+    .header-title {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .header-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    /* ── GRID ── */
+    .grid-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #2a2a2a;
+      padding: 18px 16px 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 0 12px 12px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ── TOOL CARD ── */
+    .tool-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 14px 16px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: transform 0.12s, border-color 0.12s, background 0.12s;
+      cursor: pointer;
+      min-height: 130px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: currentColor;
+      opacity: 0;
+      transition: opacity 0.12s;
+    }
+
+    .tool-card:active::after { opacity: 0.06; }
+    .tool-card:active { transform: scale(0.97); }
+
+    .tool-card.blue   { border-top-color: var(--blue); }
+    .tool-card.amber  { border-top-color: var(--amber); }
+    .tool-card.teal   { border-top-color: var(--teal); }
+    .tool-card.green  { border-top-color: var(--green); }
+    .tool-card.red    { border-top-color: var(--red); }
+    .tool-card.purple { border-top-color: var(--purple); }
+
+    .card-icon {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .card-name {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-dim);
+      line-height: 1.4;
+      margin-top: auto;
+    }
+
+    .card-tag {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #333;
+      text-transform: uppercase;
+    }
+
+    /* ── WIDE CARD (full width) ── */
+    .tool-card.wide {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
+      min-height: 80px;
+      padding: 16px 18px;
+    }
+
+    .tool-card.wide .card-icon { font-size: 30px; flex-shrink: 0; }
+    .tool-card.wide .card-name { font-size: 17px; }
+    .tool-card.wide .card-desc { margin-top: 2px; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 24px 16px 40px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #222;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo-row">
+      <span class="costco-badge">Costco</span>
+      <span class="header-title">Toolkit</span>
+    </div>
+  </div>
+  <div class="header-sub">BRANDON &nbsp;·&nbsp; DEPT 61 — MEAT &nbsp;·&nbsp; TEMPE</div>
+</header>
+
+<div style="max-width:520px;margin:0 auto;">
+  <div class="grid-label">— Tools —</div>
+  <div class="grid">
+
+    <!-- FIELD GUIDE — wide, primary tool -->
+    <a class="tool-card wide blue" href="field-guide.html">
+      <span class="card-icon">📖</span>
+      <div>
+        <div class="card-name">Field Guide</div>
+        <div class="card-desc">PLUs, AS400 commands, cut specs, procedures</div>
+      </div>
+      <span class="card-tag" style="position:static;margin-left:auto;white-space:nowrap;">MAIN</span>
+    </a>
+
+    <!-- CLOSING TEMPLATE -->
+    <a class="tool-card amber" href="closing-template.html">
+      <span class="card-icon">📋</span>
+      <span class="card-name">Closing Template</span>
+      <span class="card-desc">Nightly close report — fill & text</span>
+    </a>
+
+    <!-- PLACEHOLDER: AS400 SMART SEARCH -->
+    <a class="tool-card teal" href="as400-smart-search.html" onclick="return nolink(event)">
+      <span class="card-tag">Soon</span>
+      <span class="card-icon">🖥</span>
+      <span class="card-name">AS400 Smart Search</span>
+      <span class="card-desc">Command lookup & reference</span>
+    </a>
+
+    <!-- PLACEHOLDER: SCHEDULE -->
+    <a class="tool-card green" href="schedule.html" onclick="return nolink(event)">
+      <span class="card-tag">Soon</span>
+      <span class="card-icon">📅</span>
+      <span class="card-name">Schedule</span>
+      <span class="card-desc">Shift calendar & UKG sync</span>
+    </a>
+
+    <!-- PLACEHOLDER: CUT SPECS -->
+    <a class="tool-card red" href="cut-specs.html" onclick="return nolink(event)">
+      <span class="card-tag">Soon</span>
+      <span class="card-icon">🥩</span>
+      <span class="card-name">Cut Specs</span>
+      <span class="card-desc">Beef, pork, poultry references</span>
+    </a>
+
+    <!-- PLACEHOLDER: CAREER -->
+    <a class="tool-card purple" href="career.html" onclick="return nolink(event)">
+      <span class="card-tag">Soon</span>
+      <span class="card-icon">🎯</span>
+      <span class="card-name">Career</span>
+      <span class="card-desc">Goals, milestones, SIT tracking</span>
+    </a>
+
+  </div>
+</div>
+
+<footer>DEPT 61 &nbsp;·&nbsp; COSTCO TEMPE &nbsp;·&nbsp; STARTED 03.25.26</footer>
+
+<script>
+  function nolink(e) {
+    e.preventDefault();
+    const tag = e.currentTarget.querySelector('.card-tag');
+    const orig = tag.textContent;
+    tag.textContent = 'Coming soon';
+    tag.style.color = '#666';
+    setTimeout(() => { tag.textContent = orig; tag.style.color = ''; }, 1500);
+    return false;
+  }
+</script>
+
+</body>
+</html>
