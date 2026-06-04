@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>PLU — Dept 61</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0a0a0a;--surface:#161616;--s2:#1e1e1e;--border:#2a2a2a;--text:#fff;--dim:#ccc;--muted:#999;--red:#cc0000;--amber:#e07b00;--prime:#c8960c;--choice:#4a7fbf;--wagyu:#9b4dca;--teal:#007a6e;--r:6px}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
+    header{background:var(--surface);border-bottom:3px solid var(--red);padding:10px 14px 8px;flex-shrink:0;display:flex;align-items:center;gap:12px}
+    .back{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 9px;border:1px solid #333;border-radius:4px;white-space:nowrap;flex-shrink:0}
+    .htitle{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:3px;text-transform:uppercase}
+    .hsub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+
+    .search-wrap{background:var(--surface);padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+    #search{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:20px;color:var(--text);font-family:'Barlow',sans-serif;font-size:16px;padding:9px 14px;outline:none}
+    #search::placeholder{color:var(--muted)}
+    #search:focus{border-color:var(--red)}
+
+    .cat-bar{display:flex;gap:6px;padding:8px 12px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+    .cat-bar::-webkit-scrollbar{display:none}
+    .cat-btn{padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:all .15s}
+    .cat-btn.active.all{background:#333;color:var(--text);border-color:#555}
+    .cat-btn.active.beef{background:#8b2020;color:#fff;border-color:#8b2020}
+    .cat-btn.active.pork{background:#7a5c2a;color:#fff;border-color:#7a5c2a}
+    .cat-btn.active.poultry{background:#4a7040;color:#fff;border-color:#4a7040}
+    .cat-btn.active.seafood{background:var(--teal);color:#fff;border-color:var(--teal)}
+    .cat-btn.active.grinds{background:#555;color:#fff;border-color:#777}
+
+    #plu-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .plu-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);padding:6px 14px 2px;letter-spacing:1px}
+
+    .group-header{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#444;padding:8px 14px 2px}
+
+    .plu-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;gap:12px}
+    .plu-row:active{background:var(--s2)}
+    .plu-row.hidden{display:none}
+    .plu-name{font-size:15px;color:var(--dim);flex:1;line-height:1.3}
+    .plu-num{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--red);flex-shrink:0;letter-spacing:-0.5px}
+
+    /* copied flash */
+    .plu-row.flash{background:rgba(224,123,0,.12)}
+
+    .empty{text-align:center;padding:40px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px}
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="meat.html">← Meat</a>
+  <div>
+    <div class="htitle">PLU Lookup</div>
+    <div class="hsub">DEPT 61 · TAP TO COPY</div>
+  </div>
+</header>
+
+<div class="search-wrap">
+  <input id="search" type="search" placeholder="Search item or PLU number..." autocomplete="off" autocorrect="off" spellcheck="false">
+</div>
+
+<div class="cat-bar">
+  <button class="cat-btn active all" data-cat="all">All</button>
+  <button class="cat-btn beef" data-cat="beef">🥩 Beef</button>
+  <button class="cat-btn pork" data-cat="pork">🐷 Pork</button>
+  <button class="cat-btn poultry" data-cat="poultry">🐔 Poultry</button>
+  <button class="cat-btn seafood" data-cat="seafood">🐟 Seafood</button>
+  <button class="cat-btn grinds" data-cat="grinds">⚙️ Grinds</button>
+</div>
+
+<div id="plu-list">
+  <div class="plu-count" id="plu-count"></div>
+  <!-- rows injected by JS -->
+</div>
+
+<script>
+const DATA = [
+  // ── BEEF CHOICE ──
+  {n:'Beef New York Steak',p:2,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef London Broil',p:4,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Ribeye Steak',p:5,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef T-Bone Steak',p:7,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Tenderloin Steak',p:1,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Teres Major',p:9,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Tri-Tip Steak',p:11,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Flank Steak',p:13,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Stew Meat',p:20,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Boneless Short Rib',p:47,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Brisket Trimmed',p:50,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Chuck Steak',p:51,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Bone-In Rib Roast',p:52,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Ribeye Roast',p:53,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Eye of Round Roast',p:56,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Tri-Tip Roast',p:60,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Top Round Roast',p:85,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Chuck Shoulder Clod',p:86,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Ribeye Cryo',p:73,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef New York Cryo',p:71,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Brisket Cryo',p:423,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Bone-In Rib Steak (GL Rib)',p:385,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Frenched Bone-In Rib',p:54,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef 5x6 Bone-In Rib',p:358,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Top Sirloin Cap Off',p:542,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Top Sirloin Cap Steak',p:1514,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Top Sirloin Cap Off Cryo',p:1509,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Ribeye Thin Cut',p:1454,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Inside Skirt Steak',p:4572,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef NY Shabu Shabu',p:514,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Picanha (Top Sirloin Cap)',p:4940,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef NY Country Style Ribs',p:2883,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Bone-In Short Rib',p:1365,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Plate Short Ribs',p:866,c:'beef',g:'Beef — Choice',grade:'choice'},
+  {n:'Beef Back Rib',p:683,c:'beef',g:'Beef — Choice',grade:'choice'},
+  // ── BEEF PRIME ──
+  {n:'Beef Prime Tenderloin Steak',p:336,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime NY Steak',p:278,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Ribeye Steak',p:333,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Eye of Ribeye (2pc)',p:1775,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Ribeye Cap Steak',p:1779,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Ribeye Roast',p:341,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Bone-In Rib Steak',p:378,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Bone-In Rib Roast',p:717,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Frenched BI Rib Steak',p:1660,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Top Sirloin Steak',p:957,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Top Sirloin Cap Off',p:1670,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Top Sirloin Cap Steak',p:1773,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Tri-Tip Steak',p:1270,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Tri-Tip Roast',p:1271,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime T-Bone Steak',p:970,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Commodity Brisket',p:1535,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Chuck Roast',p:1637,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Boneless Short Rib',p:1336,c:'beef',g:'Beef — Prime',grade:'prime'},
+  {n:'Beef Prime Tongue',p:1274,c:'beef',g:'Beef — Prime',grade:'prime'},
+  // ── WAGYU ──
+  {n:'A5 Wagyu Ribeye Steak',p:9620,c:'beef',g:'A5 Wagyu',grade:'wagyu'},
+  {n:'A5 Wagyu Ribeye Cryo',p:9643,c:'beef',g:'A5 Wagyu',grade:'wagyu'},
+  {n:'A5 Wagyu NY Strip Steak',p:9673,c:'beef',g:'A5 Wagyu',grade:'wagyu'},
+  {n:'A5 Wagyu NY Strip Cryo',p:9679,c:'beef',g:'A5 Wagyu',grade:'wagyu'},
+  {n:'Classic Wagyu Ribeye Steak',p:1099,c:'beef',g:'Classic Wagyu',grade:'wagyu'},
+  {n:'Classic Wagyu NY Strip Steak',p:1089,c:'beef',g:'Classic Wagyu',grade:'wagyu'},
+  {n:'Classic Wagyu Tenderloin Steak',p:1164,c:'beef',g:'Classic Wagyu',grade:'wagyu'},
+  {n:'Classic Wagyu Tri-Tip Steak',p:1094,c:'beef',g:'Classic Wagyu',grade:'wagyu'},
+  {n:'Classic Wagyu Brisket Steak',p:836,c:'beef',g:'Classic Wagyu',grade:'wagyu'},
+  {n:'Classic Wagyu Boneless Short Rib',p:848,c:'beef',g:'Classic Wagyu',grade:'wagyu'},
+  {n:'Classic Wagyu Teres Major Steak',p:868,c:'beef',g:'Classic Wagyu',grade:'wagyu'},
+  // ── PORK ──
+  {n:'Pork Boneless Pork Chop',p:217,c:'pork',g:'Pork — Chops & Loin'},
+  {n:'Pork Boneless Loin Cryo',p:810,c:'pork',g:'Pork — Chops & Loin'},
+  {n:'Pork Boneless Sirloin Chop',p:44,c:'pork',g:'Pork — Chops & Loin'},
+  {n:'Pork Loin Rib & Loin Chops',p:102,c:'pork',g:'Pork — Chops & Loin'},
+  {n:'Pork Boneless Roast',p:216,c:'pork',g:'Pork — Roasts & Butt'},
+  {n:'Pork Boneless Butt Cryo',p:809,c:'pork',g:'Pork — Roasts & Butt'},
+  {n:'Pork Tenderloins',p:203,c:'pork',g:'Pork — Roasts & Butt'},
+  {n:'Pork Sirloin Tip Roast',p:3010,c:'pork',g:'Pork — Roasts & Butt'},
+  {n:'Pork Rack of Pork',p:3169,c:'pork',g:'Pork — Roasts & Butt'},
+  {n:'Pork Back Ribs',p:680,c:'pork',g:'Pork — Ribs'},
+  {n:'Pork Back Ribs Cryo',p:208,c:'pork',g:'Pork — Ribs'},
+  {n:'Pork St. Louis Spare Ribs',p:682,c:'pork',g:'Pork — Ribs'},
+  {n:'Pork St. Louis Ribs Cryo',p:1034,c:'pork',g:'Pork — Ribs'},
+  {n:'Pork St. Louis Ribs Portions',p:693,c:'pork',g:'Pork — Ribs'},
+  {n:'Pork Belly',p:1615,c:'pork',g:'Pork — Specialty'},
+  {n:'Pork Shoulder Blade Steak',p:212,c:'pork',g:'Pork — Specialty'},
+  {n:'Pork Stew Meat',p:150,c:'pork',g:'Pork — Specialty'},
+  // ── POULTRY ──
+  {n:'Foster Farms B/S Breast',p:861,c:'poultry',g:'Foster Farms'},
+  {n:'Foster Farms Thighs',p:864,c:'poultry',g:'Foster Farms'},
+  {n:'Foster Farms Drumsticks',p:863,c:'poultry',g:'Foster Farms'},
+  {n:'Foster Farms B/S Thighs',p:862,c:'poultry',g:'Foster Farms'},
+  {n:'Foster Farms Party Wings',p:7233,c:'poultry',g:'Foster Farms'},
+  {n:'Foster Farms Whole Fryers',p:7234,c:'poultry',g:'Foster Farms'},
+  {n:'Foster Farms Tenderloins',p:7237,c:'poultry',g:'Foster Farms'},
+  {n:'Foster Farms Turkey Toms',p:113,c:'poultry',g:'Foster Farms'},
+  {n:'Foster Farms Turkey Hens',p:114,c:'poultry',g:'Foster Farms'},
+  {n:'LPP Air Chilled Party Wings',p:4725,c:'poultry',g:'Lincoln Premium (LPP)'},
+  {n:'LPP Air Chilled Tenderloins',p:4729,c:'poultry',g:'Lincoln Premium (LPP)'},
+  {n:'LPP Air Chilled B/S Breasts',p:4735,c:'poultry',g:'Lincoln Premium (LPP)'},
+  {n:'LPP Air Chilled Thighs',p:4737,c:'poultry',g:'Lincoln Premium (LPP)'},
+  {n:'LPP Air Chilled Drumsticks',p:4739,c:'poultry',g:'Lincoln Premium (LPP)'},
+  {n:'Pilgrims B/S Breasts',p:519,c:'poultry',g:'Pilgrims (KS)'},
+  {n:'Pilgrims Thighs',p:1522,c:'poultry',g:'Pilgrims (KS)'},
+  {n:'Pilgrims Drumsticks',p:529,c:'poultry',g:'Pilgrims (KS)'},
+  {n:'Pilgrims Party Wings',p:32,c:'poultry',g:'Pilgrims (KS)'},
+  {n:'Pilgrims Tenderloins',p:147,c:'poultry',g:'Pilgrims (KS)'},
+  {n:'Pilgrims Whole Fryers',p:1555,c:'poultry',g:'Pilgrims (KS)'},
+  {n:'Org Pilgrims Whole Fryers',p:5971,c:'poultry',g:'Organic Poultry'},
+  {n:'Org Pilgrims B/S Breasts',p:233,c:'poultry',g:'Organic Poultry'},
+  {n:'Org Pitman Whole Fryers',p:386,c:'poultry',g:'Organic Poultry'},
+  {n:'Org Pitman B/S Breasts',p:280,c:'poultry',g:'Organic Poultry'},
+  {n:'Empire Kosher Whole Fryers',p:777,c:'poultry',g:'Kosher Poultry'},
+  {n:'Empire Kosher B/S Breasts',p:781,c:'poultry',g:'Kosher Poultry'},
+  // ── SEAFOOD ──
+  {n:'Salmon Fillet (Norway, ABF)',p:2100,c:'seafood',g:'Salmon — Fresh Farmed'},
+  {n:'Salmon Fillet (Chile, ABF)',p:382,c:'seafood',g:'Salmon — Fresh Farmed'},
+  {n:'ABF Portion Cut Salmon (Norway)',p:1329,c:'seafood',g:'Salmon — Fresh Farmed'},
+  {n:'ABF Portion Cut Salmon (Chile)',p:1330,c:'seafood',g:'Salmon — Fresh Farmed'},
+  {n:'Wild Sockeye Fillet',p:186,c:'seafood',g:'Salmon — Wild'},
+  {n:'Wild King Salmon Fillet',p:129,c:'seafood',g:'Salmon — Wild'},
+  {n:'Pacific Halibut',p:256,c:'seafood',g:'Fresh Fish'},
+  {n:'Ahi Tuna',p:64,c:'seafood',g:'Fresh Fish'},
+  {n:'Mahi Mahi',p:1002,c:'seafood',g:'Fresh Fish'},
+  {n:'Tilapia',p:175,c:'seafood',g:'Fresh Fish'},
+  {n:'Barramundi',p:508,c:'seafood',g:'Fresh Fish'},
+  {n:'Black Cod',p:393,c:'seafood',g:'Fresh Fish'},
+  {n:'Dungeness Crab (Cooked)',p:728,c:'seafood',g:'Shellfish'},
+  {n:'Scallops U-20',p:561,c:'seafood',g:'Shellfish'},
+  {n:'Red King Crab (4-7ct)',p:456,c:'seafood',g:'Shellfish — Frozen'},
+  {n:'Snow Crab Legs',p:227,c:'seafood',g:'Shellfish — Frozen'},
+  {n:'Argentinian King Crab',p:627,c:'seafood',g:'Shellfish — Frozen'},
+  {n:'Cold Water Lobster Tails 5lb',p:293,c:'seafood',g:'Shellfish — Frozen'},
+  // ── GRINDS ──
+  {n:'Beef Ground 88/12',p:90,c:'grinds',g:'Ground Beef'},
+  {n:'Beef Ground Patties 88/12',p:93,c:'grinds',g:'Ground Beef'},
+  {n:'Beef Ground 10lb Chubs',p:157,c:'grinds',g:'Ground Beef'},
+  {n:'Beef Trim',p:903,c:'grinds',g:'Production'},
+  {n:'Ground Pork',p:300,c:'grinds',g:'Ground Pork'},
+];
+
+// Sort by PLU number within each group
+DATA.sort((a,b) => a.p - b.p);
+
+let currentCat = 'all';
+let query = '';
+
+function render() {
+  const list = document.getElementById('plu-list');
+  const count = document.getElementById('plu-count');
+  const q = query.toLowerCase();
+
+  let html = '';
+  let visible = 0;
+  let lastGroup = '';
+
+  const filtered = DATA.filter(d => {
+    const catMatch = currentCat === 'all' || d.c === currentCat;
+    const qMatch = !q || d.n.toLowerCase().includes(q) || String(d.p).includes(q);
+    return catMatch && qMatch;
+  });
+
+  filtered.forEach(d => {
+    if (d.g !== lastGroup) {
+      html += `<div class="group-header">${d.g}</div>`;
+      lastGroup = d.g;
+    }
+    html += `<div class="plu-row" onclick="copyPlu(this, '${d.p}')">
+      <div class="plu-name">${d.n}</div>
+      <div class="plu-num">${d.p}</div>
+    </div>`;
+    visible++;
+  });
+
+  if (!visible) html = '<div class="empty">No PLUs found</div>';
+
+  list.innerHTML = `<div class="plu-count">${visible} item${visible!==1?'s':''}</div>` + html;
+  list.scrollTop = 0;
+}
+
+function copyPlu(row, plu) {
+  navigator.clipboard?.writeText(plu).catch(()=>{});
+  row.classList.add('flash');
+  setTimeout(() => row.classList.remove('flash'), 400);
+}
+
+document.querySelectorAll('.cat-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCat = btn.dataset.cat;
+    render();
+  });
+});
+
+document.getElementById('search').addEventListener('input', e => {
+  query = e.target.value;
+  render();
+});
+
+render();
+window.addEventListener('beforeinstallprompt', e => e.preventDefault());
+</script>
+</body>
+</html>

@@ -8,7 +8,7 @@
   <title>Cut Specs — Dept 61</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#0a0a0a;--surface:#141414;--surface2:#1c1c1c;--border:#252525;--text:#fff;--dim:#aaa;--muted:#555;--red:#cc0000;--prime:#c8960c;--choice:#4a7fbf;--wagyu:#9b4dca;--teal:#007a6e;--r:8px}
+    :root{--bg:#0a0a0a;--surface:#141414;--surface2:#1c1c1c;--border:#252525;--text:#fff;--dim:#aaa;--muted:#999;--red:#cc0000;--prime:#c8960c;--choice:#4a7fbf;--wagyu:#9b4dca;--teal:#007a6e;--r:8px}
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     html,body{height:100%}
     body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
@@ -26,7 +26,7 @@
     .g-bar{display:flex;gap:6px;padding:8px 12px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
     .g-bar::-webkit-scrollbar{display:none}
     .g-btn{padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--dim);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:all .15s}
-    .g-btn.active.all{background:#333;color:var(--text);border-color:#555}
+    .g-btn.active.all{background:#333;color:var(--text);border-color:var(--muted)}
     .g-btn.active.prime{background:var(--prime);color:#000;border-color:var(--prime)}
     .g-btn.active.choice{background:var(--choice);color:#fff;border-color:var(--choice)}
     .g-btn.active.wagyu{background:var(--wagyu);color:#fff;border-color:var(--wagyu)}
@@ -56,12 +56,14 @@
     .pill.warn{background:rgba(255,80,80,.1);color:#ff8080;border:1px solid rgba(255,80,80,.25)}
     .cut-body{display:none;border-top:1px solid var(--border)}
     .cut-card.open .cut-body{display:block}
-    /* IMAGE GALLERY */
-    .img-gallery{display:flex;gap:8px;overflow-x:auto;padding:12px 14px 10px;scrollbar-width:none}
+    /* IMAGE GALLERY — scrollable with snap + counter */
+    .img-wrap{position:relative;padding:10px 14px 6px}
+    .img-gallery{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
     .img-gallery::-webkit-scrollbar{display:none}
-    .img-thumb{flex-shrink:0;width:110px;height:82px;object-fit:cover;border-radius:5px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:opacity .15s}
-    .img-thumb:active{opacity:.7}
-    .img-placeholder{flex-shrink:0;width:110px;height:82px;border-radius:5px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px}
+    .img-thumb{flex-shrink:0;width:calc(100% - 28px);max-width:360px;height:220px;object-fit:contain;border-radius:6px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;scroll-snap-align:start;transition:opacity .12s}
+    .img-thumb:active{opacity:.8}
+    .img-counter{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);text-align:right;padding:2px 0 0;letter-spacing:1px}
+    .img-hint{font-family:'JetBrains Mono',monospace;font-size:9px;color:#555;text-align:center;padding:2px 0 0;letter-spacing:.5px}
     /* STEPS */
     .cut-steps{padding:0 14px 14px}
     .steps-list{list-style:none;display:flex;flex-direction:column;gap:6px;padding-top:2px}
@@ -87,6 +89,8 @@
 
 <div class="sp-bar">
   <button class="sp-tab active" data-sp="beef">🥩 Beef</button>
+  <button class="sp-tab" data-sp="pork">🐷 Pork</button>
+  <button class="sp-tab" data-sp="lamb">🐑 Lamb</button>
   <button class="sp-tab" data-sp="seafood">🐟 Seafood</button>
 </div>
 
@@ -392,6 +396,37 @@ const CUTS = {
             "Remove tongue from belt — DISCARD ALL TRIMMINGS. Rendering can only. Do NOT grind",
             "Take end piece out of claw — also DISCARD ALL","Split end piece into 2 even slices"]}
   ],
+  pork: [
+    {grade:"other",name:"Pork Back Ribs",plu:"680",item:"—",slug:"",imgs:0,
+     pills:["Tenderize ONCE","Back side","2–3 racks/pkg"],warn:[],
+     steps:["Tenderize ONCE on bone side","Square cut on meat saw if needed","Inspect each rack for uniformity","Package 2–3 racks per package","Wrap and label"]},
+    {grade:"other",name:"Pork St. Louis Spare Ribs",plu:"682",item:"—",slug:"",imgs:0,
+     pills:["Tenderize ONCE","Trim skirt off","Remove breast bone"],warn:[],
+     steps:["Tenderize ONCE","Remove skirt flap and breast bone if present","Trim any excess fat — do not over-trim","Package 2 racks per package or as directed","Wrap and label"]},
+    {grade:"other",name:"Pork Boneless Butt / Shoulder",plu:"809",item:"—",slug:"",imgs:0,
+     pills:["Tenderize ONCE","Trim to blue membrane","Remove bone felt"],warn:[],
+     steps:["Tenderize ONCE — whole boneless pork butt","Remove any bone felt, cartilage, or connective tissue","Trim external fat to ¼"","Package per spec","Wrap and label"]},
+    {grade:"other",name:"Pork Tenderloin",plu:"203",item:"—",slug:"",imgs:0,
+     pills:["Do NOT tenderize","Remove silver skin","2 per pkg"],warn:["Do NOT tenderize"],
+     steps:["DO NOT tenderize","Remove silver skin membrane — pull by hand","Trim any surface fat","Package 2 tenderloins per package","Wrap and label"]},
+    {grade:"other",name:"Pork Rack of Pork",plu:"3169",item:"—",slug:"",imgs:0,
+     pills:["Do NOT tenderize","French bones if required","Trim fat cap"],warn:[],
+     steps:["DO NOT tenderize","Inspect rack — remove any bone felt or feather bones","French rib bones if directed — clean 1" down from tips","Trim fat cap to ¼"","Package per spec","Wrap and label"]},
+    {grade:"other",name:"Pork Belly",plu:"1615",item:"—",slug:"",imgs:0,
+     pills:["Do NOT tenderize","Score skin if required","Trim to spec"],warn:[],
+     steps:["DO NOT tenderize","Trim to spec — remove any remaining ribs if present","Score skin in crosshatch pattern if directed","Package per spec","Wrap and label"]},
+  ],
+  lamb: [
+    {grade:"other",name:"Lamb Rack (Frenched)",plu:"—",item:"—",slug:"",imgs:0,
+     pills:["Do NOT tenderize","French bones 1.5"","Trim fat cap to ¼""],warn:["No official Costco spec — contact management"],
+     steps:["No official cut spec available in system","DO NOT tenderize","French rib bones approximately 1.5" from tips","Trim fat cap to ¼" — follow contour","Remove any fell (papery membrane) if present","Package per spec","Wrap and label"]},
+    {grade:"other",name:"Lamb Leg Boneless",plu:"—",item:"—",slug:"",imgs:0,
+     pills:["Do NOT tenderize","Remove excess fat","Trim to spec"],warn:["No official Costco spec — contact management"],
+     steps:["No official cut spec available in system","DO NOT tenderize","Remove excess fat — trim to ¼"","Remove any fell or connective tissue","Package per spec","Wrap and label"]},
+    {grade:"other",name:"Lamb Shoulder Chops",plu:"—",item:"—",slug:"",imgs:0,
+     pills:["Do NOT tenderize","Cross-cut on saw","Uniform thickness"],warn:["No official Costco spec — contact management"],
+     steps:["No official cut spec available in system","Cross-cut shoulder on meat saw to uniform thickness (¾"–1")","Trim any excessive fat","Package per spec","Wrap and label"]},
+  ],
   seafood: [
     {grade:"other",name:"Salmon Steak",plu:"—",item:"—",slug:"seafood_salmon_steak",imgs:2,
      pills:["1½\" steaks","2½\" min diameter tail-end","Remove all fins"],warn:[],
@@ -433,7 +468,11 @@ function buildCard(cut) {
   ).join("");
 
   const noSpec = cut.grade === 'wagyu' && !cut.slug;
-  const galHTML = cut.imgs > 0 ? `<div class="img-gallery" data-slug="${cut.slug}" data-imgs="${cut.imgs}"></div>` : "";
+  const galHTML = cut.imgs > 0 ? `<div class="img-wrap">
+      <div class="img-gallery" data-slug="${cut.slug}" data-imgs="${cut.imgs}"></div>
+      <div class="img-counter">Tap photo to open full size</div>
+      <div class="img-hint">← SCROLL →</div>
+    </div>` : "";
   const noSpecNote = noSpec ? `<div class="no-spec-note">⚠ No official Costco spec sheet available — PLU/Item# data only</div>` : "";
 
   return `
@@ -484,20 +523,33 @@ function render() {
 }
 
 function loadGallery(card) {
-  const gal = card.querySelector(".img-gallery");
-  if (!gal || gal.dataset.loaded) return;
-  gal.dataset.loaded = "1";
+  const wrap = card.querySelector(".img-wrap");
+  if (!wrap || wrap.dataset.loaded) return;
+  wrap.dataset.loaded = "1";
+  const gal = wrap.querySelector(".img-gallery");
   const slug = gal.dataset.slug;
   const n = parseInt(gal.dataset.imgs);
+  let loaded = 0;
+  const counter = wrap.querySelector(".img-counter");
+  const hint = wrap.querySelector(".img-hint");
+
   for (let i = 1; i <= n; i++) {
     const img = document.createElement("img");
     img.className = "img-thumb";
     img.src = `${IMG}${slug}_${i}.jpg`;
     img.alt = `Step ${i}`;
     img.onclick = () => window.open(img.src, "_blank");
-    img.onerror = () => img.remove();
+    img.onload = () => { loaded++; if(counter) counter.textContent = `${loaded} photo${loaded!==1?'s':''}` };
+    img.onerror = () => { img.remove(); };
     gal.appendChild(img);
   }
+
+  // Update counter on scroll
+  gal.addEventListener('scroll', () => {
+    const imgs = gal.querySelectorAll('.img-thumb');
+    const idx = Math.round(gal.scrollLeft / gal.offsetWidth);
+    if (counter && imgs.length) counter.textContent = `${idx+1} / ${imgs.length}`;
+  }, {passive:true});
 }
 
 function toggle(card) {
@@ -513,6 +565,9 @@ document.querySelectorAll(".sp-tab").forEach(t => {
     currentG = "all";
     document.querySelectorAll(".g-btn").forEach(b => b.classList.remove("active"));
     document.querySelector(".g-btn.all").classList.add("active");
+    // Hide grade bar for non-beef species
+    const noGrade = ['seafood','pork','lamb'];
+    document.getElementById('g-bar').style.display = noGrade.includes(currentSp) ? 'none' : 'flex';
     render();
   });
 });

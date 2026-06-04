@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Blue Book — Dept 61</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0a0a0a;--surface:#161616;--s2:#1e1e1e;--border:#2a2a2a;--text:#fff;--dim:#ccc;--muted:#999;--amber:#e07b00;--blue:#4a90d9;--green:#4caf6e;--red:#e05555;--r:8px}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100dvh;display:flex;flex-direction:column}
+    header{background:var(--surface);border-bottom:3px solid var(--amber);padding:10px 14px 8px;flex-shrink:0;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+    .back{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 9px;border:1px solid #333;border-radius:4px;white-space:nowrap;flex-shrink:0}
+    .htitle{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:3px;text-transform:uppercase}
+    .hsub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+    .search-wrap{background:var(--surface);padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0;position:sticky;top:55px;z-index:99}
+    #search{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:20px;color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;padding:8px 14px;outline:none}
+    #search::placeholder{color:var(--muted)}
+    #search:focus{border-color:var(--amber)}
+    #content{flex:1;overflow-y:auto;padding:10px 12px 40px;max-width:520px;margin:0 auto;width:100%}
+    .section-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#444;text-align:center;padding:8px 0 4px}
+
+    /* SECTION CARD */
+    .sec{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--amber);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
+    .sec.hidden{display:none}
+    .sec-header{padding:11px 13px;cursor:pointer;display:flex;align-items:center;gap:10px}
+    .sec-header:active{background:rgba(255,255,255,.03)}
+    .sec-icon{font-size:18px;flex-shrink:0}
+    .sec-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:1px;text-transform:uppercase;flex:1}
+    .sec-toggle{color:var(--muted);font-size:13px;transition:transform .2s}
+    .sec.open .sec-toggle{transform:rotate(180deg)}
+    .sec-body{display:none;border-top:1px solid var(--border);padding:0}
+    .sec.open .sec-body{display:block}
+
+    /* PROCEDURE */
+    .proc{padding:11px 13px;border-bottom:1px solid var(--border)}
+    .proc:last-child{border-bottom:none}
+    .proc-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+    .proc-steps{list-style:none;display:flex;flex-direction:column;gap:3px}
+    .proc-steps li{font-size:14px;line-height:1.5;color:var(--dim);display:flex;gap:8px}
+    .proc-steps li::before{content:'›';color:var(--muted);flex-shrink:0}
+    .note{font-size:12px;color:var(--muted);font-style:italic;margin-top:5px;padding-left:14px;line-height:1.4}
+    .warn{font-size:12px;color:var(--red);margin-top:5px;padding-left:14px}
+    code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(255,255,255,.08);padding:1px 5px;border-radius:3px;color:var(--blue)}
+
+    /* TABLE */
+    .bb-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+    .bb-table th{background:#222;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)}
+    .bb-table td{padding:6px 8px;border-bottom:1px solid #1e1e1e;color:var(--dim);vertical-align:top}
+    .bb-table tr:last-child td{border-bottom:none}
+    .bb-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--amber);white-space:nowrap}
+  </style>
+</head>
+<body>
+<header>
+  <a class="back" href="index.html">← Hub</a>
+  <div>
+    <div class="htitle">📘 Blue Book</div>
+    <div class="hsub">SUPERVISOR QUICK REFERENCE · DEC 2025</div>
+  </div>
+</header>
+<div class="search-wrap">
+  <input id="search" type="search" placeholder="Search procedures..." autocomplete="off" autocorrect="off" spellcheck="false">
+</div>
+<div id="content">
+
+<!-- ── REFERENCE ── -->
+<div class="sec open" data-search="phone numbers hotline contacts email service desk">
+  <div class="sec-header" onclick="tog(this)">
+    <span class="sec-icon">📞</span>
+    <span class="sec-title">Reference — Contacts & Hotlines</span>
+    <span class="sec-toggle">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="proc">
+      <div class="proc-title">Key Phone Numbers</div>
+      <table class="bb-table">
+        <tr><th>Line</th><th>Number</th><th>Hours</th></tr>
+        <tr><td>Costco Service Desk</td><td>(425) 313-8001</td><td>24/7</td></tr>
+        <tr><td>Register System DOWN Hotline</td><td>(425) 313-8001 opt 9</td><td>System down only</td></tr>
+        <tr><td>Ottawa Service Desk (CN)</td><td>(613) 221-2100</td><td>M–F 6a–9:30p EST</td></tr>
+        <tr><td>Fiserv</td><td>(800) 554-0034</td><td>—</td></tr>
+        <tr><td>Moneris (CN)</td><td>(866) 319-7450</td><td>—</td></tr>
+        <tr><td>Citi Authorization (US)</td><td>(866) 208-5147</td><td>—</td></tr>
+        <tr><td>CIBC Authorization (CN)</td><td>(866) 346-2999</td><td>—</td></tr>
+        <tr><td>Shop Card Services (US)</td><td>(888) 668-9668</td><td>M–F 7a–6p PST</td></tr>
+        <tr><td>Shop Card Services (CN)</td><td>(877) 258-9580</td><td>M–F 8a–4:30p EST</td></tr>
+        <tr><td>Member Services Hotline</td><td>(800) 774-2678</td><td>—</td></tr>
+        <tr><td>Ecom High Priority (US)</td><td>(866) 765-3743</td><td>—</td></tr>
+      </table>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Key Emails</div>
+      <table class="bb-table">
+        <tr><th>Purpose</th><th>Email</th></tr>
+        <tr><td>Front End / Refunds</td><td>whsopsFRNsupport@costco.com</td></tr>
+        <tr><td>Warehouse Operations</td><td>warehouseoperations@costco.com</td></tr>
+        <tr><td>US Ecom Escalations</td><td>msceee@costco.com</td></tr>
+      </table>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Register Numbers</div>
+      <table class="bb-table">
+        <tr><th>Area</th><th>Registers</th></tr>
+        <tr><td>Front End</td><td>1 – 50</td></tr>
+        <tr><td>Tobacco</td><td>61 – 64</td></tr>
+        <tr><td>Optical</td><td>71 – 74</td></tr>
+        <tr><td>Hearing Aid</td><td>79</td></tr>
+        <tr><td>Pharmacy</td><td>91 – 94</td></tr>
+        <tr><td>Tire Center</td><td>95 – 98</td></tr>
+        <tr><td>Liquor</td><td>99 – 104</td></tr>
+        <tr><td>Enterprise Refunds</td><td>121 – 130</td></tr>
+        <tr><td>Membership</td><td>191 – 199</td></tr>
+        <tr><td>Self-Checkout</td><td>201 – 212</td></tr>
+        <tr><td>Food Court</td><td>501 – 508</td></tr>
+        <tr><td>Control</td><td>800</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── SUPERVISOR ── -->
+<div class="sec" data-search="supervisor override tender cashing coupon adjustment void membership blocking">
+  <div class="sec-header" onclick="tog(this)">
+    <span class="sec-icon">🔑</span>
+    <span class="sec-title">Supervisor — Register Procedures</span>
+    <span class="sec-toggle">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="proc">
+      <div class="proc-title">Override</div>
+      <ul class="proc-steps">
+        <li>Supervisor key in Override Mode</li>
+        <li><code>&lt;CLEAR&gt;</code> → <code>&lt;OVERRIDE&gt;</code> → enter supervisor # → <code>&lt;ENTER&gt;</code></li>
+        <li>Key in password → <code>&lt;ENTER&gt;</code></li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Override Terminal Secured</div>
+      <ul class="proc-steps">
+        <li><code>&lt;SIGN ON/OFF&gt;</code> → <code>&lt;CLEAR&gt;</code> → Override</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Verify Price & Linked Item Record</div>
+      <ul class="proc-steps">
+        <li><code>&lt;6&gt;</code> → <code>&lt;SIGN ON/OFF&gt;</code></li>
+        <li>Scan or key item(s) → <code>&lt;TOTAL&gt;</code></li>
+        <li>To exit: <code>&lt;SIGN ON/OFF&gt;</code> twice</li>
+      </ul>
+      <div class="note">Pressing ENTER twice prints item detail.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Void Linked Fee</div>
+      <ul class="proc-steps">
+        <li>Sign onto register → <code>&lt;6&gt;</code> → <code>&lt;SIGN ON/OFF&gt;</code> → scan or key item → <code>&lt;ENTER&gt;</code> twice</li>
+        <li>Use four-digit link # on receipt OR look up item # in controller</li>
+        <li><code>&lt;VOID&gt;</code> → key linked fee followed by eight zeroes</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Tender Cashing — Check</div>
+      <ul class="proc-steps">
+        <li><code>&lt;1&gt;</code> → <code>&lt;SIGN ON/OFF&gt;</code> → scan membership #</li>
+        <li>Key in $ amount → <code>&lt;CHECK&gt;</code></li>
+        <li>Endorse check, change due member</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Tender Cashing — Executive 2% Reward</div>
+      <ul class="proc-steps">
+        <li><code>&lt;1&gt;</code> → <code>&lt;SIGN ON/OFF&gt;</code> → scan membership #</li>
+        <li><code>&lt;6&gt;</code> → <code>&lt;/&gt;</code> → <code>&lt;MISC TENDER&gt;</code></li>
+        <li>Scan or key barcode → <code>&lt;ENTER&gt;</code></li>
+        <li>Endorse reward, change due member</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Tender Cashing — Citi Reward (US)</div>
+      <ul class="proc-steps">
+        <li><code>&lt;1&gt;</code> → <code>&lt;SIGN ON/OFF&gt;</code> → scan membership #</li>
+        <li>Scan reward OR <code>&lt;9&gt;</code> → <code>&lt;/&gt;</code> → <code>&lt;MISC TENDER&gt;</code></li>
+        <li>Key entire bar code → <code>&lt;ENTER&gt;</code> → change due member</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Tender Exchange / Correction</div>
+      <ul class="proc-steps">
+        <li><code>&lt;2&gt;</code> → <code>&lt;SIGN ON/OFF&gt;</code> → scan membership #</li>
+        <li><code>&lt;VOID&gt;</code> → key in $ amount</li>
+        <li>Press incorrect (previous) tender: <code>&lt;CASH&gt;</code>, <code>&lt;CHECK&gt;</code>, or <code>&lt;STANDALONE&gt;</code></li>
+        <li>Key in $ amount → select new tender type</li>
+        <li>Deface receipt, attach to Daily Register Sheet</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Coupon Adjustment</div>
+      <ul class="proc-steps">
+        <li>Scan membership # → <code>&lt;SLIP PRINT&gt;</code> (if receipt available) → <code>&lt;ADJUSTMENT&gt;</code></li>
+        <li><code>&lt;VOID&gt;</code> → scan coupon → <code>&lt;TOTAL&gt;</code></li>
+        <li>Tender, override required</li>
+        <li>Deface adjustment receipt, attach to Daily Register Sheet</li>
+      </ul>
+      <div class="note">Coupons outside valid date require an override.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Training Mode</div>
+      <ul class="proc-steps">
+        <li>Sign on with Training Operator Code (500–505), password: <code>9999</code></li>
+        <li><code>&lt;7&gt;</code> → <code>&lt;SIGN ON/OFF&gt;</code> → exit <code>&lt;SIGN ON/OFF&gt;</code> twice</li>
+        <li>All receipts must be defaced and attached to Daily Register Sheet</li>
+      </ul>
+      <div class="note">Training Mode does NOT affect IAFEP numbers.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Price Override</div>
+      <ul class="proc-steps">
+        <li>Key in $ amount → <code>&lt;PRICE&gt;</code></li>
+        <li>Scan or key in item number → <code>&lt;ENTER&gt;</code> → override</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Department Ring</div>
+      <ul class="proc-steps">
+        <li>Only use when item number is not set up</li>
+        <li>Key in $ amount → <code>&lt;PRICE&gt;</code></li>
+        <li>Key in Department # → <code>&lt;DEPARTMENT&gt;</code></li>
+        <li>Key in item number (use zero if none) → <code>&lt;ENTER&gt;</code> → override required</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Void Previous Transaction — Same Register, Same Day</div>
+      <ul class="proc-steps">
+        <li>Hold <code>&lt;CTRL&gt;</code> → <code>&lt;ADJUSTMENT&gt;</code></li>
+        <li>Enter transaction # → <code>&lt;ENTER&gt;</code></li>
+        <li>Enter transaction amount → <code>&lt;ENTER&gt;</code></li>
+        <li>Tender key twice → override</li>
+        <li>Deface receipt, attach to Daily Register Sheet with original receipt</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Void Previous Transaction — Adjustment Register, Same Day</div>
+      <ul class="proc-steps">
+        <li>Hold <code>&lt;CTRL&gt;</code> → <code>&lt;ADJUSTMENT&gt;</code></li>
+        <li>Scan transaction barcode OR enter register number → <code>&lt;ENTER&gt;</code></li>
+        <li>Enter transaction # if register number keyed → <code>&lt;ENTER&gt;</code></li>
+        <li>Enter transaction amount → <code>&lt;ENTER&gt;</code></li>
+        <li>Tender key twice → override</li>
+        <li>Deface receipt, attach to DRS with original</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Adjustments</div>
+      <ul class="proc-steps">
+        <li>Scan or key original membership #</li>
+        <li>Press <code>&lt;ADJUSTMENT&gt;</code></li>
+        <li>Scan/key items to be voided → <code>&lt;TOTAL&gt;</code></li>
+        <li>Tender key → override</li>
+        <li>Deface adjustment receipt, note original purchase date(s) if different day</li>
+        <li>Attach to Daily Register Sheet</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Transfer Register to Another</div>
+      <ul class="proc-steps">
+        <li>Sign on as Sup/Mgr at NEW register</li>
+        <li><code>&lt;8&gt;</code> → <code>&lt;SIGN ON/OFF&gt;</code></li>
+        <li>Key in previous register # → <code>&lt;ENTER&gt;</code> → re-enter register # → <code>&lt;ENTER&gt;</code></li>
+        <li><code>&lt;ENTER&gt;</code> for same operator OR <code>&lt;TOTAL&gt;</code> for current operator</li>
+        <li>Receipt will reprint → continue with order → <code>&lt;TOTAL&gt;</code> → tender → sign off</li>
+        <li>Check problem at failed register and correct it</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Daily Register Sheet (DRS) — Logging Rules</div>
+      <table class="bb-table">
+        <tr><th>Transaction Type</th><th>Log on DRS?</th><th>Receipt Requirement</th></tr>
+        <tr><td>Forced pickups (cash recycler)</td><td>Yes</td><td>Cash recycler receipt attached to DRS</td></tr>
+        <tr><td>Zero total receipt – coupon</td><td>Yes</td><td>Given to member</td></tr>
+        <tr><td>Adjustments & ancillary refunds</td><td>No</td><td>Deface, note original date if different, attach to DRS</td></tr>
+        <tr><td>Void total & zero total w/ inline void</td><td>No</td><td>Deface, attach to DRS</td></tr>
+        <tr><td>Void previous & adjustment void</td><td>No</td><td>Both original and void receipt defaced, attached to DRS</td></tr>
+        <tr><td>Zero total receipt</td><td>No</td><td>Deface, attach to DRS</td></tr>
+        <tr><td>Void membership # (zero total, no items)</td><td>No</td><td>Can be discarded</td></tr>
+        <tr><td>Manual loans from vault (CFI)</td><td>No</td><td>Loan receipt + white CFI form attached to DRS</td></tr>
+      </table>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Membership/Item Blocking Codes</div>
+      <table class="bb-table">
+        <tr><th>Block</th><th>Timing</th><th>Action</th></tr>
+        <tr><td>Block 6</td><td>Immediate</td><td>Possible NSF</td></tr>
+        <tr><td>No Checks</td><td>Immediate/Check Tender</td><td>Override required to tender as check</td></tr>
+        <tr><td>Frequent Shops</td><td>Check Tender</td><td>Override to continue — 3 checks/day or 6 in 5 days</td></tr>
+        <tr><td>Must Sign Up or Inactive</td><td>Immediate</td><td>Void Transaction Only</td></tr>
+        <tr><td>Old Card</td><td>Immediate</td><td>New member card on file</td></tr>
+        <tr><td>Renewal Due</td><td>Immediate</td><td>Pay renewal or override</td></tr>
+        <tr><td>2% Reward Owed</td><td>Immediate</td><td>Override, direct member to membership</td></tr>
+        <tr><td>Pull and Hold</td><td>After item scan</td><td>Item under evaluation — cashier clearable, may not be sold</td></tr>
+        <tr><td>Recall/Defective</td><td>After item scan</td><td>Safety/quality issue — cashier clearable, may not be sold</td></tr>
+        <tr><td>Not For Sale</td><td>After item scan</td><td>EPC block added at location</td></tr>
+        <tr><td>Code A</td><td>Tender</td><td>Checks approved up to $10,000</td></tr>
+        <tr><td>Code B</td><td>Tender</td><td>Checks approved up to $5,000</td></tr>
+        <tr><td>Code C</td><td>Tender</td><td>Checks approved up to $2,000</td></tr>
+      </table>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Membership Renewal / Upgrade Item Numbers</div>
+      <ul class="proc-steps">
+        <li><code>#31</code> — Gold Star Renewal</li>
+        <li><code>#67</code> — Business or Executive Renewal (verify fees)</li>
+        <li><code>#231590</code> — Executive Upgrade</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Membership Types</div>
+      <ul class="proc-steps">
+        <li><code>1/</code> = Trial Membership</li>
+        <li><code>3/</code> = Supplies</li>
+        <li><code>7/</code> = International Membership</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Citi Reward Register Messages</div>
+      <table class="bb-table">
+        <tr><th>Register Display</th><th>Reward Status</th><th>Action</th></tr>
+        <tr><td>Approved</td><td>Accepted/Redeemed</td><td>None</td></tr>
+        <tr><td>33 Research Needed</td><td>Already Redeemed</td><td>Advise member reward has been redeemed</td></tr>
+        <tr><td>Dollar Mismatch</td><td>—</td><td>Reward was reissued — invalidates previous</td></tr>
+        <tr><td>44 Research Needed</td><td>Reissued</td><td>Advise member reward was reissued</td></tr>
+        <tr><td>Cancelled by Citi</td><td>Cancelled</td><td>Member must contact Citi</td></tr>
+        <tr><td>B311 Not Authorized</td><td>Register offline</td><td>Rescan reward; override only after multiple attempts with system research</td></tr>
+        <tr><td>Expired</td><td>Expired</td><td>Manager override required</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONTROLLER ── -->
+<div class="sec" data-search="controller reports operator maintenance password food court reprint receipts">
+  <div class="sec-header" onclick="tog(this)">
+    <span class="sec-icon">🖥</span>
+    <span class="sec-title">Controller</span>
+    <span class="sec-toggle">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="proc">
+      <div class="proc-title">Department Totals Report (Real-Time Sales)</div>
+      <ul class="proc-steps">
+        <li>TGCS ACE APPLICATION [1] → Reports [R] → Sales Report → Department Totals Report</li>
+        <li>Select report parameters and destination</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Outstanding Store & Forward Report</div>
+      <ul class="proc-steps">
+        <li>IBM ACE Applications → Reports [R] → SurePOS ACE EPS Reports → Outstanding SAF/TOR Report</li>
+        <li>Run to ensure transactions approved when EFT was down have been released</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">View Offline Pending Report</div>
+      <ul class="proc-steps">
+        <li>IBM ACE Applications → Accounting → Scroll to Close → Arrow down to System Status → [ENTER]</li>
+        <li>Active transactions may delay auto-store close</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Loan Report</div>
+      <ul class="proc-steps">
+        <li>IBM ACE Applications [1] → Reports [R] → Listing and Log Reports [L] → Exception Log → ENTER</li>
+        <li>Non-cash recycler: verify against CFIs from vault</li>
+        <li>Cash recycler: should show NO loans</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Reprint Receipts — Current Day (ACE Transaction Search)</div>
+      <ul class="proc-steps">
+        <li>TGCS ACE APPLICATION [1] → Manager Procedures [M] → ACE Transaction Search Tool [A]</li>
+        <li>Manager Journal [M] → search by appropriate filters</li>
+      </ul>
+      <div class="note">Supervisor or manager must accompany member using reprinted receipt to exit.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">View Summary Journals (Previous Day Receipts)</div>
+      <ul class="proc-steps">
+        <li>TGCS ACE [1] → Manager Procedures [M] → View Summary Journals [V] → Sort by Date</li>
+        <li>Press Enter on first terminal → in Search field: member# followed by *</li>
+        <li>Use arrow down to navigate → Press Print</li>
+      </ul>
+      <div class="note">Only 15 lines before and 14 after highlighted line will print. Long receipts require multiple prints.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Operator Maintenance — Adding an Operator</div>
+      <ul class="proc-steps">
+        <li>TGCS ACE [1] → Data Maintenance [D] → Operator Authorization [O]</li>
+        <li>Key cashier number → ENTER → select model: *1=Cashier, *2=Training, *3=Refund, *4=Inventory, *5=Sales Audit, *6=Supervisor, *7=Manager</li>
+        <li>Enter cashier name as FIRST*LAST → enter initial password → select Expire Password</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Enhanced Password (Supervisors & Managers)</div>
+      <ul class="proc-steps">
+        <li>Click CHANGE ENHANCED PASSWORD or press ALT+C</li>
+        <li>Enter 8-character alpha-numeric password → verify → SAVE → OK → F3 to exit</li>
+      </ul>
+      <div class="proc-title" style="margin-top:8px">Enhanced Password Rules</div>
+      <ul class="proc-steps">
+        <li>Expires every 90 days</li>
+        <li>Must be alpha-numeric (at least one letter and one number)</li>
+        <li>Case sensitive · Must be 8 characters</li>
+        <li>No more than 2 letters or numbers in sequence or repeated</li>
+        <li>No spaces or special characters (&amp;, @, %)</li>
+        <li>Cannot reuse previous 5 passwords</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Change Food Court Lookup Keys</div>
+      <ul class="proc-steps">
+        <li>TGCS ACE [1] → User Applications [U] → Keyboard Lookup Utility [K] → Whse Food Court → ENTER</li>
+        <li>TAB between keys to edit/delete/enter Food Court item numbers</li>
+        <li>ALT+S to save changes</li>
+      </ul>
+      <div class="note">Changes upload to register after signing off.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Operator Models & ID Number Ranges</div>
+      <table class="bb-table">
+        <tr><th>Model</th><th>Position</th><th>Operator ID Range</th></tr>
+        <tr><td>*1</td><td>Cashier</td><td>1 – 399</td></tr>
+        <tr><td>*2</td><td>Training</td><td>500 – 525</td></tr>
+        <tr><td>*3</td><td>Refund Cashier</td><td>610 – 649</td></tr>
+        <tr><td>*4</td><td>Inventory Auditor</td><td>606 – 609</td></tr>
+        <tr><td>*5</td><td>Sales Audit</td><td>600 – 605</td></tr>
+        <tr><td>*6</td><td>Supervisor</td><td>801 – 849</td></tr>
+        <tr><td>*7</td><td>Manager</td><td>850 – 899 (or 900+)</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── CASHIER ── -->
+<div class="sec" data-search="cashier payment EBT FSA check purchase order loan void pickup resale">
+  <div class="sec-header" onclick="tog(this)">
+    <span class="sec-icon">💳</span>
+    <span class="sec-title">Cashier — Payment & Transactions</span>
+    <span class="sec-toggle">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="proc">
+      <div class="proc-title">Change Expired Password</div>
+      <ul class="proc-steps">
+        <li>Register displays "Password Expired Enter New Password"</li>
+        <li>Key new password → ENTER → verify new password → ENTER</li>
+        <li>"B070 New Password Accepted" → CLEAR</li>
+      </ul>
+      <div class="note">Passwords expire every 90 days. Never share passwords.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Change Cashier Password (Not Expired)</div>
+      <ul class="proc-steps">
+        <li>Key Cashier # → &lt;/&gt; → current password → OVERRIDE</li>
+        <li>Enter new password → SIGN ON → verify → ENTER</li>
+        <li>"B070 New Password Accepted" → ENTER</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">EBT Food (US)</div>
+      <ul class="proc-steps">
+        <li>Member swipes EBT card, selects EBT Food</li>
+        <li>"E" on receipt = EBT eligible items</li>
+        <li>For EBT subtotal: TOTAL → EBT → TOTAL</li>
+        <li>TOTAL → DEBIT/CREDIT to tender</li>
+      </ul>
+      <div class="warn">Never enter member's PIN on their behalf.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">EBT Cash (US)</div>
+      <ul class="proc-steps">
+        <li>Member swipes EBT card → selects EBT Cash</li>
+        <li>TOTAL → CREDIT/DEBIT to tender → member enters PIN</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">FSA</div>
+      <ul class="proc-steps">
+        <li>"F" on receipt = FSA eligible items</li>
+        <li>For FSA subtotal: &lt;2&gt; → &lt;/&gt; → TOTAL</li>
+        <li>Less than FSA total: key FSA amount → CREDIT/DEBIT</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Purchase Orders</div>
+      <ul class="proc-steps">
+        <li>SLIP PRINT on → scan items → TOTAL → PO TENDER → PO TENDER</li>
+        <li>ENTER to charge 1.5% admin fee OR CLEAR to waive fee</li>
+        <li>Override required → insert document to slip print</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Loan</div>
+      <ul class="proc-steps">
+        <li>LOAN → key in $ amount → CASH → TOTAL</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Pickup — Cash</div>
+      <ul class="proc-steps">
+        <li>PICKUP → key dollar amount → CASH → TOTAL</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Pickup — Check</div>
+      <ul class="proc-steps">
+        <li>PICKUP → CHECK → TOTAL</li>
+      </ul>
+      <div class="note">Executive 2% Rewards included with checks. Do NOT void a check pickup.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Resale</div>
+      <ul class="proc-steps">
+        <li>Fill out resale card → RESALE (on) → scan items → RESALE (off)</li>
+        <li>Resale can toggle on/off multiple times</li>
+        <li>TOTAL → tender → print onto resale card → member must sign</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Void Transaction — Dollar Amount</div>
+      <ul class="proc-steps">
+        <li>VOID → TOTAL → override required</li>
+        <li>Deface receipt and attach to Daily Register Sheet</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Void Transaction — Zero Dollar Amount</div>
+      <ul class="proc-steps">
+        <li>VOID → TOTAL</li>
+        <li>Deface receipt and attach to Daily Register Sheet</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Voiding Partial EFT Tender</div>
+      <ul class="proc-steps">
+        <li>TOTAL → VOID → CREDIT/DEBIT (voids previous EFT payment)</li>
+      </ul>
+      <div class="warn">Void EFT payments BEFORE performing a void total to ensure funds return correctly.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Costco Wallet</div>
+      <ul class="proc-steps">
+        <li>Scan digital membership QR code → ring items → TOTAL</li>
+        <li>Linked Credit Card (US): CTRL+IC → IC</li>
+        <li>Shop Card: CTRL+STANDALONE</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Point of Sale Activated Cards (POSA)</div>
+      <ul class="proc-steps">
+        <li>Scan barcode → cashier retains card until order tendered successfully</li>
+        <li>Error message: press CLEAR → cashier keeps non-activated cards</li>
+        <li>Activation receipt prints for each POSA card</li>
+      </ul>
+      <div class="note">Only way to void POSA cards is Void Previous transaction.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Operator Statistics</div>
+      <ul class="proc-steps">
+        <li>NO SALE → 96 → SIGN ON</li>
+        <li>Prints: Operator Name, IPM (items per minute), MPH (members per hour)</li>
+      </ul>
+      <div class="note">AS400 option IAFEP displays operator statistics for registers 1–50 the following day.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Converting Register to Refund Mode (Dec 1 – Jan 10)</div>
+      <ul class="proc-steps">
+        <li>Sign on as Refund Clerk, Sup, or Mgr on selected FE register</li>
+        <li>SEASONAL REFUND → ENTER → register is now in Refund mode</li>
+        <li>Sign off → have refund cashier sign on</li>
+        <li>To exit during day: SEASONAL REFUND → ENTER → sign off</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Cash Out Costco Shop Card — Exception States</div>
+      <table class="bb-table">
+        <tr><th>State</th><th>Cash Out Limit</th></tr>
+        <tr><td>CA</td><td>$10</td></tr>
+        <tr><td>CO, CT, HI, MA, ME, MT, NJ, NY, OR, PR, WA</td><td>$5</td></tr>
+        <tr><td>TX</td><td>$2.50</td></tr>
+        <tr><td>RI, VT</td><td>$1</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── SELF CHECKOUT ── -->
+<div class="sec" data-search="self checkout SCO void suspend open close lane age validation scanner">
+  <div class="sec-header" onclick="tog(this)">
+    <span class="sec-icon">🛒</span>
+    <span class="sec-title">Self Checkout (SCO)</span>
+    <span class="sec-toggle">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="proc">
+      <div class="proc-title">Open the Lane</div>
+      <ul class="proc-steps">
+        <li>Scan Shopper Assistant (SA) Card</li>
+        <li>Select OPEN LANE – CANCEL PENDING TRANSACTIONS</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Age Validation</div>
+      <ul class="proc-steps">
+        <li>Scan SA card → age validation screen shows → verify ID</li>
+        <li>Scan back of ID OR key member date of birth</li>
+        <li>If member appears over 40: key generic DOB <code>01011961</code></li>
+        <li>ENTER</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Suspend Transaction</div>
+      <ul class="proc-steps">
+        <li>Member presses ASSISTANCE NEEDED → scan SA card</li>
+        <li>VOID OR SUSPEND → TRANSACTION → SUSPEND TRANSACTION</li>
+        <li>Suspended receipt prints with retrieval barcode</li>
+        <li>SA or Supervisor retains receipt and takes member to register</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Void Transaction</div>
+      <ul class="proc-steps">
+        <li>Member presses ASSISTANCE NEEDED → scan SA card</li>
+        <li>VOID OR SUSPEND → TRANSACTION → VOID TRANSACTION</li>
+        <li>Override required using established procedures</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Void Single Item</div>
+      <ul class="proc-steps">
+        <li>Member presses ASSISTANCE NEEDED → scan SA card</li>
+        <li>VOID OR SUSPEND → SINGLE ITEM → select item → VOID ITEM</li>
+      </ul>
+      <div class="note">Remove voided items from scale.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Troubleshooting — SCO Lane Frozen</div>
+      <ul class="proc-steps">
+        <li>Scan SA card on tabletop or hand scanner</li>
+        <li>If SA card doesn't scan: press green button behind or underneath SCO touch screen</li>
+        <li>Select CLOSE LANE → scan SA card → OPEN LANE → continue</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Zero Security Scale</div>
+      <ul class="proc-steps">
+        <li>Scan SA card → NEXT → ZERO SECURITY SCALE</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ── TROUBLESHOOTING ── -->
+<div class="sec" data-search="troubleshooting register reload PIN pad reset readdress Z001 U008 store forward scanner">
+  <div class="sec-header" onclick="tog(this)">
+    <span class="sec-icon">🔧</span>
+    <span class="sec-title">Troubleshooting — Registers & Devices</span>
+    <span class="sec-toggle">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="proc">
+      <div class="proc-title">Register Quick Reload</div>
+      <ul class="proc-steps">
+        <li>S1 (hold CTRL + press DEPT + release) → 91</li>
+        <li>S2 (hold CTRL + press RESALE + release)</li>
+        <li>[T0010 ENTER REQUEST] displays → 99</li>
+        <li>S2 again — register will reload</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">U008 Message</div>
+      <ul class="proc-steps">
+        <li>Power register OFF — hold power button 10 seconds</li>
+        <li>Wait additional 10 seconds → turn ON — register will reload</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Z001/Z002 Message</div>
+      <ul class="proc-steps">
+        <li>Enter register address as 4 digits (e.g., #1 = 1001, #16 = 1016, #501 = 1501)</li>
+        <li>S2 (hold CTRL + press RESALE + release) — register will reload</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Readdress Full Screen (Touchscreen)</div>
+      <ul class="proc-steps">
+        <li>Full screen shows Z001/Z002 with keypad and S1/S2 buttons</li>
+        <li>Enter register # as 4 digits → S2</li>
+        <li>Message: "Z044 format desk, to format disk key S1, else key S2 press" → S1</li>
+        <li>Once format complete → S2 → Z012 appears → reboot takes 10–15 minutes</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Register System Down</div>
+      <ul class="proc-steps">
+        <li>Answer alarms on controllers, respond to message, contact Help Desk</li>
+        <li>Entire system DOWN: call HOTLINE (425) 313-8001 option 9</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Store & Forward (EFT System Down)</div>
+      <ul class="proc-steps">
+        <li>Credit cards up to $1,000.00 can process via Store & Forward</li>
+        <li>Once communication restored, stored transactions forward automatically</li>
+        <li>NO DEBIT or DMC transactions at registers — must use standalone</li>
+        <li>ALL credit over $1,000 and ALL DEBIT: TOTAL → STANDALONE → STANDALONE → receipt prints → hand to supervisor</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">PIN Pad Reset — MX915</div>
+      <ul class="proc-steps">
+        <li>Press 1+5+9 simultaneously → release → X → 1</li>
+        <li>PIN pad reloads (~10 seconds)</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">PIN Pad Reset — M400</div>
+      <ul class="proc-steps">
+        <li>Press 1+5+9 simultaneously → release → 1+5+9 again to reach "Supervisor" screen</li>
+        <li>Press red X → select Reboot → press green O</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Credit/Debit Cards Not Swiping</div>
+      <ul class="proc-steps">
+        <li>Magnetic reader may need cleaning — obtain cleaning card, follow instructions</li>
+        <li>Clean PIN pad keys with damp towel only</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ── STANDALONE (US) ── -->
+<div class="sec" data-search="standalone US sale refund manual entry shop card detail clerk">
+  <div class="sec-header" onclick="tog(this)">
+    <span class="sec-icon">🏧</span>
+    <span class="sec-title">Standalone (US)</span>
+    <span class="sec-toggle">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="proc">
+      <div class="proc-title">Sale Transaction</div>
+      <ul class="proc-steps">
+        <li>Press SALE → enter Clerk # → REGISTER # → ENTER</li>
+        <li>If "Clerk ID Doesn't Exist": enter Yes to add register, password <code>1111</code></li>
+        <li>Enter $ Amount → ENTER</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Refund Transaction</div>
+      <ul class="proc-steps">
+        <li>Press REFUND → password <code>1111</code> → ENTER → enter $ Amount → ENTER</li>
+        <li>Enter Clerk # → REGISTER # → ENTER</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Shop Card Balance Inquiry</div>
+      <ul class="proc-steps">
+        <li>From main screen: NEXT twice → BALANCE INQUIRY → swipe Shop Card</li>
+        <li>Balance prints on receipt</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Adding a Register to Standalone</div>
+      <ul class="proc-steps">
+        <li>All V400M standalones preprogrammed for registers 1–10</li>
+        <li>From home screen: CANCEL (red X) → NEXT × 3 → SETUP</li>
+        <li>Password <code>1111</code> → ENTER → CLERKS/SERVERS → ADD → enter new register # → ENTER → CANCEL</li>
+      </ul>
+    </div>
+    <div class="note">Standalones automatically settle at 10pm local time. If warehouse tries to run settlement, Standalone generates a declined message — payment still received.</div>
+  </div>
+</div>
+
+<!-- ── SHOP CARDS ── -->
+<div class="sec" data-search="shop card sell activate balance void transfer lost">
+  <div class="sec-header" onclick="tog(this)">
+    <span class="sec-icon">🎁</span>
+    <span class="sec-title">Shop Cards</span>
+    <span class="sec-toggle">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="proc">
+      <div class="proc-title">Selling / Adding Value</div>
+      <ul class="proc-steps">
+        <li>#155 → ENTER → key value ($25–$1,000)</li>
+        <li>Scan barcode on back of card</li>
+        <li>Daily limit: $10,000/membership, max $2,000/single card</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Card Redemption — Register</div>
+      <ul class="proc-steps">
+        <li>TOTAL → CREDIT/DEBIT → member swipes shop card</li>
+        <li>Remaining balance prints on receipt</li>
+        <li>US and CN cards can be redeemed cross-border</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Void Transaction with Shop Card</div>
+      <ul class="proc-steps">
+        <li>Shop card(s) must be voided FIRST</li>
+        <li>VOID → #155 → enter amount → scan card → ENTER</li>
+        <li>Void transaction → override required</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Balance Inquiries</div>
+      <ul class="proc-steps">
+        <li>Register: &lt;21&gt; → SIGN ON/OFF → swipe card on PIN pad → ENTER</li>
+        <li>OR: swipe on standalone terminal / check Costco.com</li>
+      </ul>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Balance Transfer (Lost / Damaged Card)</div>
+      <ul class="proc-steps">
+        <li>Verify balance on damaged/lost card</li>
+        <li>Activate new shop card for same amount</li>
+        <li>Tender damaged/lost card as payment via manual entry</li>
+      </ul>
+      <div class="note">Balance transfers by phone must be done from a warehouse landline.</div>
+    </div>
+    <div class="proc">
+      <div class="proc-title">Lost Card Contacts</div>
+      <ul class="proc-steps">
+        <li>US: (888) 668-9668 — M–F 7am–6pm PST</li>
+        <li>CN: (877) 258-9580 — M–F 8am–4:30pm EST</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ── AS400 COMMANDS (from Blue Book) ── -->
+<div class="sec" data-search="as400 commands list DFI EDSR ITMW IAI IAFEP SAST WII">
+  <div class="sec-header" onclick="tog(this)">
+    <span class="sec-icon">💻</span>
+    <span class="sec-title">AS400 — Blue Book Command List</span>
+    <span class="sec-toggle">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="proc">
+      <table class="bb-table">
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td>DFI</td><td>Daily Flash Inquiry</td></tr>
+        <tr><td>EDSM</td><td>Change Sign / Free Form Signs</td></tr>
+        <tr><td>EDSR</td><td>EDP Sign Request</td></tr>
+        <tr><td>EOI/CNI</td><td>Electronic Order Inquiry / Canada Order Inquiry</td></tr>
+        <tr><td>FCP</td><td>Food Court Printer Maintenance</td></tr>
+        <tr><td>GDR</td><td>Gas Station Duplicate Receipt</td></tr>
+        <tr><td>IAFEP</td><td>Front End Productivity</td></tr>
+        <tr><td>IA1</td><td>Item Activity Inquiry</td></tr>
+        <tr><td>IAI</td><td>Item Alpha Inquiry</td></tr>
+        <tr><td>IAIMI</td><td>Inventory Movement — Item</td></tr>
+        <tr><td>IAIMV</td><td>Inventory Movement</td></tr>
+        <tr><td>IAWD</td><td>Warehouse Dashboard</td></tr>
+        <tr><td>IGM</td><td>Item by Group Code Maintenance</td></tr>
+        <tr><td>IIL</td><td>Item Inquiry by Location</td></tr>
+        <tr><td>IMIN</td><td>International Membership Inquiry</td></tr>
+        <tr><td>IRCI</td><td>Instant Rebate Coupon Inquiry</td></tr>
+        <tr><td>ISO</td><td>Item Sales/Operator</td></tr>
+        <tr><td>ITMW</td><td>Item Inquiry for Warehouse</td></tr>
+        <tr><td>IXI</td><td>Item Cross Reference</td></tr>
+        <tr><td>LSDC</td><td>Labor Scheduling Door Count</td></tr>
+        <tr><td>LSDT</td><td>Daily Tracking</td></tr>
+        <tr><td>LSWI</td><td>Labor Scheduling Worksheet Inquiry</td></tr>
+        <tr><td>MAINQ</td><td>Membership Activity Inquiry</td></tr>
+        <tr><td>MBA9</td><td>Membership Basic Activity (view only)</td></tr>
+        <tr><td>NSQ</td><td>NSF Inquiry</td></tr>
+        <tr><td>ORG</td><td>Warehouse Organization</td></tr>
+        <tr><td>PH</td><td>Central Phone List</td></tr>
+        <tr><td>PLU</td><td>Item Maintenance Report — INP265I (price changes)</td></tr>
+        <tr><td>PSA</td><td>POS Activation Inquiry</td></tr>
+        <tr><td>PSWM</td><td>Password Maintenance</td></tr>
+        <tr><td>RETI</td><td>View Invalid Resale Transactions</td></tr>
+        <tr><td>RII</td><td>Restricted Sale Item Inquiry</td></tr>
+        <tr><td>SAST</td><td>Sales Audit</td></tr>
+        <tr><td>SIM</td><td>Sales Impact Maintenance</td></tr>
+        <tr><td>SNI</td><td>Serial Number Inquiry</td></tr>
+        <tr><td>SNM</td><td>Serial Number Maintenance</td></tr>
+        <tr><td>TAXI</td><td>Annual Spending by Member</td></tr>
+        <tr><td>WFBRP</td><td>FE Block Report Reprint</td></tr>
+        <tr><td>WHS72</td><td>Scan Trash</td></tr>
+        <tr><td>WII</td><td>Warehouse Item Inquiry</td></tr>
+        <tr><td>WIIA</td><td>WII with All Authority</td></tr>
+        <tr><td>WPH</td><td>Warehouse Phone List</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── DEPARTMENT CODES ── -->
+<div class="sec" data-search="department codes list foods hardlines softlines ancillary perishables meat">
+  <div class="sec-header" onclick="tog(this)">
+    <span class="sec-icon">🏪</span>
+    <span class="sec-title">Department Codes</span>
+    <span class="sec-toggle">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="proc">
+      <table class="bb-table">
+        <tr><th>Dept #</th><th>Name</th><th>Category</th></tr>
+        <tr><td>61</td><td>Meat</td><td>Perishables</td></tr>
+        <tr><td>62</td><td>Bakery</td><td>Perishables</td></tr>
+        <tr><td>63</td><td>Service Deli</td><td>Perishables</td></tr>
+        <tr><td>65</td><td>Produce</td><td>Perishables</td></tr>
+        <tr><td>11</td><td>Tobacco</td><td>Foods</td></tr>
+        <tr><td>12</td><td>Candy</td><td>Foods</td></tr>
+        <tr><td>13</td><td>Food</td><td>Foods</td></tr>
+        <tr><td>14</td><td>Sundries</td><td>Foods</td></tr>
+        <tr><td>16</td><td>Liquor</td><td>Foods</td></tr>
+        <tr><td>17</td><td>Cooler</td><td>Foods</td></tr>
+        <tr><td>18</td><td>Frozen Foods</td><td>Foods</td></tr>
+        <tr><td>19</td><td>Deli</td><td>Foods</td></tr>
+        <tr><td>20</td><td>H.A.B.A.</td><td>Hardlines</td></tr>
+        <tr><td>22</td><td>Tires/Auto Batteries</td><td>Hardlines</td></tr>
+        <tr><td>23</td><td>Hardware</td><td>Hardlines</td></tr>
+        <tr><td>24</td><td>Majors/Electronics</td><td>Hardlines</td></tr>
+        <tr><td>25</td><td>Automotive</td><td>Hardlines</td></tr>
+        <tr><td>26</td><td>Sporting Goods</td><td>Hardlines</td></tr>
+        <tr><td>27</td><td>Garden</td><td>Hardlines</td></tr>
+        <tr><td>28</td><td>Toys/Seasonal/Software</td><td>Hardlines</td></tr>
+        <tr><td>31</td><td>Women's Apparel</td><td>Softlines</td></tr>
+        <tr><td>32</td><td>Housewares</td><td>Softlines</td></tr>
+        <tr><td>33</td><td>Small Appliances</td><td>Softlines</td></tr>
+        <tr><td>34</td><td>Domestics</td><td>Softlines</td></tr>
+        <tr><td>35</td><td>Jewelry</td><td>Softlines</td></tr>
+        <tr><td>36</td><td>Media</td><td>Softlines</td></tr>
+        <tr><td>44</td><td>Special Events</td><td>Softlines</td></tr>
+        <tr><td>53</td><td>Gas Station</td><td>Ancillary</td></tr>
+        <tr><td>87</td><td>Tire Services</td><td>Ancillary</td></tr>
+        <tr><td>88</td><td>Food Court</td><td>Ancillary</td></tr>
+        <tr><td>92</td><td>Pharmacy – RX</td><td>Ancillary</td></tr>
+        <tr><td>94</td><td>Optical</td><td>Ancillary</td></tr>
+        <tr><td>96</td><td>Hearing Aids</td><td>Ancillary</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+function tog(header) {
+  const sec = header.closest('.sec');
+  sec.classList.toggle('open');
+}
+
+document.getElementById('search').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('.sec').forEach(sec => {
+    const text = (sec.textContent + ' ' + (sec.dataset.search||'')).toLowerCase();
+    sec.classList.toggle('hidden', q && !text.includes(q));
+  });
+});
+
+window.addEventListener('beforeinstallprompt', e => e.preventDefault());
+</script>
+</body>
+</html>

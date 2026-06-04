@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Docs — Dept 61</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0a0a0a;--surface:#161616;--border:#2a2a2a;--text:#fff;--dim:#ccc;--muted:#999;--blue:#0055a5;--amber:#e07b00;--teal:#007a6e;--green:#2a7040;--purple:#5a3f8a;--red:#cc0000;--r:8px}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100dvh;padding-bottom:40px}
+    header{background:var(--surface);border-bottom:3px solid var(--blue);padding:10px 14px 8px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+    .back{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 9px;border:1px solid #333;border-radius:4px;white-space:nowrap;flex-shrink:0}
+    .htitle{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:3px;text-transform:uppercase}
+    .hsub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+    .container{max-width:480px;margin:0 auto;padding:12px 12px}
+    .section-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#444;text-align:center;padding:8px 0 4px}
+    .doc-card{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--border);border-radius:var(--r);padding:14px 16px;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:14px;margin-bottom:8px;transition:transform .12s;position:relative}
+    .doc-card:active{transform:scale(.97)}
+    .doc-card.blue  {border-left-color:var(--blue)}
+    .doc-card.amber {border-left-color:var(--amber)}
+    .doc-card.teal  {border-left-color:var(--teal)}
+    .doc-card.green {border-left-color:var(--green)}
+    .doc-card.purple{border-left-color:var(--purple)}
+    .doc-card.red   {border-left-color:var(--red)}
+    .doc-icon{font-size:26px;flex-shrink:0}
+    .doc-text{flex:1;min-width:0}
+    .doc-name{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+    .doc-desc{font-size:12px;color:var(--dim);margin-top:2px;line-height:1.4}
+    .doc-tag{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.5px;margin-top:3px}
+    .arrow{color:var(--muted);font-size:16px;flex-shrink:0}
+  </style>
+</head>
+<body>
+<header>
+  <a class="back" href="index.html">← Hub</a>
+  <div>
+    <div class="htitle">📁 Docs</div>
+    <div class="hsub">OPS & MANUALS</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="section-label">— AS400 & Systems —</div>
+
+  <a class="doc-card teal" href="field-guide.html">
+    <span class="doc-icon">📖</span>
+    <div class="doc-text">
+      <div class="doc-name">Field Guide</div>
+      <div class="doc-desc">PLUs, AS400 commands, cut specs, procedures</div>
+      <div class="doc-tag">LIVE APP</div>
+    </div>
+    <span class="arrow">›</span>
+  </a>
+
+  <a class="doc-card blue" href="blue-book.html">
+    <span class="doc-icon">📘</span>
+    <div class="doc-text">
+      <div class="doc-name">Supervisor Blue Book</div>
+      <div class="doc-desc">Register procedures, troubleshooting, controller reference — Dec 2025</div>
+      <div class="doc-tag">DEC 2025</div>
+    </div>
+    <span class="arrow">›</span>
+  </a>
+
+  <div class="section-label">— Equipment Manuals —</div>
+
+  <a class="doc-card amber" href="https://github.com/2smok3d/Costco/raw/main/manuals/EDP_Manual.pdf" target="_blank">
+    <span class="doc-icon">🖨</span>
+    <div class="doc-text">
+      <div class="doc-name">EDP Manual</div>
+      <div class="doc-desc">Electronic Data Processing — sign printing, price changes, item downloads</div>
+      <div class="doc-tag">PDF</div>
+    </div>
+    <span class="arrow">↗</span>
+  </a>
+
+  <a class="doc-card amber" href="https://github.com/2smok3d/Costco/raw/main/manuals/Move_5000_Standalone_Guide.pdf" target="_blank">
+    <span class="doc-icon">💳</span>
+    <div class="doc-text">
+      <div class="doc-name">Move 5000 Standalone</div>
+      <div class="doc-desc">Standalone terminal operations guide</div>
+      <div class="doc-tag">PDF</div>
+    </div>
+    <span class="arrow">↗</span>
+  </a>
+
+  <a class="doc-card amber" href="https://github.com/2smok3d/Costco/raw/main/manuals/V400M_Standalone_Guide.pdf" target="_blank">
+    <span class="doc-icon">💳</span>
+    <div class="doc-text">
+      <div class="doc-name">V400M Standalone</div>
+      <div class="doc-desc">V400M terminal setup, registers, and operations</div>
+      <div class="doc-tag">PDF</div>
+    </div>
+    <span class="arrow">↗</span>
+  </a>
+
+  <div class="section-label">— Department References —</div>
+
+  <a class="doc-card red" href="https://github.com/2smok3d/Costco/raw/main/department/front-end/Front_End_Manual.pdf" target="_blank">
+    <span class="doc-icon">🏪</span>
+    <div class="doc-text">
+      <div class="doc-name">Front End Manual</div>
+      <div class="doc-desc">Front end operations, cashier procedures, register guide</div>
+      <div class="doc-tag">PDF</div>
+    </div>
+    <span class="arrow">↗</span>
+  </a>
+
+  <a class="doc-card green" href="https://github.com/2smok3d/Costco/raw/main/as400/guides/AS400_Guide.pdf" target="_blank">
+    <span class="doc-icon">🖥</span>
+    <div class="doc-text">
+      <div class="doc-name">AS400 Guide</div>
+      <div class="doc-desc">Costco AS400 system guide — commands, navigation, reporting</div>
+      <div class="doc-tag">FEB 2026</div>
+    </div>
+    <span class="arrow">↗</span>
+  </a>
+
+  <a class="doc-card purple" href="https://github.com/2smok3d/Costco/raw/main/as400/guides/Costco_AS400_Mastery__A_Field_Manual_for_Warehouse_Career_Advancement_PDF.pdf" target="_blank">
+    <span class="doc-icon">📗</span>
+    <div class="doc-text">
+      <div class="doc-name">AS400 Mastery Manual</div>
+      <div class="doc-desc">Field manual for warehouse career advancement via AS400</div>
+      <div class="doc-tag">PDF</div>
+    </div>
+    <span class="arrow">↗</span>
+  </a>
+
+</div>
+</body>
+</html>
