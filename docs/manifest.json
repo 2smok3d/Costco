@@ -1,7 +1,7 @@
 {
-  "name": "Costco Toolkit",
-  "short_name": "Toolkit",
-  "description": "Dept 61 tools — Meat, AS400, Closing Report",
+  "name": "Costco Warehouse",
+  "short_name": "Warehouse",
+  "description": "Dept 61 tools \u2014 Meat, AS400, Closing Report",
   "start_url": "/Costco/",
   "display": "standalone",
   "background_color": "#0a0a0a",

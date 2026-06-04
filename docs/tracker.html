@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Tracker — Dept 61</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0a0a;--surface:#161616;--s2:#1e1e1e;--border:#2a2a2a;
+      --text:#fff;--dim:#ccc;--muted:#999;
+      --poultry:#2a6e3f;--turkey:#1e5430;--pork:#8a5500;
+      --beef-cryo:#7a1c1c;--beef-ea:#cc0000;--prepack:#a52020;
+      --lamb:#5a3f8a;--grinds:#2a4e7a;
+      --r:8px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
+
+    /* ── HEADER ── */
+    header{background:var(--surface);border-bottom:3px solid #3a6ea8;padding:10px 14px 8px;flex-shrink:0;display:flex;align-items:center;gap:12px}
+    .back{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 9px;border:1px solid #333;border-radius:4px;white-space:nowrap;flex-shrink:0}
+    .htitle{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:3px;text-transform:uppercase}
+    .hsub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+
+    /* ── SHIFT BAR ── */
+    .shift-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 12px;flex-shrink:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .shift-date{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:6px 10px;flex:1;min-width:110px}
+    .shift-sel{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;color:var(--text);background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:6px 10px;-webkit-appearance:none;appearance:none;cursor:pointer;text-transform:uppercase}
+    .btn-clear{background:transparent;border:1px solid #444;border-radius:5px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px 12px;cursor:pointer;white-space:nowrap}
+    .btn-clear:active{color:var(--text);border-color:#888}
+    .btn-report{background:#3a6ea8;border:none;border-radius:5px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;padding:6px 14px;cursor:pointer;white-space:nowrap}
+    .btn-report:active{background:#2a5e98}
+
+    /* ── SCROLL AREA ── */
+    #scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px}
+
+    /* ── CATEGORY HEADER ── */
+    .cat-header{display:flex;align-items:center;gap:10px;padding:10px 14px 5px;margin-top:2px}
+    .cat-bar{width:4px;height:28px;border-radius:2px;flex-shrink:0}
+    .cat-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+    .cat-unit{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-left:auto}
+    .cat-total{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.5px;margin-left:6px}
+
+    /* ── ITEM ROW ── */
+    .item-row{display:flex;align-items:center;padding:7px 14px;border-bottom:1px solid var(--border);gap:12px}
+    .item-name{flex:1;font-size:15px;color:var(--dim);line-height:1.2;min-width:0}
+    .item-name.og{color:#a0d0a0}
+    .stepper{display:flex;align-items:center;gap:0;flex-shrink:0}
+    .step-btn{background:var(--s2);border:1px solid var(--border);color:var(--dim);font-size:18px;font-weight:700;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;user-select:none;-webkit-user-select:none;transition:background .1s,color .1s;flex-shrink:0}
+    .step-btn.minus{border-radius:5px 0 0 5px}
+    .step-btn.plus{border-radius:0 5px 5px 0}
+    .step-btn:active{background:#333;color:#fff}
+    .step-num{background:var(--s2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);border-left:none;border-right:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;width:44px;height:36px;text-align:center;outline:none;-webkit-appearance:none;appearance:none;padding:0}
+    .step-num:focus{background:#252525}
+
+    /* ── MODAL OVERLAY (report) ── */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:flex-end}
+    .modal-bg.open{display:flex}
+    .modal{background:#161616;border-radius:14px 14px 0 0;padding:18px 16px 40px;width:100%;max-height:80dvh;display:flex;flex-direction:column;gap:10px}
+    .modal-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#3a8ee8}
+    .report-box{background:#0a0a0a;border:1px solid #333;border-radius:var(--r);font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.9;padding:14px;white-space:pre-wrap;color:#fff;overflow-y:auto;flex:1}
+    .modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .btn-copy-rep{background:#3a6ea8;color:#fff;border:none;border-radius:var(--r);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:13px;cursor:pointer}
+    .btn-copy-rep.copied{background:#2a7040}
+    .btn-close-modal{background:transparent;border:1px solid #444;border-radius:var(--r);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:13px;cursor:pointer}
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="index.html">← Hub</a>
+  <div>
+    <div class="htitle">📊 Tracker</div>
+    <div class="hsub">DEPT 61 · INVENTORY COUNT</div>
+  </div>
+</header>
+
+<div class="shift-bar">
+  <input class="shift-date" type="date" id="shift-date">
+  <select class="shift-sel" id="shift-type">
+    <option value="OPEN">Open</option>
+    <option value="CLOSE" selected>Close</option>
+    <option value="MIDDY">Middy</option>
+  </select>
+  <button class="btn-clear" onclick="clearAll()">↺ Clear</button>
+  <button class="btn-report" onclick="showReport()">📋 Report</button>
+</div>
+
+<div id="scroll"></div>
+
+<!-- REPORT MODAL -->
+<div class="modal-bg" id="modal-bg" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title">📋 Shift Report</div>
+    <div class="report-box" id="report-box"></div>
+    <div class="modal-btns">
+      <button class="btn-copy-rep" id="btn-copy-rep" onclick="copyReport()">Copy</button>
+      <button class="btn-close-modal" onclick="document.getElementById('modal-bg').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CATS = [
+  {
+    id:'poultry', title:'Poultry', unit:'case', color:'var(--poultry)',
+    items:[
+      {n:'B/S Breast'},{n:'Wings'},{n:'Drumsticks'},{n:'B/I Thigh'},
+      {n:'B/S Thigh'},{n:'Tenders'},{n:'Whole Bird'},
+      {n:'OG Whole Bird',og:true},{n:'OG B/S Breast',og:true},
+      {n:'OG B/S Thigh',og:true},{n:'OG Tenders',og:true},{n:'OG Drumstick',og:true}
+    ]
+  },
+  {
+    id:'turkey', title:'Turkey', unit:'case', color:'var(--turkey)',
+    items:[{n:'Butterball Grinds'},{n:'OG Grinds',og:true}]
+  },
+  {
+    id:'pork-cryo', title:'Pork Cryo', unit:'case', color:'var(--pork)',
+    items:[{n:'Belly'},{n:'Back Ribs'},{n:'Spare Ribs'},{n:'Pork Loin'},{n:'Shoulder'},{n:'Tenderloin'}]
+  },
+  {
+    id:'beef-cryo', title:'Beef Cryo', unit:'case', color:'var(--beef-cryo)',
+    items:[{n:'Beef Ribs'},{n:'Tenderloin'},{n:'Brisket'}]
+  },
+  {
+    id:'beef-ea', title:'Beef', unit:'ea', color:'var(--beef-ea)',
+    items:[{n:'Chuck'},{n:'Ribeye'},{n:'New York'},{n:'Brisket'}]
+  },
+  {
+    id:'prepack', title:'Beef Prepack', unit:'ea', color:'var(--prepack)',
+    items:[{n:'Flanken Style'}]
+  },
+  {
+    id:'lamb', title:'Lamb', unit:'case', color:'var(--lamb)',
+    items:[{n:'Leg'},{n:'Rib'}]
+  },
+  {
+    id:'grinds', title:'Grinds', unit:'case', color:'var(--grinds)',
+    items:[{n:'OG Grinds',og:true},{n:'Wagyu Grinds'},{n:'Bison Grinds'}]
+  }
+];
+
+// ── State ──────────────────────────────────────────────────────────────
+const STORE_KEY = 'tracker_v2';
+let state = {};
+
+function loadState() {
+  try { state = JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch { state = {}; }
+}
+function saveState() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+function itemKey(catId, itemName) { return `${catId}::${itemName}`; }
+function getVal(catId, name) { return parseInt(state[itemKey(catId,name)] || 0); }
+function setVal(catId, name, v) {
+  const k = itemKey(catId, name);
+  const val = Math.max(0, v);
+  state[k] = val;
+  saveState();
+  return val;
+}
+
+// ── Date default ────────────────────────────────────────────────────────
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+document.getElementById('shift-date').value = state._date || todayStr();
+
+// ── Build UI ────────────────────────────────────────────────────────────
+function build() {
+  const scroll = document.getElementById('scroll');
+  let html = '';
+
+  CATS.forEach(cat => {
+    const total = cat.items.reduce((s,i) => s + getVal(cat.id, i.n), 0);
+    html += `
+      <div class="cat-header">
+        <div class="cat-bar" style="background:${cat.color}"></div>
+        <div class="cat-title">${cat.title}</div>
+        <div class="cat-unit">${cat.unit}</div>
+        <div class="cat-total" id="total-${cat.id}" style="color:${cat.color}">${total || ''}</div>
+      </div>`;
+
+    cat.items.forEach(item => {
+      const val = getVal(cat.id, item.n);
+      const nameClass = item.og ? 'item-name og' : 'item-name';
+      html += `
+        <div class="item-row" id="row-${cat.id}-${item.n.replace(/\W/g,'_')}">
+          <div class="${nameClass}">${item.n}</div>
+          <div class="stepper">
+            <div class="step-btn minus" onpointerdown="step('${cat.id}','${item.n}',-1)">−</div>
+            <input class="step-num" type="number" min="0" value="${val}"
+              onchange="manual('${cat.id}','${item.n}',this)"
+              onclick="this.select()">
+            <div class="step-btn plus" onpointerdown="step('${cat.id}','${item.n}',1)">+</div>
+          </div>
+        </div>`;
+    });
+  });
+
+  scroll.innerHTML = html;
+}
+
+// ── Step ─────────────────────────────────────────────────────────────────
+function step(catId, name, delta) {
+  const input = document.querySelector(`[id="row-${catId}-${name.replace(/\W/g,'_')}"] .step-num`);
+  if (!input) return;
+  const newVal = setVal(catId, name, getVal(catId, name) + delta);
+  input.value = newVal;
+  updateCatTotal(catId);
+}
+
+function manual(catId, name, input) {
+  const newVal = setVal(catId, name, parseInt(input.value) || 0);
+  input.value = newVal;
+  updateCatTotal(catId);
+}
+
+function updateCatTotal(catId) {
+  const cat = CATS.find(c => c.id === catId);
+  if (!cat) return;
+  const total = cat.items.reduce((s,i) => s + getVal(catId, i.n), 0);
+  const el = document.getElementById(`total-${catId}`);
+  if (el) el.textContent = total || '';
+}
+
+// ── Clear ─────────────────────────────────────────────────────────────────
+function clearAll() {
+  if (!confirm('Clear all counts?')) return;
+  const date = document.getElementById('shift-date').value;
+  const type = document.getElementById('shift-type').value;
+  state = { _date: date, _type: type };
+  saveState();
+  build();
+}
+
+// ── Report ────────────────────────────────────────────────────────────────
+function showReport() {
+  const date = document.getElementById('shift-date').value;
+  const type = document.getElementById('shift-type').value;
+
+  let lines = [`${date}  ${type} — Dept 61 Inventory`, ``];
+
+  CATS.forEach(cat => {
+    const filled = cat.items.filter(i => getVal(cat.id, i.n) > 0);
+    if (!filled.length) return;
+    const total = filled.reduce((s,i) => s + getVal(cat.id, i.n), 0);
+    lines.push(`${cat.title.toUpperCase()} (${cat.unit}) — total: ${total}`);
+    filled.forEach(i => {
+      const v = getVal(cat.id, i.n);
+      lines.push(`  ${i.n.padEnd(22)} ${v}`);
+    });
+    lines.push('');
+  });
+
+  lines.push(`Generated ${new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}`);
+
+  document.getElementById('report-box').textContent = lines.join('\n');
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function copyReport() {
+  const text = document.getElementById('report-box').textContent;
+  const btn = document.getElementById('btn-copy-rep');
+  navigator.clipboard?.writeText(text).catch(()=>{});
+  btn.textContent = '✓ Copied';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-bg'))
+    document.getElementById('modal-bg').classList.remove('open');
+}
+
+// ── Save date/shift changes ───────────────────────────────────────────────
+document.getElementById('shift-date').addEventListener('change', e => {
+  state._date = e.target.value; saveState();
+});
+document.getElementById('shift-type').addEventListener('change', e => {
+  state._type = e.target.value; saveState();
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────
+loadState();
+if (state._date) document.getElementById('shift-date').value = state._date;
+if (state._type) document.getElementById('shift-type').value = state._type;
+build();
+window.addEventListener('beforeinstallprompt', e => e.preventDefault());
+</script>
+</body>
+</html>
