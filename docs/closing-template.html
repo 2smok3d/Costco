@@ -263,6 +263,20 @@
     }
     .btn-copy.copied { color: #fff; border-color: #888; }
 
+    /* ── TOGGLE ── */
+    .toggle-wrap { cursor:pointer; }
+    .toggle-track {
+      width: 48px; height: 26px; background: #333; border-radius: 13px;
+      position: relative; transition: background .2s;
+    }
+    .toggle-track.on { background: var(--done); }
+    .toggle-thumb {
+      position: absolute; top: 3px; left: 3px;
+      width: 20px; height: 20px; background: #888; border-radius: 50%;
+      transition: left .2s, background .2s;
+    }
+    .toggle-track.on .toggle-thumb { left: 25px; background: #fff; }
+
     .btn-reset {
       background: transparent;
       border: 1px solid #2a2a2a;
@@ -412,6 +426,24 @@
     </div>
   </div>
 
+  <!-- ── INVENTORY ── -->
+  <div class="section">— Options —</div>
+
+  <div class="field" id="c-inv">
+    <div class="field-label">Include Inventory Counts</div>
+    <div class="field-row" style="align-items:center;gap:12px">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1">
+        <div class="toggle-wrap" onclick="toggleInv()">
+          <div class="toggle-track" id="inv-track">
+            <div class="toggle-thumb" id="inv-thumb"></div>
+          </div>
+        </div>
+        <span id="inv-label" style="font-size:15px;color:var(--muted)">Off</span>
+      </label>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)" id="inv-status">No tracker data</span>
+    </div>
+  </div>
+
   <!-- ── CLOSE ── -->
   <div class="section">— Close —</div>
 
@@ -524,6 +556,12 @@
     rows.push(`Out at ${outTime}.`);
     rows.push(`— Brandon`);
 
+    // Optionally append inventory
+    if (document.getElementById('inv-track')?.classList.contains('on')) {
+      const inv = buildInventoryBlock();
+      if (inv) rows.push('', inv);
+    }
+
     const output = rows.join('\n');
     document.getElementById('output-box').textContent = output;
 
@@ -568,6 +606,71 @@
     document.getElementById('hdr-date').textContent = `${d.getMonth()+1}/${d.getDate()}`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // ── Inventory toggle ──────────────────────────────────────────────────────
+  let invOn = false;
+
+  function toggleInv() {
+    invOn = !invOn;
+    document.getElementById('inv-track').classList.toggle('on', invOn);
+    document.getElementById('inv-label').textContent = invOn ? 'On' : 'Off';
+    document.getElementById('inv-label').style.color = invOn ? 'var(--done)' : 'var(--muted)';
+    document.getElementById('c-inv').className = 'field' + (invOn ? ' s-done' : '');
+    checkTrackerData();
+  }
+
+  function checkTrackerData() {
+    try {
+      const raw = localStorage.getItem('tracker_v2');
+      const data = raw ? JSON.parse(raw) : {};
+      const keys = Object.keys(data).filter(k => !k.startsWith('_') && parseInt(data[k]) > 0);
+      const el = document.getElementById('inv-status');
+      if (keys.length) {
+        el.textContent = keys.length + ' items tracked';
+        el.style.color = 'var(--done)';
+      } else {
+        el.textContent = 'No tracker data';
+        el.style.color = 'var(--muted)';
+      }
+    } catch {}
+  }
+
+  function buildInventoryBlock() {
+    try {
+      const raw = localStorage.getItem('tracker_v2');
+      if (!raw) return null;
+      const data = JSON.parse(raw);
+
+      const CATS = [
+        {id:'poultry',  title:'Poultry',      unit:'cs'},
+        {id:'turkey',   title:'Turkey',       unit:'cs'},
+        {id:'pork-cryo',title:'Pork Cryo',    unit:'cs'},
+        {id:'beef-cryo',title:'Beef Cryo',    unit:'cs'},
+        {id:'beef-ea',  title:'Beef',         unit:'ea'},
+        {id:'prepack',  title:'Beef Prepack', unit:'ea'},
+        {id:'lamb',     title:'Lamb',         unit:'cs'},
+        {id:'grinds',   title:'Grinds',       unit:'cs'},
+      ];
+
+      const lines = ['Inventory:'];
+      let hasAny = false;
+
+      CATS.forEach(cat => {
+        const catItems = Object.entries(data)
+          .filter(([k,v]) => k.startsWith(cat.id + '::') && parseInt(v) > 0)
+          .map(([k,v]) => ({ name: k.replace(cat.id + '::', ''), val: parseInt(v) }));
+        if (!catItems.length) return;
+        hasAny = true;
+        const total = catItems.reduce((s,i) => s + i.val, 0);
+        lines.push(`  ${cat.title} (${total}${cat.unit}): ` + catItems.map(i => `${i.name} ${i.val}`).join(', '));
+      });
+
+      return hasAny ? lines.join('\n') : null;
+    } catch { return null; }
+  }
+
+  // Check on load
+  checkTrackerData();
 
   // ── Suppress install prompt ───────────────────────────────────────────────
   window.addEventListener('beforeinstallprompt', e => e.preventDefault());
