@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>AS400 — Dept 61</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0a0a;--surface:#141414;--s2:#1c1c1c;--border:#262626;
+      --text:#fff;--dim:#ccc;--muted:#999;--faint:#555;
+      --grn:#00c87a;--grn-dim:rgba(0,200,122,.12);--grn-border:rgba(0,200,122,.3);
+      --amber:#e07b00;--blue:#4a90d9;--red:#cc0000;--purple:#9b59d0;
+      --r:8px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
+
+    /* HEADER */
+    header{background:var(--surface);border-bottom:3px solid var(--grn);padding:10px 14px 8px;flex-shrink:0;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+    .back{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 9px;border:1px solid #333;border-radius:4px;white-space:nowrap;flex-shrink:0}
+    .htitle{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:3px;text-transform:uppercase}
+    .hsub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+
+    /* SEARCH */
+    .search-bar{background:var(--surface);padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+    #as-search{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:20px;color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;padding:9px 14px;outline:none}
+    #as-search::placeholder{color:var(--muted)}
+    #as-search:focus{border-color:var(--grn)}
+
+    /* TABS */
+    .tab-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+    .tab-bar::-webkit-scrollbar{display:none}
+    .tab{flex:0 0 auto;padding:9px 14px;border:none;background:none;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .15s}
+    .tab.active{color:var(--grn);border-bottom-color:var(--grn)}
+
+    /* CONTENT */
+    #content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .pane{display:none;padding:10px 12px 40px;max-width:560px;margin:0 auto}
+    .pane.active{display:block}
+
+    /* SECTION LABEL */
+    .sec-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);letter-spacing:2px;text-transform:uppercase;padding:10px 2px 4px}
+    .result-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;padding:0 2px 6px}
+
+    /* COMMAND CARD */
+    .cmd-card{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden;transition:border-left-color .2s}
+    .cmd-card.hidden{display:none}
+    .cmd-card.cat-item    {border-left-color:#4a90d9}
+    .cmd-card.cat-sales   {border-left-color:#e07b00}
+    .cmd-card.cat-member  {border-left-color:#9b59d0}
+    .cmd-card.cat-labor   {border-left-color:#2e7d42}
+    .cmd-card.cat-signs   {border-left-color:#c8960c}
+    .cmd-card.cat-profile {border-left-color:#cc0000}
+    .cmd-card.cat-reports {border-left-color:#5a9a8a}
+    .cmd-card.cat-ibm     {border-left-color:#555}
+    .cmd-card.cat-ancil   {border-left-color:#7a5a2a}
+    .cmd-card.cat-optical {border-left-color:#a050d0}
+    .cmd-card.cat-rf      {border-left-color:var(--grn)}
+
+    .cmd-header{padding:11px 13px 9px;cursor:pointer;display:flex;align-items:center;gap:10px}
+    .cmd-header:active{background:rgba(255,255,255,.03)}
+    .cmd-code{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--grn);flex-shrink:0;min-width:70px}
+    .cmd-name{font-size:14px;color:var(--dim);flex:1;line-height:1.2}
+    .cmd-toggle{color:var(--faint);font-size:12px;transition:transform .2s;flex-shrink:0}
+    .cmd-card.open .cmd-toggle{transform:rotate(180deg)}
+
+    .cmd-body{display:none;border-top:1px solid var(--border);padding:11px 13px 13px;display:none;flex-direction:column;gap:8px}
+    .cmd-card.open .cmd-body{display:flex}
+
+    .cmd-what{font-size:14px;color:var(--dim);line-height:1.5}
+    .cmd-section-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:2px}
+    .cmd-steps{list-style:none;display:flex;flex-direction:column;gap:3px;margin-top:2px}
+    .cmd-steps li{font-size:13px;color:var(--dim);display:flex;gap:8px;line-height:1.5}
+    .cmd-steps li::before{content:'›';color:var(--faint);flex-shrink:0}
+    .cmd-tip{font-size:12px;background:var(--grn-dim);border:1px solid var(--grn-border);border-radius:5px;padding:8px 10px;color:var(--grn);line-height:1.4}
+    .cmd-warn{font-size:12px;background:rgba(204,0,0,.1);border:1px solid rgba(204,0,0,.25);border-radius:5px;padding:8px 10px;color:#ff8080;line-height:1.4}
+    .cmd-keys{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+    .key-pill{font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--s2);border:1px solid var(--border);border-radius:4px;padding:3px 7px;color:var(--dim)}
+    kbd{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--s2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--grn)}
+    .confirmed-badge{font-family:'JetBrains Mono',monospace;font-size:8px;background:var(--grn-dim);border:1px solid var(--grn-border);color:var(--grn);padding:2px 6px;border-radius:3px;letter-spacing:.5px;flex-shrink:0}
+
+    /* DEPT SHEET */
+    .dept-sheet{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+    .dept-header{padding:12px 14px;background:#111;display:flex;align-items:center;gap:10px;cursor:pointer}
+    .dept-icon{font-size:22px;flex-shrink:0}
+    .dept-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;letter-spacing:2px;text-transform:uppercase;flex:1}
+    .dept-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+    .dept-body{display:none;padding:0 14px 14px}
+    .dept-sheet.open .dept-body{display:block}
+    .dept-sheet.open .cmd-toggle{transform:rotate(180deg)}
+
+    .dept-priority{margin:10px 0 6px}
+    .dept-priority-title{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+    .dept-cmd-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
+    .dept-cmd-row:last-child{border-bottom:none}
+    .dept-cmd-code{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--grn);min-width:60px;flex-shrink:0}
+    .dept-cmd-desc{font-size:13px;color:var(--dim);line-height:1.4}
+    .priority-star{color:var(--amber);font-size:10px;flex-shrink:0}
+
+    /* RF TABLE */
+    .rf-row{display:flex;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);gap:12px}
+    .rf-row:last-child{border-bottom:none}
+    .rf-num{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:var(--grn);min-width:32px;flex-shrink:0;padding-top:1px}
+    .rf-info{flex:1}
+    .rf-name{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:var(--text)}
+    .rf-desc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
+    .rf-star{color:var(--amber);font-size:10px;margin-left:4px}
+
+    /* GUIDE CONTENT */
+    .guide-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px}
+    .guide-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--grn);margin-bottom:8px}
+    .guide-body{font-size:14px;color:var(--dim);line-height:1.6}
+    .guide-body p{margin-bottom:6px}
+    .guide-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+    .guide-table th{background:#1c1c1c;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)}
+    .guide-table td{padding:7px 8px;border-bottom:1px solid #1a1a1a;color:var(--dim);vertical-align:top}
+    .guide-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--grn);white-space:nowrap}
+    .guide-table tr:last-child td{border-bottom:none}
+
+    /* ERROR TABLE */
+    .err-row{padding:10px 0;border-bottom:1px solid var(--border)}
+    .err-row:last-child{border-bottom:none}
+    .err-code{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--red)}
+    .err-name{font-size:13px;color:var(--dim);margin:3px 0}
+    .err-fix{font-size:12px;color:var(--muted);line-height:1.4}
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="index.html">← Hub</a>
+  <div>
+    <div class="htitle">🖥 AS400</div>
+    <div class="hsub">COSTCO WAREHOUSE · IBM i REFERENCE</div>
+  </div>
+</header>
+
+<div class="search-bar">
+  <input id="as-search" type="search" placeholder="Search commands, functions, keywords..." autocomplete="off" autocorrect="off" spellcheck="false">
+</div>
+
+<div class="tab-bar">
+  <button class="tab active" data-tab="commands">Commands</button>
+  <button class="tab" data-tab="rf">RF Scanner</button>
+  <button class="tab" data-tab="dept">Dept Sheets</button>
+  <button class="tab" data-tab="guide">Sign-On & Nav</button>
+  <button class="tab" data-tab="power">Power User</button>
+  <button class="tab" data-tab="errors">Errors</button>
+</div>
+
+<div id="content">
+
+<!-- ══════════════════════════════════════════════════════════════════
+     COMMANDS
+══════════════════════════════════════════════════════════════════ -->
+<div class="pane active" id="pane-commands">
+  <div class="result-count" id="cmd-count"></div>
+  <div id="cmd-list">
+
+    <!-- ── ITEM LOOKUP ── -->
+    <div class="sec-label">Item Lookup</div>
+
+    <div class="cmd-card cat-item" data-search="iai item alpha inquiry search keyword description on hand">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">IAI</span>
+        <span class="cmd-name">Item Alpha Inquiry</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">The #1 most-used screen. Gateway to 80% of all merchandise data. Search any item by keyword, item #, dept, or UPC (drop check digit).</p>
+        <div class="cmd-section-title">How to Use</div>
+        <ul class="cmd-steps">
+          <li>Type <kbd>IAI</kbd> → Enter description keyword, item #, or dept</li>
+          <li>In the <kbd>Opt</kbd> column next to any result: <kbd>1</kbd> = on-hand by warehouse · <kbd>3</kbd> = sales by region · <kbd>5</kbd> = item detail · <kbd>8</kbd> = planned shipments</li>
+          <li>Set Display On Hand = <kbd>Y</kbd> for in-stock only, <kbd>N</kbd> = all ever carried</li>
+          <li>Use <kbd>*NW</kbd>, <kbd>*MW</kbd>, <kbd>*USALL</kbd> in Location Group to broaden scope</li>
+        </ul>
+        <div class="cmd-tip">⭐ Start every item investigation here. Clear the Location field to maximize results. Chain to ITMW (opt 8) for full detail.</div>
+        <div class="cmd-keys"><span class="key-pill">F3 Exit</span><span class="key-pill">F4 Search/Prompt</span><span class="key-pill">F12 Back</span></div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-item" data-search="itmw item warehouse inquiry on hand today sales status">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">ITMW</span>
+        <span class="cmd-name">Item Inquiry for Warehouse ⭐</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Most detailed item screen, scoped to YOUR warehouse only. Real-time on-hand, on-order, next delivery ETA, today's sales, active rebates.</p>
+        <ul class="cmd-steps">
+          <li>Enter item # directly or drill in via IAI opt <kbd>8</kbd></li>
+          <li>Shows: units on hand, units on order, ETA, sell price, cost, NSI on hand, today's sales, vendor</li>
+        </ul>
+        <div class="cmd-keys"><span class="key-pill">F9 Rebates</span><span class="key-pill">F14 Taxes</span><span class="key-pill">F21 Print Sign</span><span class="key-pill">F22 EBT/Env Fees</span></div>
+        <div class="cmd-tip">Add 2-day buffer to next-delivery date when telling members — supply delays are real.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-item" data-search="iil item inventory lookup multi warehouse region usall">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">IIL</span>
+        <span class="cmd-name">Item Inventory Lookup (Multi-Warehouse)</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">On-hand across multiple warehouses. Use to redirect members, source stock-outs, or rank your warehouse vs. peers.</p>
+        <ul class="cmd-steps">
+          <li>Enter item # → scope: region code or wildcard <kbd>*MW</kbd> / <kbd>*USALL</kbd></li>
+          <li>Returns: each warehouse, on-hand, on-order, status</li>
+        </ul>
+        <div class="cmd-warn">⚠ IIL updates ONCE OVERNIGHT in QBATCH — never promise real-time accuracy. Data is from yesterday.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-item" data-search="upc lookup barcode scan item number check digit">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">UPC</span>
+        <span class="cmd-name">UPC Lookup</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Find an item by its 12-digit barcode when scanning fails at the register.</p>
+        <div class="cmd-tip">Always drop the LAST digit (check digit) when keying a UPC manually — Costco convention.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-item" data-search="rhi receiving history inquiry po purchase order delivery vendor">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">RHI</span>
+        <span class="cmd-name">Receiving History Inquiry</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Every PO/delivery received for a specific item: date, vendor, PO #, quantity, cost. Essential for investigating receiving errors and vendor claims.</p>
+        <div class="cmd-tip">Cross-reference RHI against physical pallet count same-day. Catching discrepancies early is 5× easier than next-day corrections.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-item" data-search="dash receiving dashboard truck appointment po vendor status door">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">DASH</span>
+        <span class="cmd-name">Receiving Dashboard</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Every inbound truck and its appointment for the day: PO #, vendor, ETA, status, door assignment. Receiving clerks live here during morning shifts.</p>
+        <div class="cmd-tip">Cross-reference DASH against RHI for any stocked-out SKU — the next truck may already contain it.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-item" data-search="ixi upc cross reference item number barcode setup">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">IXI</span>
+        <span class="cmd-name">Item / UPC Cross Reference</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Cross-reference an item number with all associated UPCs. Use when an item won't scan at the register — if UPC is set up, run an EPC download to push the fix.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-item" data-search="irci instant rebate coupon inquiry irc active expired future amount">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">IRCI</span>
+        <span class="cmd-name">Instant Rebate Coupon Inquiry</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">View active, expired, or future IRC coupons. Find coupon numbers for register adjustments. Returns: item, coupon #, IRC amount, qty limit, start/end dates.</p>
+        <ul class="cmd-steps">
+          <li>Filter by location, dept, or item #</li>
+          <li>Place X next to Active / Expired / Future</li>
+          <li>For future: enter start AND end date (start must be in the future)</li>
+        </ul>
+        <div class="cmd-warn">When keying an IRC coupon at the register: DROP the last digit OR precede with &lt;/&gt;</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-item" data-search="si sign inquiry view price sign content without printing">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">SI</span>
+        <span class="cmd-name">Sign Inquiry</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">View a price sign's content without printing: size, price, instant-savings text, effective dates. Verify before printing to avoid wrong-sign errors.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-item" data-search="macr merchandise audit count report on hand inventory department print">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">MACR</span>
+        <span class="cmd-name">Merchandise Audit Count Report</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Print full department inventory listing: every item with on-hand, location, category, NSI on-hand. Used for cycle counts and period-end reconciliation.</p>
+        <ul class="cmd-steps">
+          <li>Enter dept # → optionally add category code to filter</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-item" data-search="isi item sales inquiry group items igm">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">ISI</span>
+        <span class="cmd-name">Item Sales Inquiry</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">View sales for individual items or IGM groups. Enter item numbers individually or use a group name created in IGM.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-item" data-search="igm item group maintenance create edit list">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">IGM</span>
+        <span class="cmd-name">Item Group Maintenance</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Create and manage item groups for ISI and COMP. Enter warehouse # and group name → add/remove item numbers. Only active warehouse items can be added.</p>
+        <div class="cmd-keys"><span class="key-pill">F23 Delete group</span></div>
+      </div>
+    </div>
+
+    <!-- ── SALES ── -->
+    <div class="sec-label">Sales & Analytics</div>
+
+    <div class="cmd-card cat-sales" data-search="dsi department sales inquiry today all departments scoreboard">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">DSI</span>
+        <span class="cmd-name">Department Sales Inquiry</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Today's sales for ALL departments in your warehouse — the daily scoreboard. Manager-on-duty starts every shift here.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-sales" data-search="dsl department sales listing daily weekly ytd last year plan comparison">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">DSL</span>
+        <span class="cmd-name">Department Sales Listing ⭐</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Daily, weekly, and YTD sales by department with vs.-last-year and vs.-plan columns. The primary number for every period-end conversation.</p>
+        <div class="cmd-tip">Pair DSL with IIL: if you're #1 in sales but low on on-hand, stock-out is imminent. Bring DSL YoY data to every buyer/manager meeting.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-sales" data-search="lsdt daily sales tracking labor hours planned used sales per man hour">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">LSDT</span>
+        <span class="cmd-name">Daily Sales Tracking</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Today's sales + labor: hours planned, hours used, hours saved/over, sales-per-man-hour. Manager-on-duty uses this to call people in or send home.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-sales" data-search="lswt weekly sales tracking labor weekly breakout schedule next week">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">LSWT</span>
+        <span class="cmd-name">Weekly Sales Tracking</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Same metric set as LSDT, rolled to the week with daily breakouts. The basis for next week's schedule planning.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-sales" data-search="lsdc door count members traffic hourly daily plan last year ticket">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">LSDC</span>
+        <span class="cmd-name">Door Count</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Members through the door, hourly and daily, vs. plan and vs. last year. Combined with LSDT gives average ticket — a key KPI.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-sales" data-search="iatop top items department sales rank units dollars buyer walk">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">IATOP</span>
+        <span class="cmd-name">Top Items by Department</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Ranks SKUs by sales $ or units in a chosen period. Critical prep before any buyer or regional walk-through.</p>
+        <div class="cmd-tip">Pair with IIL — if you're #1 in sales but #10 in regional on-hand, expect an imminent stock-out. Run before every manager meeting.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-sales" data-search="iafep front end productivity items per minute cashier labor hour register">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">IAFEP</span>
+        <span class="cmd-name">Front-End Productivity</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Items per minute, per cashier, per labor-hour, per register. NOT real-time — current day not available. Enter warehouse # then toggle views with F19/F20.</p>
+        <div class="cmd-keys"><span class="key-pill">F19 Main → Data</span><span class="key-pill">F20 Data → Time</span><span class="key-pill">F1 Stat explanation</span></div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-sales" data-search="stk four week sales demand days supply d&d department production planning">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">STK</span>
+        <span class="cmd-name">4-Week Sales & Days of Supply</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">4-week unit sales and Days of Supply (D&D) by department — critical for production planning in fresh departments. DOS = on-hand ÷ avg daily units.</p>
+        <div class="cmd-tip">For meat: when DOS exceeds pull-date window on any item, mark it down immediately. A spike in DOS = over-production.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-sales" data-search="iawd warehouse dashboard all metrics one place">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">IAWD</span>
+        <span class="cmd-name">Warehouse Dashboard</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">All key metrics in one view: sales, labor, traffic, and more. Morning quick-check before opening.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-sales" data-search="comp comparison analysis sales history item group vendor date range fiscal year">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">COMP</span>
+        <span class="cmd-name">Comparison Analysis</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Compare sales history by item, group, dept, vendor, location, or date range across the last 3 fiscal years. Uses IGM groups.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-sales" data-search="dfi daily flash inquiry">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">DFI</span>
+        <span class="cmd-name">Daily Flash Inquiry</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Daily flash sales summary. Quick snapshot of overall warehouse performance.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-sales" data-search="kri roadshow inquiry vendor schedule building floor">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">KRI</span>
+        <span class="cmd-name">Roadshow Inquiry</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Roadshow vendor schedule: who's in the building, when, and where on the floor.</p>
+      </div>
+    </div>
+
+    <!-- ── MEMBERSHIP ── -->
+    <div class="sec-label">Membership</div>
+
+    <div class="cmd-card cat-member" data-search="wii warehouse item inquiry member purchase history refund desk">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">WII</span>
+        <span class="cmd-name">Member Purchase History (Refund Desk) ⭐</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">The refund-desk primary tool. Enter membership # + item # OR category code (never both). Returns purchase dates, prices, warehouse, audit receipts.</p>
+        <ul class="cmd-steps">
+          <li>Enter membership # → item # OR category code (not both)</li>
+          <li>Clear the Location field for broadest results</li>
+          <li>Goes back 10+ years</li>
+        </ul>
+        <div class="cmd-warn">WII does NOT include Costco.com online orders — those are in the ecommerce system (EOI).</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-member" data-search="mba9 membership inquiry read only name phone view lookup">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">MBA9</span>
+        <span class="cmd-name">Membership Inquiry (Read-Only)</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">View-only membership lookup by member #, name, phone, or address. Safer for routine verification — cannot edit. Toggle search with F11.</p>
+        <div class="cmd-tip">Use MBA9 for floor lookups. Reserve MBA (full edit) for sign-up and changes.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-member" data-search="mba membership full edit create cancel refund executive upgrade spouse card">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">MBA</span>
+        <span class="cmd-name">Membership (Full Edit — Requires Login)</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Create, edit, cancel, refund memberships. Change Gold Star ↔ Executive ↔ Business. Manage spouse cards. Requires personal management login.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-member" data-search="mhs member history shopping analytics 10 years purchase date price warehouse">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">MHS</span>
+        <span class="cmd-name">Member History Shopping</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Analytics view of a member's purchase history: date, warehouse, item, qty, price, tender type. Goes back 10+ years.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-member" data-search="mrc memr membership report card income renewal sign up executive upgrade">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">MRC / MEMR</span>
+        <span class="cmd-name">Membership Report Card</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Membership performance vs. LY and plan: new sign-ups, Executive upgrades, renewal rate. FE and membership huddles open with these.</p>
+        <div class="cmd-keys"><span class="key-pill">F11 Renewal Rate & Trend</span></div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-member" data-search="eoi cni ecommerce order inquiry bopiw pickup costco.com online">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">EOI / CNI</span>
+        <span class="cmd-name">Ecommerce Order Inquiry / BOPIW</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Research Costco.com and Costco.ca orders. Check in BOPIW (Buy Online Pickup In Warehouse) pickups.</p>
+        <ul class="cmd-steps">
+          <li>Filter by Order # (9–10 digits) or membership #</li>
+          <li>Press ENTER → Order Detail screen</li>
+          <li>Key 5 or X next to item for price, S&H, tax, coupon detail</li>
+          <li>BOPIW: <kbd>F4</kbd> = prompt Serial # · <kbd>F8</kbd> = confirm update · <kbd>F9</kbd> = member pickup</li>
+        </ul>
+        <div class="cmd-tip">Coupons on Ecom are treated as tender — they show in item detail, not as a separate line.</div>
+      </div>
+    </div>
+
+    <!-- ── SIGNS & MERCHANDISING ── -->
+    <div class="sec-label">Signs & Merchandising</div>
+
+    <div class="cmd-card cat-signs" data-search="edsr sign request print price sign s size everyday">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">EDSR</span>
+        <span class="cmd-name">Every Day Sign Request (Print)</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Print a price sign. Costco's standard sign size is "S" (small) unless told otherwise during sign-changeover events.</p>
+        <div class="cmd-tip">Walk the floor every morning with an EDSR printout — comparing paper to product is how you catch price mismatches before members do.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-signs" data-search="edsm free form sign custom manual sign printing">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">EDSM</span>
+        <span class="cmd-name">Sign Maintenance (Free-Form / Custom)</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Create and print custom or manual signs. Used for non-standard items, roadshow setups, or correcting sign content.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-signs" data-search="edmp print all daily signs run after 3am batch sign changeover">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">EDMP</span>
+        <span class="cmd-name">Print All Daily Signs</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Batch-print all signs that changed for the day. Run after 3am when the overnight sign-change batch has completed.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-signs" data-search="epc emergency price change item download item block same day">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">EPC</span>
+        <span class="cmd-name">Emergency Price Change / Item Download</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Same-day price changes, item downloads to registers (fixes UPC scanning issues), and item blocks. Regional rules determine who gets this access.</p>
+        <div class="cmd-warn">Access controlled via WPM. Requires EPC password assigned by staff manager or above.</div>
+      </div>
+    </div>
+
+    <!-- ── PROFILES & PASSWORDS ── -->
+    <div class="sec-label">Profiles & Passwords</div>
+
+    <div class="cmd-card cat-profile" data-search="eprfm employee profile maintenance setup optical rtv sales audit vault combo staff manager">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">EPRFM</span>
+        <span class="cmd-name">Employee Profile Maintenance</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Set up AS400 profiles for Optical, RTV, Sales Audit, and Vault. RESTRICTED — Staff Managers and above only.</p>
+        <ul class="cmd-steps">
+          <li>Enter EPRFM → F4 for position list</li>
+          <li>Enter employee # → ENTER → F6 to assign</li>
+          <li>Tab to User Template → F4 to pick template → F8 to finalize</li>
+          <li>For combo employees: select Sales Audit FIRST — this exposes multi-dept option</li>
+          <li>To disable: enter position type + employee # → confirm → F23 twice</li>
+        </ul>
+        <div class="cmd-warn">Full-time Sales Auditors CANNOT carry any other profile — Sales Audit is exclusive.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-profile" data-search="eprfd employee profile display view who has profiles inquiry">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">EPRFD</span>
+        <span class="cmd-name">Employee Profile Display (Read-Only)</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Inquiry-only. View profiles assigned through EPRFM. Use to audit access, troubleshoot "I can't see X menu," and stage compliance reviews.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-profile" data-search="wpm warehouse password maintenance apr epc tcp tsh assign access">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">WPM</span>
+        <span class="cmd-name">Warehouse Password Maintenance</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Manages passwords for protected programs. AWM and WM access only.</p>
+        <ul class="cmd-steps">
+          <li>Enter WPM → F6 to add new user → enter User ID (max 10 chars)</li>
+          <li>Employee sets own password (5–10 chars, letters/numbers only, no special chars)</li>
+        </ul>
+        <div class="cmd-section-title">Access Types</div>
+        <table class="guide-table">
+          <tr><th>Code</th><th>Access</th></tr>
+          <tr><td>APR</td><td>Refund Audit</td></tr>
+          <tr><td>EPC</td><td>Emergency Price Change (+ item downloads + item blocks)</td></tr>
+          <tr><td>TCP</td><td>Tire Center Password (WM, AWM, Ops Mgr only)</td></tr>
+          <tr><td>TSH</td><td>Trash Scan</td></tr>
+        </table>
+        <div class="cmd-tip">Use PWMI to view who currently has passwords for any of these options.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-profile" data-search="rpwd reset role password temporary profile">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">RPWD</span>
+        <span class="cmd-name">Reset Role Password</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Resets a role-based AS400 profile password. Staff managers and above. Employee must set new password on first login after reset.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-profile" data-search="pswm password maintenance change">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">PSWM</span>
+        <span class="cmd-name">Password Maintenance</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Manage AS400 passwords. Passwords expire every 90 days. Must be alpha-numeric, 8 characters, no special chars, not a previous 5 passwords.</p>
+      </div>
+    </div>
+
+    <!-- ── REPORTS & PRINTING ── -->
+    <div class="sec-label">Reports & Printing</div>
+
+    <div class="cmd-card cat-reports" data-search="outq print outqueue manage print jobs release route hold delete">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">OUTQ</span>
+        <span class="cmd-name">Print Outqueue</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Manage all print jobs. Each printer has its own outqueue. SOUTQ = sign printer (sign jobs don't stay after printing).</p>
+        <table class="guide-table">
+          <tr><th>Key</th><th>Action</th></tr>
+          <tr><td>2</td><td>Change — move printer, change copies or start page</td></tr>
+          <tr><td>4</td><td>Delete — cannot be undone</td></tr>
+          <tr><td>5</td><td>Display — view without printing</td></tr>
+          <tr><td>6</td><td>Release — print the job</td></tr>
+        </table>
+        <div class="cmd-keys"><span class="key-pill">F18 Jump to bottom (newest)</span><span class="key-pill">F19 Switch outqueues</span></div>
+        <div class="cmd-tip">Main printer format: PRINT[location#] (e.g., PRINT110). Remove suffix letters to reroute to main office printer.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-reports" data-search="rdprt sprt reroute reset printer fix issue">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">RDPRT / SPRT</span>
+        <span class="cmd-name">Reroute or Reset Printer</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Fix printer issues without calling the Service Desk.</p>
+        <ul class="cmd-steps">
+          <li><strong>Reroute:</strong> RDPRT → select Source Printer (key 1) → select Destination (key 1) → confirm → SPRT to restart → test</li>
+          <li><strong>Reset:</strong> RDPRT → select Source Printer → key 6 next to it → SPRT → test</li>
+        </ul>
+        <div class="cmd-warn">Reset only undoes the last reroute. Multiple reroutes → call Service Desk.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-reports" data-search="wfbrp front end block report blocked renewals voids signups">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">WFBRP</span>
+        <span class="cmd-name">Front End Block Report</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Shows blocked renewals, voids, FE signups, and member #99 by cashier.</p>
+        <div class="cmd-warn">Can ONLY be viewed by printing — not on-screen.</div>
+      </div>
+    </div>
+
+    <!-- ── LABOR SCHEDULING ── -->
+    <div class="sec-label">Labor Scheduling</div>
+
+    <div class="cmd-card cat-labor" data-search="lssi lane shift coverage forecasted scheduled lanes service clerks cashiers">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">LSSI</span>
+        <span class="cmd-name">Lane & Shift Coverage</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Forecasted vs. scheduled lanes for a day and time. System counts all Service Clerks as cashiers.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-labor" data-search="lswi labor schedule worksheet inquiry staffing">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">LSWI</span>
+        <span class="cmd-name">Labor Schedule Worksheet Inquiry</span>
+        <span class="confirmed-badge">✓</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">View staffing worksheet — hours planned vs. needed by department and time block.</p>
+      </div>
+    </div>
+
+    <!-- ── IBM i STANDARD ── -->
+    <div class="sec-label">IBM i Standard Commands</div>
+
+    <div class="cmd-card cat-ibm" data-search="wrksplf work spooled files view print hold release route pdf">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">WRKSPLF</span>
+        <span class="cmd-name">Work With Spooled Files</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">View, hold, release, reroute, or copy to PDF all print jobs from your session. The tool for managing everything you've printed today.</p>
+        <table class="guide-table">
+          <tr><th>Option</th><th>Action</th></tr>
+          <tr><td>3</td><td>Hold</td></tr>
+          <tr><td>5</td><td>Display (view without printing)</td></tr>
+          <tr><td>6</td><td>Release (print)</td></tr>
+          <tr><td>2</td><td>Change OUTQ (reroute to different printer)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-ibm" data-search="wrkactjob active jobs hung session find job list">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">WRKACTJOB</span>
+        <span class="cmd-name">Work With Active Jobs</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Shows all active jobs on the system. Use to find a hung session or identify a job locking a record.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-ibm" data-search="dspmsg display messages message waiting mw indicator">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">DSPMSG</span>
+        <span class="cmd-name">Display Messages</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Shows messages waiting (the MW indicator at bottom of screen). Run when you see MW lit up to clear messages before they accumulate.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-ibm" data-search="dsplibl display library list cpf4101 file not found">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">DSPLIBL</span>
+        <span class="cmd-name">Display Library List</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Shows your library list. First thing to check when you hit CPF4101 "File not found" — if a library is missing from your list, call IT.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-ibm" data-search="dspjoblog job log cpf error codes it support troubleshoot">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">DSPJOBLOG</span>
+        <span class="cmd-name">Display Job Log</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Shows your job log with the exact CPF error codes IT will need. Run this and capture the CPF before calling IT support.</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-ibm" data-search="wrkobjlck object lock record locked cpf5032 job">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">WRKOBJLCK</span>
+        <span class="cmd-name">Work With Object Locks</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Shows who is locking a record. Resolves CPF5032 "Record already locked to this job."</p>
+      </div>
+    </div>
+
+    <div class="cmd-card cat-ibm" data-search="signoff sign off log off clean list print job log">
+      <div class="cmd-header" onclick="togCard(this)">
+        <span class="cmd-code">SIGNOFF</span>
+        <span class="cmd-name">Sign Off</span>
+        <span class="cmd-toggle">▼</span>
+      </div>
+      <div class="cmd-body">
+        <p class="cmd-what">Sign off cleanly. <kbd>SIGNOFF *LIST</kbd> prints your job log on the way out — useful for end-of-shift diagnostics.</p>
+      </div>
+    </div>
+
+  </div><!-- /cmd-list -->
+</div><!-- /pane-commands -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     RF SCANNER
+══════════════════════════════════════════════════════════════════ -->
+<div class="pane" id="pane-rf">
+  <div class="guide-card" style="margin-bottom:12px;border-left:4px solid var(--grn)">
+    <div class="guide-title">RF Scanner Overview</div>
+    <div class="guide-body">
+      <p>RF (handheld) scanners give wireless AS400 access anywhere on the floor. Sign on with your warehouse profile. Navigate with number keys. F21 = Done on most pre-scan options.</p>
+      <p style="margin-top:6px"><strong>Most important options:</strong> 11 (item lookup), 72 (scan trash), 07 (pallet labels), 23 (print signs).</p>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div style="display:flex;flex-direction:column;gap:0">
+      <div class="rf-row">
+        <span class="rf-num">07</span>
+        <div class="rf-info">
+          <div class="rf-name">Print Depot Labels</div>
+          <div class="rf-desc">Free-form text on pallet labels. Select printer (1=RCV, 2=RTV), enter text and tag count.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">11</span>
+        <div class="rf-info">
+          <div class="rf-name">Item Inquiry <span class="rf-star">⭐ Most Used</span></div>
+          <div class="rf-desc">Scan barcode or enter item # → view dept and on-hand quantities. The fastest item check on the floor.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">13</span>
+        <div class="rf-info">
+          <div class="rf-name">Item Alpha Inquiry</div>
+          <div class="rf-desc">Search by description (min 3 chars per field) and/or dept number. RF version of IAI.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">16</span>
+        <div class="rf-info">
+          <div class="rf-name">UPC Inquiry</div>
+          <div class="rf-desc">Scan or key UPC → get item description and item number. Drop check digit when keying.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">18</span>
+        <div class="rf-info">
+          <div class="rf-name">Item Sales Report</div>
+          <div class="rf-desc">Enter warehouse # and optional date, scan/key items, F21 to print to sign printer.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">19</span>
+        <div class="rf-info">
+          <div class="rf-name">Item Group Maintenance</div>
+          <div class="rf-desc">Create/edit item groups via scanner. F4 to scan/key items · F10 to review · opt 4 to remove.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">20</span>
+        <div class="rf-info">
+          <div class="rf-name">Merchandise Audit Entry</div>
+          <div class="rf-desc">Scan/key counts for physical inventory audit. Multiple counts per item accepted.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">21</span>
+        <div class="rf-info">
+          <div class="rf-name">Clear Audit Count List</div>
+          <div class="rf-desc">Clears all counts entered in option 20. Use before starting a fresh count.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">22</span>
+        <div class="rf-info">
+          <div class="rf-name">Print Merchandise Audit Report</div>
+          <div class="rf-desc">Print counts from option 20. Same report as MACR.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">23</span>
+        <div class="rf-info">
+          <div class="rf-name">EDP Sign Requests <span class="rf-star">⭐</span></div>
+          <div class="rf-desc">Print signs from the floor. Enter size letter, scan items · F10 review · F21 print.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">36</span>
+        <div class="rf-info">
+          <div class="rf-name">Print Pallet Tag</div>
+          <div class="rf-desc">Print pallet ID tags. Select printer, enter item/UPC, qty, optional PO # and initials.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">63</span>
+        <div class="rf-info">
+          <div class="rf-name">Fresh Foods Inventory (FFI)</div>
+          <div class="rf-desc">Input fresh department inventory counts. Used at each period end (13× per year).</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">72</span>
+        <div class="rf-info">
+          <div class="rf-name">Scan Trash / Dispose <span class="rf-star">⭐</span></div>
+          <div class="rf-desc">Remove damaged or disposed items from inventory. Requires WPM username/password (TSH access). Same-day reversal: enter negative amount in Sell Unit field.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">88</span>
+        <div class="rf-info">
+          <div class="rf-name">Item / UPC Cross Reference</div>
+          <div class="rf-desc">Cross-reference item # with all associated UPCs. Same as desktop IXI.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">98</span>
+        <div class="rf-info">
+          <div class="rf-name">Item / UPC Check</div>
+          <div class="rf-desc">View item description, item #, UPC, and sell price. Shows per-unit pricing for multipacks.</div>
+        </div>
+      </div>
+      <div class="rf-row">
+        <span class="rf-num">8</span>
+        <div class="rf-info">
+          <div class="rf-name">Pre-Scan (Member + Items)</div>
+          <div class="rf-desc">Scan member card + up to 8 items in advance. Hit F21 when done. Used to clear a line or enable fast checkout. Does NOT work for items without a UPC/barcode.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-title">RF 72 — Scan Trash Notes</div>
+    <div class="guide-body">
+      <p>⚠ Requires WPM TSH password assigned by manager/AWM/WM.</p>
+      <p>Same-day reversal: enter negative amount in the Sell Unit field.</p>
+      <p>Older reversals: use RTV option NSE18.</p>
+      <p>Research scan trash entries: use AS400 option <kbd>TSH</kbd>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     DEPT REFERENCE SHEETS
+══════════════════════════════════════════════════════════════════ -->
+<div class="pane" id="pane-dept">
+
+  <!-- MEAT -->
+  <div class="dept-sheet open">
+    <div class="dept-header" onclick="togDept(this)">
+      <span class="dept-icon">🥩</span>
+      <span class="dept-title">Meat</span>
+      <span class="dept-num">Dept 61</span>
+      <span class="cmd-toggle" style="color:var(--muted);font-size:12px;transition:transform .2s">▼</span>
+    </div>
+    <div class="dept-body">
+      <div class="dept-priority">
+        <div class="dept-priority-title">⭐ Primary Commands</div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">IAI</span><span class="dept-cmd-desc">Look up any beef/pork/poultry item by keyword or PLU. Start every item question here.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">ITMW</span><span class="dept-cmd-desc">Real-time on-hand, today's sales, next delivery for any meat item at your warehouse.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">STK</span><span class="dept-cmd-desc">4-week sales & Days of Supply by dept 61. Core tool for cut-list planning. High DOS = over-production.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">DSL</span><span class="dept-cmd-desc">Dept 61 sales vs. last year and vs. plan — daily, weekly, and YTD. Know this number every shift.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">RHI</span><span class="dept-cmd-desc">Receiving history for any primal/sub-primal. Verify deliveries posted correctly same day.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">RF 11</span><span class="dept-cmd-desc">Scan or key any item # on the floor for instant on-hand check. Fastest tool for cooler walk.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">RF 72</span><span class="dept-cmd-desc">Scan out damaged, expired, or disposed product (trim, fat, bone, leakers, out-of-date). TSH password required.</span><span class="priority-star">⭐</span></div>
+      </div>
+      <div class="dept-priority">
+        <div class="dept-priority-title">Secondary / Situational</div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">IIL</span><span class="dept-cmd-desc">Cross-warehouse on-hand — find prime ribeye at a sister warehouse. Overnight data only.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">IATOP</span><span class="dept-cmd-desc">Top-selling items in dept 61. Run before buyer/manager walk-throughs.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">IRCI</span><span class="dept-cmd-desc">Check active IRCs on beef items — know about markdowns before members ask.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">MACR</span><span class="dept-cmd-desc">Print full dept 61 on-hand listing for period-end inventory and cycle counts.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">EDSR</span><span class="dept-cmd-desc">Print/reprint price signs. Walk meat case with EDSR printout to verify signs.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">RF 23</span><span class="dept-cmd-desc">Print signs directly from the floor scanner without going to a terminal.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">RF 07</span><span class="dept-cmd-desc">Print pallet/depot labels for receiving.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">DASH</span><span class="dept-cmd-desc">Check incoming meat trucks — when is the next delivery? What PO?</span></div>
+      </div>
+      <div class="dept-priority">
+        <div class="dept-priority-title">Meat-Specific Notes</div>
+        <div class="dept-cmd-row" style="border:none;flex-direction:column;gap:6px;padding-bottom:0">
+          <span class="dept-cmd-desc" style="color:var(--muted)">• Variable-weight (catch-weight) items: UPCs starting with <kbd>2</kbd> encode weight/price per GS1 retail convention.</span>
+          <span class="dept-cmd-desc" style="color:var(--muted)">• Production yield: sub-primal in → retail cut out → trim/fat/bone = shrink. Target 70–85% yield on beef depending on grade/trim spec.</span>
+          <span class="dept-cmd-desc" style="color:var(--muted)">• Shrink reason codes: Out-of-date · Spoilage · Trim/Fat/Bone · Damage · Contamination · Markdown · Internal Use · Donation (Feeding America) · Recall/Hold.</span>
+          <span class="dept-cmd-desc" style="color:var(--muted)">• Receiving accuracy: variable-weight cases individually weighed or scanned. Total scanned weight should equal invoice ±0.5%.</span>
+          <span class="dept-cmd-desc" style="color:var(--muted)">• COOL compliance: Country-of-Origin required on imported chicken, lamb, and goat muscle cuts. Country code in item master prints automatically on scale label.</span>
+          <span class="dept-cmd-desc" style="color:var(--muted)">• 13 physical inventories per year (one per 4-week fiscal period). Pre-inventory prep: print expected on-hand from IAI opt 1 for every active SKU.</span>
+          <span class="dept-cmd-desc" style="color:var(--muted)">• Costco company-wide shrink target: 0.11–0.12% of sales. Fresh meat runs higher — track weekly with STK/DSL to stay within department tolerance.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRONT END -->
+  <div class="dept-sheet">
+    <div class="dept-header" onclick="togDept(this)">
+      <span class="dept-icon">💳</span>
+      <span class="dept-title">Front End</span>
+      <span class="dept-num">Registers 1–50 · SCO 201–212</span>
+      <span class="cmd-toggle" style="color:var(--muted);font-size:12px;transition:transform .2s">▼</span>
+    </div>
+    <div class="dept-body">
+      <div class="dept-priority">
+        <div class="dept-priority-title">Primary Commands</div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">IAFEP</span><span class="dept-cmd-desc">Items per minute, items per labor hour by cashier. Core coaching tool. NOT real-time.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">LSDT</span><span class="dept-cmd-desc">Today's sales + labor hours (planned vs. actual). Call in/send home decisions made here.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">LSSI</span><span class="dept-cmd-desc">Forecasted vs. scheduled lanes — are you adequately staffed?</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">LSDC</span><span class="dept-cmd-desc">Door count — members through the door hourly. Combined with LSDT = average ticket.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">WII</span><span class="dept-cmd-desc">Member purchase history — refund desk primary tool. Member # + item # or category code.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">MBA9</span><span class="dept-cmd-desc">Membership lookup (read-only). Safe for routine verification on the floor.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">IRCI</span><span class="dept-cmd-desc">Look up IRC coupon # for register adjustments. Drop last digit at register.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">WFBRP</span><span class="dept-cmd-desc">Front End Block Report — blocked renewals, voids, signups. Print only (not on-screen).</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">MRC</span><span class="dept-cmd-desc">Membership Report Card — new signups, Executive upgrades, renewal rate.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">NSQ</span><span class="dept-cmd-desc">NSF Inquiry — look up returned check information.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">EOI</span><span class="dept-cmd-desc">Ecommerce/BOPIW check-in. F4 prompt · F8 confirm · F9 pickup.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">RF 8</span><span class="dept-cmd-desc">Pre-scan: scan member card + up to 8 items, F21 done. Fast-lane or clearance tool.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEMBERSHIP -->
+  <div class="dept-sheet">
+    <div class="dept-header" onclick="togDept(this)">
+      <span class="dept-icon">🪪</span>
+      <span class="dept-title">Membership</span>
+      <span class="dept-num">Registers 191–199</span>
+      <span class="cmd-toggle" style="color:var(--muted);font-size:12px;transition:transform .2s">▼</span>
+    </div>
+    <div class="dept-body">
+      <div class="dept-priority">
+        <div class="dept-priority-title">Primary Commands</div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">MBA</span><span class="dept-cmd-desc">Full membership edit — create, edit, cancel, refund, upgrade. Requires personal login.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">MBA9</span><span class="dept-cmd-desc">Read-only membership lookup. Toggle with F11: member #, name, sounds-like, ID type, phone, address.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">WBS9</span><span class="dept-cmd-desc">Business Membership inquiry (equivalent of MBA9 for business accounts).</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">IMIN</span><span class="dept-cmd-desc">International membership inquiry — requires member # AND country of issuance.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">MRC</span><span class="dept-cmd-desc">Membership Report Card — income this year vs. LY and % change by date/period/YTD.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">MAINQ</span><span class="dept-cmd-desc">Membership Activity Inquiry — detailed activity log for any membership.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">EPRFM</span><span class="dept-cmd-desc">Assign membership desk profiles (Staff Mgr+ only).</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCE -->
+  <div class="dept-sheet">
+    <div class="dept-header" onclick="togDept(this)">
+      <span class="dept-icon">🥦</span>
+      <span class="dept-title">Produce</span>
+      <span class="dept-num">Dept 65</span>
+      <span class="cmd-toggle" style="color:var(--muted);font-size:12px;transition:transform .2s">▼</span>
+    </div>
+    <div class="dept-body">
+      <div class="dept-priority">
+        <div class="dept-priority-title">Primary Commands</div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">IAI</span><span class="dept-cmd-desc">Item lookup by keyword. Search organic produce with "ORG" in description field.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">STK</span><span class="dept-cmd-desc">4-week D&D — core for ordering. High DOS on perishables = shrink risk.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">ITMW</span><span class="dept-cmd-desc">Real-time on-hand and today's sales. Key for fast-moving seasonal items.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">DASH</span><span class="dept-cmd-desc">Incoming produce truck schedule. Cross-check against ITMW for stocked-out items.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">DSL</span><span class="dept-cmd-desc">Dept 65 sales vs. LY and plan. Organic vs. conventional split visible at dept level.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">MACR</span><span class="dept-cmd-desc">Full dept 65 inventory listing for period-end count (13× per year).</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">RF 72</span><span class="dept-cmd-desc">Scan out spoilage, pull-date, and damage. TSH password required.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELI -->
+  <div class="dept-sheet">
+    <div class="dept-header" onclick="togDept(this)">
+      <span class="dept-icon">🍗</span>
+      <span class="dept-title">Service Deli</span>
+      <span class="dept-num">Dept 19</span>
+      <span class="cmd-toggle" style="color:var(--muted);font-size:12px;transition:transform .2s">▼</span>
+    </div>
+    <div class="dept-body">
+      <div class="dept-priority">
+        <div class="dept-priority-title">Primary Commands</div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">ITMW</span><span class="dept-cmd-desc">On-hand for rotisserie and prepared-food items in real time. Track cook-batch vs. sales.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">STK</span><span class="dept-cmd-desc">4-week D&D for deli items. Over-production on rotisserie shows as high DOS → shrink. 2-hour hot-hold limit.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">RF 72</span><span class="dept-cmd-desc">Scan out hot-hold-expired, pull-date, and quality-reject items. TSH password required.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">DSL</span><span class="dept-cmd-desc">Dept 19 sales vs. LY and plan. Rotisserie, pizza, and prepared foods appear individually.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">MACR</span><span class="dept-cmd-desc">Full dept 19 inventory for period-end count (13× per year, explicitly per Service Deli Mgr JD).</span></div>
+      </div>
+      <div class="dept-priority">
+        <div class="dept-priority-title">Deli Notes</div>
+        <div class="dept-cmd-row" style="border:none;flex-direction:column;gap:6px;padding-bottom:0">
+          <span class="dept-cmd-desc" style="color:var(--muted)">• Rotisserie: 90-min cook cycle, strict 2-hour hot-hold limit. Production batch decrements raw chicken SKU and credits cooked retail SKU.</span>
+          <span class="dept-cmd-desc" style="color:var(--muted)">• Unsold birds: repurposed to chicken Alfredo, soup, pot pies (keyed as component-issue/transfer, NOT shrink), or shrunk out at hot-hold limit.</span>
+          <span class="dept-cmd-desc" style="color:var(--muted)">• Pack time printed on label to the minute — time-stamp is the pull-date trigger.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BAKERY -->
+  <div class="dept-sheet">
+    <div class="dept-header" onclick="togDept(this)">
+      <span class="dept-icon">🥐</span>
+      <span class="dept-title">Bakery</span>
+      <span class="dept-num">Dept 32</span>
+      <span class="cmd-toggle" style="color:var(--muted);font-size:12px;transition:transform .2s">▼</span>
+    </div>
+    <div class="dept-body">
+      <div class="dept-priority">
+        <div class="dept-priority-title">Primary Commands</div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">STK</span><span class="dept-cmd-desc">4-week D&D for all bakery SKUs. Bake schedule is driven by STK weighted by day-of-week (Sat/Sun highest).</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">ITMW</span><span class="dept-cmd-desc">Real-time on-hand for finished goods. Cross-reference with production count at close.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">RF 72</span><span class="dept-cmd-desc">Scan out pull-date expired, cull/quality-reject, and unsold items. TSH password required.</span><span class="priority-star">⭐</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">DSL</span><span class="dept-cmd-desc">Dept 32 sales — spot overproduction on any SKU vs. trailing average.</span></div>
+        <div class="dept-cmd-row"><span class="dept-cmd-code">MACR</span><span class="dept-cmd-desc">Full dept 32 inventory for period-end count (13× per year).</span></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /pane-dept -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     SIGN-ON & NAVIGATION
+══════════════════════════════════════════════════════════════════ -->
+<div class="pane" id="pane-guide">
+
+  <div class="guide-card">
+    <div class="guide-title">Sign-On Credentials</div>
+    <table class="guide-table">
+      <tr><th>Digits</th><th>Username</th><th>Password</th></tr>
+      <tr><td>1–2 (XX)</td><td>WHSEINXX</td><td>EDP0XX</td></tr>
+      <tr><td>3 (XXX)</td><td>WHSEINXXX</td><td>EDPXXX</td></tr>
+      <tr><td>4 (XXXX)</td><td>WIN0XXXX</td><td>EDP0XXXX</td></tr>
+    </table>
+    <p style="margin-top:8px;font-size:12px;color:var(--muted)">Membership: WHSEMBXX / MEMBER0XX · Membership 3-digit: WHSEMBXXX / MEMBERXXX · Demo: WXXXDMO (restricted from EDSM, WII, LSDT)</p>
+    <p style="margin-top:6px;font-size:12px;color:var(--red)">⚠ Never share personal management profiles.</p>
+    <p style="margin-top:6px;font-size:12px;color:var(--muted)">Terminal auto-locks after 90 seconds of keyboard idle. Sign back on normally when it locks.</p>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-title">Function Keys</div>
+    <table class="guide-table">
+      <tr><th>Key</th><th>Action</th></tr>
+      <tr><td>F1</td><td>Help — screen-specific definitions and key guide</td></tr>
+      <tr><td>F3</td><td>Exit — return to previous/main menu completely</td></tr>
+      <tr><td>F4</td><td>Prompt — fillable form for any command; shows available options</td></tr>
+      <tr><td>F5</td><td>Refresh the current display</td></tr>
+      <tr><td>F6</td><td>Print / Create (context-dependent)</td></tr>
+      <tr><td>F9</td><td>Retrieve last command typed</td></tr>
+      <tr><td>F10</td><td>Command line toggle</td></tr>
+      <tr><td>F11</td><td>Alternate view (more columns)</td></tr>
+      <tr><td>F12</td><td>Cancel — back one screen without exiting the program</td></tr>
+      <tr><td>F21</td><td>Done (RF scanner pre-scan option 8)</td></tr>
+      <tr><td>Shift + F1–F12</td><td>F13 through F24</td></tr>
+      <tr><td>Reset (left-Ctrl)</td><td>Recovers from "X II" input-inhibited state</td></tr>
+      <tr><td>Shift + Esc</td><td>System Request — open second interactive job (power user)</td></tr>
+      <tr><td>Field Exit (right-Ctrl)</td><td>Blanks rest of numeric field and tabs forward — learn this on day one</td></tr>
+    </table>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-title">Two Sessions at Once</div>
+    <div class="guide-body">
+      <p>1. Press <kbd>Shift+Esc</kbd> (System Request)</p>
+      <p>2. Key <kbd>1</kbd> next to "Start New Session" → ENTER</p>
+      <p>3. Repeat to toggle back</p>
+      <p style="margin-top:6px">Power tip: run IAI in one session and DSL in the other without losing context. Fastest way to cross-reference data.</p>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-title">Custom Home Screen</div>
+    <div class="guide-body">
+      <p><kbd>F15</kbd> (Shift+F3) — Add the current option to your custom home menu (or remove it if already added)</p>
+      <p><kbd>F18</kbd> (Shift+F6) — Toggle between default and custom home screens</p>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-title">Drill-Through Option Codes</div>
+    <div class="guide-body">
+      <p>In most inquiry screens, key a number in the <kbd>Opt</kbd> column to drill in:</p>
+    </div>
+    <table class="guide-table" style="margin-top:8px">
+      <tr><th>Opt</th><th>Action</th></tr>
+      <tr><td>1</td><td>On-hand by warehouse (updates next day)</td></tr>
+      <tr><td>3</td><td>Sales by region or company</td></tr>
+      <tr><td>5</td><td>Item detail / sign display</td></tr>
+      <tr><td>6</td><td>Print sign</td></tr>
+      <tr><td>8</td><td>ITMW — detailed item info (most used)</td></tr>
+      <tr><td>0</td><td>HAZMAT / disposal info</td></tr>
+    </table>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-title">Key Identifiers</div>
+    <div class="guide-body">
+      <p><strong>Item numbers</strong> — 6–7 digit numeric codes (older items: 5–6 digits)</p>
+      <p><strong>UPCs</strong> — 12-digit GTIN-12. Drop last digit when keying manually (check digit)</p>
+      <p><strong>Variable-weight UPCs</strong> — Start with "2" (GS1 convention). First 6 digits = item, trailing digits = price or weight (used for all in-store-cut meat)</p>
+      <p><strong>Warehouse numbers</strong> — 3-digit numeric + 2-letter region code (e.g., 129 BA, 388 MW). Newer warehouses are 1000+</p>
+      <p><strong>Tempe warehouse region</strong> — SW (Southwest)</p>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-title">Status Bar Indicators</div>
+    <table class="guide-table">
+      <tr><th>Indicator</th><th>Meaning</th></tr>
+      <tr><td>MW</td><td>Message Waiting — run DSPMSG to clear</td></tr>
+      <tr><td>II / X II</td><td>Input Inhibited — press Reset key (left-Ctrl)</td></tr>
+      <tr><td>KB</td><td>Keyboard Locked</td></tr>
+    </table>
+  </div>
+
+</div><!-- /pane-guide -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     POWER USER
+══════════════════════════════════════════════════════════════════ -->
+<div class="pane" id="pane-power">
+
+  <div class="guide-card">
+    <div class="guide-title">The 30-Second Item Walk</div>
+    <div class="guide-body">
+      <p>Chain inquiries instead of looking at one screen alone:</p>
+      <p><kbd>IAI</kbd> → opt <kbd>1</kbd> (on-hand by warehouse) → opt <kbd>3</kbd> (sales by region) → exit → <kbd>RHI</kbd> (receiving history) → <kbd>DSL</kbd> (dept context)</p>
+      <p>Five screens, one minute. You now know more about that SKU than 90% of your peers.</p>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-title">Daily Routine — Fresh Dept Lead</div>
+    <div class="guide-body">
+      <p><strong>Before doors open:</strong> Sign on → DSL (yesterday sales vs. plan vs. LY) → LSDT (sales + labor variance) → RHI (any item received yesterday, confirm posting) → IAI/IIL on top-10 SKUs → walk floor with EDSR printout → build morning-huddle talking points.</p>
+      <p style="margin-top:8px"><strong>Mid-shift:</strong> Re-check on-hand for fast movers → submit transfer-in via IIL if OOS imminent → resolve locked-record errors → print exception spools.</p>
+      <p style="margin-top:8px"><strong>Closing:</strong> Final DSL/LSDT read → WRKSPLF to clear and route day's spool files → key shrink/damages/donations → sign off cleanly.</p>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-title">Weekly Routine</div>
+    <div class="guide-body">
+      <p><strong>Mon:</strong> 7-day DSL by SKU, rank top-25 and bottom-25. Identify slow movers with cover days &gt;5.</p>
+      <p><strong>Tue:</strong> Weekly RHI variance review for the truck cycle.</p>
+      <p><strong>Wed:</strong> Comp-shop maintenance — particularly tobacco, liquor, seasonal price audits.</p>
+      <p><strong>Thu:</strong> EDSR review for upcoming weekend pricing.</p>
+      <p><strong>Fri:</strong> Pre-weekend OOS sweep. Place transfer-in requests with sister warehouses via IIL.</p>
+      <p><strong>Sun/EoW:</strong> Print weekly DSL spool, file in dept binder, prep weekly variance commentary.</p>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-title">Period (4-Week) Routine</div>
+    <div class="guide-body">
+      <p><strong>3 days before close:</strong> Reconcile all RHI receivings for the period. Post all damages, donations, and transfers. Reconcile in-transit pallets.</p>
+      <p><strong>Count day:</strong> Print expected on-hand from IAI opt 1 for every dept SKU → conduct physical count → key variances. Biggest variances always live in slow-mover bins.</p>
+      <p><strong>Day after close:</strong> Review shrink % vs. target (0.11–0.12% company-wide). Document root cause for every variance over threshold. Print period DSL + turn calc + shrink summary as one-pager for AGM/GM.</p>
+      <p><strong>Day 1 new period:</strong> Re-baseline cover days. Reset standing orders if YoY trend has shifted ±10% or more.</p>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-title">Talk Like a Buyer — Justify-an-Order Template</div>
+    <div class="guide-body">
+      <p>"Item _____, in dept ____, showed cover days of N (vs. target ~3 days for fresh). DSL shows -X% YoY. RHI shows we're still receiving at last year's rate. Recommend cutting the standing receive by Y cases. Estimated annual savings in shrink: $_____."</p>
+      <p style="margin-top:8px"><strong>Frame in dollars, not units:</strong> 30 extra cases of ribeye = $X tied up plus spoilage risk. That's the language that moves decisions.</p>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-title">Average Operator vs. Top Performer</div>
+    <table class="guide-table">
+      <tr><th>Average</th><th>Top Performer</th></tr>
+      <tr><td>Looks up item when member asks</td><td>Pre-runs IAI/DSL on top-50 items every morning</td></tr>
+      <tr><td>Reports OOS after manager notices</td><td>Catches OOS same morning via IIL on-hand check</td></tr>
+      <tr><td>Receives truck and moves on</td><td>Reconciles RHI to on-hand same day; flags variances</td></tr>
+      <tr><td>Knows yesterday's total</td><td>Knows total + last year + plan + top mover</td></tr>
+      <tr><td>Calls buyer to "check"</td><td>Calls buyer with proposed PO change + 3 supporting numbers</td></tr>
+      <tr><td>Prints signs as needed</td><td>Walks floor with EDSR printout before opening, every day</td></tr>
+      <tr><td>Says "we have too much"</td><td>Says "DSL shows -22% YoY; cover is 7 days; recommend cutting next PO by 2 pallets"</td></tr>
+    </table>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-title">Career Advancement — SIT Path</div>
+    <div class="guide-body">
+      <p><strong>Path:</strong> Hourly → SIT (Supervisor In Training, 12-week) → Supervisor → Merchandise Training Course (12-week) → Dept Manager → AGM → GM. ~85% of managers started hourly.</p>
+      <p style="margin-top:8px"><strong>Merit increases:</strong> Automatic every 1,040 hours worked in $1/hr increments up to top-of-scale (~5 years to top out). Discretionary raises at SIT entry and above.</p>
+      <p style="margin-top:8px"><strong>SIT interview talking points using AS400:</strong></p>
+      <p>• "I used LSDT/LSWT to analyze planned vs. projected sales and adjusted staffing accordingly."</p>
+      <p>• "I caught a receiving discrepancy worth $__ using RHI vs. physical count."</p>
+      <p>• "I reduced cover days from X to Y on top movers without OOS using IAI and IIL."</p>
+      <p>• "I trained [N] team members on AS400 item lookups and sign printing."</p>
+    </div>
+  </div>
+
+</div><!-- /pane-power -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     ERRORS
+══════════════════════════════════════════════════════════════════ -->
+<div class="pane" id="pane-errors">
+
+  <div class="guide-card">
+    <div class="guide-title">Common Error Messages & Fixes</div>
+    <div style="display:flex;flex-direction:column">
+
+      <div class="err-row">
+        <div class="err-code">CPF5032</div>
+        <div class="err-name">Record already locked to this job</div>
+        <div class="err-fix">F12 to back out. If persistent: sign off and back on. IT can release via WRKOBJLCK if needed.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">CPF4101</div>
+        <div class="err-name">File not found / level check on open</div>
+        <div class="err-fix">Check library list with DSPLIBL. Usually IT pushes a fix — sign back on after they confirm.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">CPF5027</div>
+        <div class="err-name">Record being used by another job</div>
+        <div class="err-fix">Wait and retry. If blocking operations, IT can ENDJOB the offending session.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">CPF2189</div>
+        <div class="err-name">Job not authorized to use library</div>
+        <div class="err-fix">Your profile lacks access. Manager contacts IT to grant library access.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">CPF9999</div>
+        <div class="err-name">Function check — unhandled program error</div>
+        <div class="err-fix">Press F3 or Enter. Run DSPJOBLOG and capture the CPF code. Send to IT — they need the exact error from the job log.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">U008</div>
+        <div class="err-name">Register communication error</div>
+        <div class="err-fix">Power register OFF, hold power 10 seconds. Wait 10 more seconds. Power ON — register reloads.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">Z001 / Z002</div>
+        <div class="err-name">Register address error</div>
+        <div class="err-fix">Enter register # as 4 digits (register 1 = 1001, register 16 = 1016, register 501 = 1501). Press S2 (hold CTRL + RESALE + release).</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">X II</div>
+        <div class="err-name">Input Inhibited — keyboard won't respond</div>
+        <div class="err-fix">Press Reset key (left-Ctrl on 5250 keyboard). If still stuck: System Request → 2 → Enter to end request. Last resort: close and relaunch emulator.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">Terminal Secured</div>
+        <div class="err-name">Screen locks after 90 seconds idle</div>
+        <div class="err-fix">Enter operator # and password normally to resume. This is not an error — it's a security feature.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">Job already exists for this user</div>
+        <div class="err-name">Previous session still active</div>
+        <div class="err-fix">System Request → 4 (from a second session) to read messages and end the old job.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">Spool file stuck WTR/RDY</div>
+        <div class="err-name">Print job won't print</div>
+        <div class="err-fix">WRKSPLF → option 6 to release, or option 2 to change OUTQ to a working printer.</div>
+      </div>
+
+      <div class="err-row">
+        <div class="err-code">Password Disabled</div>
+        <div class="err-name">3 bad sign-ons or 90+ days inactive</div>
+        <div class="err-fix">Manager contacts IT for a QSECOFR-level reset. Passwords expire every 90 days — set a calendar reminder.</div>
+      </div>
+
+      <div class="err-row" style="border:none">
+        <div class="err-code">Subsystem Not Active</div>
+        <div class="err-name">System subsystem error</div>
+        <div class="err-fix">Alert IT immediately. Do NOT attempt to fix this yourself.</div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /pane-errors -->
+
+</div><!-- /content -->
+
+<script>
+// ── Tabs ──────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('pane-' + t.dataset.tab).classList.add('active');
+    document.getElementById('content').scrollTop = 0;
+    // Update search placeholder
+    document.getElementById('as-search').value = '';
+    filterSearch('');
+  });
+});
+
+// ── Card toggle ───────────────────────────────────────────────────────
+function togCard(header) {
+  header.closest('.cmd-card').classList.toggle('open');
+}
+function togDept(header) {
+  header.closest('.dept-sheet').classList.toggle('open');
+}
+
+// ── Search ────────────────────────────────────────────────────────────
+function filterSearch(q) {
+  q = q.toLowerCase().trim();
+  // Commands pane
+  let visible = 0;
+  document.querySelectorAll('.cmd-card').forEach(card => {
+    const text = ((card.dataset.search || '') + ' ' + card.textContent).toLowerCase();
+    const show = !q || text.includes(q);
+    card.classList.toggle('hidden', !show);
+    if (show) visible++;
+  });
+  const countEl = document.getElementById('cmd-count');
+  if (countEl) countEl.textContent = q ? `${visible} result${visible!==1?'s':''}` : '';
+
+  // If searching, switch to commands tab
+  if (q) {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(x => x.classList.remove('active'));
+    document.querySelector('[data-tab="commands"]').classList.add('active');
+    document.getElementById('pane-commands').classList.add('active');
+    // Also search RF pane cards
+    document.querySelectorAll('[id^="pane-"]:not(#pane-commands) .rf-row, .err-row, .guide-card, .dept-sheet').forEach(el => {
+      // these stay visible in their own panes
+    });
+  }
+}
+
+document.getElementById('as-search').addEventListener('input', e => {
+  filterSearch(e.target.value);
+});
+
+window.addEventListener('beforeinstallprompt', e => e.preventDefault());
+</script>
+</body>
+</html>
