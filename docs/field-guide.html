@@ -29,7 +29,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;c
 #header{flex-shrink:0;background:var(--red);padding:0;position:relative;z-index:200;-webkit-transform:translateZ(0)}
 
 /* BRAND BAR */
-#header-brand{display:flex;align-items:center;gap:10px;padding:8px 12px 6px 24px}
+#header-brand{display:flex;align-items:center;gap:10px;padding:8px 12px 6px 12px}
+#back-hub{display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:rgba(255,255,255,.85);font-size:11px;font-weight:700;letter-spacing:.06em;padding:5px 9px;text-decoration:none;white-space:nowrap;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+#back-hub:active{background:rgba(0,0,0,.6)}
 .brand-badge{background:rgba(68,4,4,.9);border:1px solid rgba(255,255,255,.18);border-radius:7px;padding:4px 9px;text-align:center;flex-shrink:0;line-height:1.2}
 .badge-line1{font-size:14px;font-weight:900;color:#fff;letter-spacing:.08em}
 .badge-line2{font-size:8px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.18em;text-transform:uppercase;margin-top:1px}
@@ -184,7 +186,7 @@ details.bb-detail[open] .bb-chevron{transform:rotate(180deg)}
 /* PWA INSTALL BANNER */
 #install-banner{position:fixed;bottom:calc(var(--nav-h) + 10px);left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;z-index:1000;box-shadow:0 4px 24px rgba(0,0,0,.5);max-width:340px;width:calc(100% - 24px);animation:slideup .25s ease}
 @keyframes slideup{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-#install-banner.hidden{display:none}
+#install-banner{display:none!important}
 .ib-icon{width:40px;height:40px;background:var(--red);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px}
 .ib-text{flex:1;min-width:0}
 .ib-title{font-size:13px;font-weight:700;color:var(--text)}
@@ -202,6 +204,7 @@ details.bb-detail[open] .bb-chevron{transform:rotate(180deg)}
 
 <header id="header">
   <div id="header-brand">
+    <a id="back-hub" href="index.html">← Hub</a>
     <div class="brand-badge">
       <div class="badge-line1">COSTCO</div>
       <div class="badge-line2">WHOLESALE</div>
