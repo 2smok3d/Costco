@@ -3,37 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="theme-color" content="#0c0c0c">
+  <link rel="manifest" href="manifest.json">
   <title>Dept 61 — Close Report</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #0c0c0c;
-      --surface: #141414;
-      --surface2: #1c1c1c;
+      --surface: #181818;
+      --input-bg: #222;
       --border: #333;
-      --accent: #e07b00;
-      --accent-dim: rgba(224,123,0,0.10);
       --text: #ffffff;
-      --text-dim: #aaa;
+      --label: #bbb;
+      --placeholder: #666;
+      --divider: #444;
+      --accent: #e07b00;
       --done: #4caf6e;
       --partial: #d4a017;
       --held: #e05555;
-      --radius: 6px;
+      --na: #555;
+      --radius: 8px;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; }
 
     body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Barlow', sans-serif;
-      padding-bottom: 90px;
+      padding-bottom: 80px;
     }
 
     /* ── HEADER ── */
     header {
       background: var(--surface);
-      border-bottom: 2px solid var(--accent);
+      border-bottom: 3px solid var(--accent);
       padding: 12px 16px 10px;
       position: sticky;
       top: 0;
@@ -43,6 +49,7 @@
       align-items: center;
     }
     .header-title {
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 20px;
       font-weight: 900;
       letter-spacing: 3px;
@@ -52,7 +59,7 @@
     .header-date {
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
-      color: var(--text-dim);
+      color: var(--label);
       letter-spacing: 1px;
     }
 
@@ -63,43 +70,48 @@
       padding: 12px 12px 0;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 6px;
     }
 
-    /* ── SECTION DIVIDER ── */
-    .divider {
-      font-size: 10px;
+    /* ── SECTION DIVIDERS ── */
+    .section {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
       font-weight: 700;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: #666;
+      color: var(--divider);
       text-align: center;
-      padding: 6px 0 2px;
+      padding: 8px 0 2px;
     }
 
-    /* ── FIELD CARD ── */
-    .card {
+    /* ── FIELD ROW ── */
+    .field {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-left: 3px solid var(--border);
+      border-left: 4px solid var(--border);
       border-radius: var(--radius);
-      padding: 11px 13px;
+      padding: 10px 12px;
       transition: border-left-color 0.2s;
     }
-    .card.s-done    { border-left-color: var(--done); }
-    .card.s-partial { border-left-color: var(--partial); }
-    .card.s-held    { border-left-color: var(--held); }
-    .card.s-accent  { border-left-color: var(--accent); }
 
-    .card-label {
+    .field.s-done    { border-left-color: var(--done); }
+    .field.s-partial { border-left-color: var(--partial); }
+    .field.s-held    { border-left-color: var(--held); }
+    .field.s-na      { border-left-color: var(--na); opacity: 0.55; }
+    .field.s-accent  { border-left-color: var(--accent); }
+
+    .field-label {
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: var(--text-dim);
-      margin-bottom: 8px;
+      color: var(--label);
+      margin-bottom: 7px;
     }
-    .card-row {
+
+    .field-row {
       display: flex;
       gap: 8px;
       align-items: center;
@@ -107,62 +119,65 @@
 
     /* ── INPUTS ── */
     select, input[type="text"], input[type="time"], textarea {
-      background: var(--surface2);
+      background: var(--input-bg);
       border: 1px solid var(--border);
-      border-radius: 4px;
+      border-radius: 5px;
       color: var(--text);
       font-family: 'Barlow', sans-serif;
       font-size: 17px;
       font-weight: 500;
-      padding: 10px 11px;
+      padding: 9px 10px;
       outline: none;
       transition: border-color 0.15s;
     }
-    select:focus, input:focus, textarea:focus {
-      border-color: var(--accent);
-    }
+    select:focus, input:focus, textarea:focus { border-color: var(--accent); }
 
     select {
       flex: 0 0 auto;
       cursor: pointer;
       -webkit-appearance: none;
       appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 10px center;
       padding-right: 28px;
-      min-width: 0;
+      min-width: 100px;
     }
+    select option { background: #222; color: #fff; }
+
     input[type="text"] {
       flex: 1;
       font-weight: 400;
       min-width: 0;
     }
-    input[type="text"]::placeholder { color: #666; font-weight: 400; }
+    input[type="text"]::placeholder { color: var(--placeholder); }
+
     input[type="time"] {
       flex: 1;
       font-family: 'JetBrains Mono', monospace;
       font-size: 18px;
     }
+
     textarea {
       width: 100%;
       resize: none;
-      min-height: 72px;
+      min-height: 70px;
       font-weight: 400;
-      line-height: 1.6;
-      font-size: 17px;
+      font-size: 16px;
+      line-height: 1.5;
     }
-    textarea::placeholder { color: #666; font-weight: 400; }
+    textarea::placeholder { color: var(--placeholder); }
 
     .time-label {
-      font-size: 15px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
       font-weight: 700;
       letter-spacing: 1px;
-      color: var(--text-dim);
+      color: var(--label);
       white-space: nowrap;
     }
 
-    /* ── GENERATE BUTTON ── */
+    /* ── GENERATE ── */
     .btn-generate {
       background: var(--accent);
       color: #000;
@@ -176,48 +191,39 @@
       padding: 15px;
       width: 100%;
       cursor: pointer;
-      margin-top: 4px;
-      transition: background 0.15s, transform 0.1s;
+      margin-top: 6px;
+      transition: background 0.15s;
     }
-    .btn-generate:active { background: #b86200; transform: scale(0.99); }
+    .btn-generate:active { background: #b86200; }
 
     /* ── OUTPUT ── */
-    .output-wrap {
-      display: none;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 4px;
-    }
+    .output-wrap { display: none; flex-direction: column; gap: 8px; margin-top: 6px; }
     .output-wrap.visible { display: flex; }
 
     .output-box {
-      background: #080808;
+      background: #0a0a0a;
       border: 1px solid var(--accent);
       border-radius: var(--radius);
       font-family: 'JetBrains Mono', monospace;
       font-size: 13px;
-      line-height: 1.9;
+      line-height: 2;
       padding: 16px;
       white-space: pre-wrap;
       color: #ffffff;
-      letter-spacing: 0.3px;
     }
 
-    .recipient-label {
+    /* SEND BUTTONS */
+    .send-label {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      color: #555;
+      color: var(--divider);
       text-align: center;
     }
 
-    .btn-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
+    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
     .btn-sms {
       background: transparent;
@@ -229,36 +235,22 @@
       font-weight: 900;
       letter-spacing: 1px;
       text-transform: uppercase;
-      padding: 14px 10px;
+      padding: 13px 10px;
       text-align: center;
       text-decoration: none;
       display: block;
-      transition: all 0.15s;
-      cursor: pointer;
       line-height: 1.3;
+      transition: all 0.15s;
     }
-
-    .btn-sms:active {
-      background: var(--accent);
-      color: #000;
-    }
-
-    .btn-sms .btn-role {
-      display: block;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      color: #777;
-      margin-top: 2px;
-    }
-
+    .btn-sms:active { background: var(--accent); color: #000; }
+    .btn-role { display: block; font-size: 10px; font-weight: 600; letter-spacing: 1px; color: #888; margin-top: 2px; }
     .btn-sms:active .btn-role { color: #000; }
 
     .btn-copy {
       background: transparent;
-      border: 1px solid #444;
+      border: 1px solid var(--border);
       border-radius: var(--radius);
-      color: #888;
+      color: var(--label);
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 15px;
       font-weight: 700;
@@ -269,11 +261,13 @@
       cursor: pointer;
       transition: all 0.15s;
     }
-    .btn-copy:active, .btn-copy.copied { color: #fff; border-color: #888; }
+    .btn-copy.copied { color: #fff; border-color: #888; }
+
+    .btn-reset {
       background: transparent;
-      border: 1px solid #444;
+      border: 1px solid #2a2a2a;
       border-radius: var(--radius);
-      color: #888;
+      color: #666;
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 14px;
       font-weight: 700;
@@ -282,9 +276,8 @@
       padding: 10px;
       width: 100%;
       cursor: pointer;
-      transition: color 0.15s, border-color 0.15s;
     }
-    .btn-reset:active { color: #888; border-color: #444; }
+    .btn-reset:active { color: #aaa; }
   </style>
 </head>
 <body>
@@ -296,131 +289,150 @@
 
 <div class="container">
 
-  <!-- POULTRY -->
-  <div class="divider">— Poultry —</div>
+  <!-- ── POULTRY ── -->
+  <div class="section">— Poultry —</div>
 
-  <div class="card" id="c-conv">
-    <div class="card-label">Conv. Poultry</div>
-    <div class="card-row">
+  <div class="field" id="c-conv">
+    <div class="field-label">Conv. Poultry</div>
+    <div class="field-row">
       <select id="conv-s" onchange="paint('c-conv','conv-s')">
-        <option>Done</option>
-        <option>Partial</option>
-        <option>Held</option>
+        <option>Done</option><option>Partial</option><option>Held</option><option>N/A</option>
       </select>
       <input type="text" id="conv-n" placeholder="notes">
     </div>
   </div>
 
-  <div class="card" id="c-pgrinds">
-    <div class="card-label">Poultry Grinds</div>
-    <div class="card-row">
-      <select id="pgrinds-s" onchange="paint('c-pgrinds','pgrinds-s')">
-        <option>Done</option>
-        <option>Partial</option>
-        <option>Held</option>
-      </select>
-      <input type="text" id="pgrinds-n" placeholder="notes">
-    </div>
-  </div>
-
-  <div class="card" id="c-ogp">
-    <div class="card-label">OG Poultry</div>
-    <div class="card-row">
+  <div class="field" id="c-ogp">
+    <div class="field-label">OG Poultry</div>
+    <div class="field-row">
       <select id="ogp-s" onchange="paint('c-ogp','ogp-s')">
-        <option>Done</option>
-        <option>Partial</option>
-        <option>Held</option>
+        <option>Done</option><option>Partial</option><option>Held</option><option>N/A</option>
       </select>
       <input type="text" id="ogp-n" placeholder="notes">
     </div>
   </div>
 
-  <!-- BEEF -->
-  <div class="divider">— Beef —</div>
+  <div class="field" id="c-pgrinds">
+    <div class="field-label">Poultry Grinds</div>
+    <div class="field-row">
+      <select id="pgrinds-s" onchange="paint('c-pgrinds','pgrinds-s')">
+        <option>Done</option><option>Partial</option><option>Held</option><option>N/A</option>
+      </select>
+      <input type="text" id="pgrinds-n" placeholder="notes">
+    </div>
+  </div>
 
-  <div class="card" id="c-grinds">
-    <div class="card-label">Grinds</div>
-    <div class="card-row">
+  <!-- ── GRINDS ── -->
+  <div class="section">— Grinds —</div>
+
+  <div class="field" id="c-grinds">
+    <div class="field-label">Grinds</div>
+    <div class="field-row">
       <select id="grinds-s" onchange="paint('c-grinds','grinds-s')">
-        <option>Done</option>
-        <option>Partial</option>
-        <option>Held</option>
+        <option>Done</option><option>Partial</option><option>Held</option><option>N/A</option>
       </select>
       <input type="text" id="grinds-n" placeholder="notes">
     </div>
   </div>
 
-  <div class="card" id="c-bricks">
-    <div class="card-label">Bricks</div>
-    <div class="card-row">
-      <select id="bricks-s" onchange="paint('c-bricks','bricks-s')">
-        <option>Done</option>
-        <option>Partial</option>
-        <option>Held</option>
+  <!-- ── BRICKS ── -->
+  <div class="section">— Bricks —</div>
+
+  <div class="field" id="c-bricks-conv">
+    <div class="field-label">Conv. Bricks</div>
+    <div class="field-row">
+      <select id="bricks-conv-s" onchange="paint('c-bricks-conv','bricks-conv-s')">
+        <option>Done</option><option>Partial</option><option>Held</option><option>N/A</option>
       </select>
-      <input type="text" id="bricks-n" placeholder="e.g. 3 cases in case">
+      <input type="text" id="bricks-conv-n" placeholder="e.g. 3 cases in case">
     </div>
   </div>
 
-  <!-- CASE -->
-  <div class="divider">— Case —</div>
+  <div class="field" id="c-bricks-og">
+    <div class="field-label">OG Bricks</div>
+    <div class="field-row">
+      <select id="bricks-og-s" onchange="paint('c-bricks-og','bricks-og-s')">
+        <option>Done</option><option>Partial</option><option>Held</option><option>N/A</option>
+      </select>
+      <input type="text" id="bricks-og-n" placeholder="e.g. 2 cases in case">
+    </div>
+  </div>
 
-  <div class="card" id="c-cryo">
-    <div class="card-label">Cryo</div>
-    <div class="card-row">
+  <div class="field" id="c-bricks-wagyu">
+    <div class="field-label">Wagyu Bricks</div>
+    <div class="field-row">
+      <select id="bricks-wagyu-s" onchange="paint('c-bricks-wagyu','bricks-wagyu-s')">
+        <option>Done</option><option>Partial</option><option>Held</option><option>N/A</option>
+      </select>
+      <input type="text" id="bricks-wagyu-n" placeholder="notes">
+    </div>
+  </div>
+
+  <div class="field" id="c-bricks-bison">
+    <div class="field-label">Bison Bricks</div>
+    <div class="field-row">
+      <select id="bricks-bison-s" onchange="paint('c-bricks-bison','bricks-bison-s')">
+        <option>Done</option><option>Partial</option><option>Held</option><option>N/A</option>
+      </select>
+      <input type="text" id="bricks-bison-n" placeholder="notes">
+    </div>
+  </div>
+
+  <!-- ── CASE ── -->
+  <div class="section">— Case —</div>
+
+  <div class="field" id="c-cryo">
+    <div class="field-label">Cryo</div>
+    <div class="field-row">
       <select id="cryo-s" onchange="paint('c-cryo','cryo-s')">
         <option value="Rotated &amp; full">Rotated &amp; full</option>
-        <option>Light</option>
-        <option>Issue</option>
+        <option>Light</option><option>Issue</option>
       </select>
       <input type="text" id="cryo-n" placeholder="notes">
     </div>
   </div>
 
-  <div class="card" id="c-date">
-    <div class="card-label">Date Watch</div>
-    <div class="card-row">
+  <div class="field" id="c-date">
+    <div class="field-label">Date Watch</div>
+    <div class="field-row">
       <select id="date-s" onchange="paint('c-date','date-s')">
-        <option>All clear</option>
-        <option>Items pulled</option>
-        <option>Watch items</option>
+        <option>All clear</option><option>Items pulled</option><option>Watch items</option>
       </select>
       <input type="text" id="date-n" placeholder="item — qty — sell by">
     </div>
   </div>
 
-  <div class="card" id="c-case">
-    <div class="card-label">Case Condition</div>
-    <div class="card-row">
+  <div class="field" id="c-case">
+    <div class="field-label">Case Condition</div>
+    <div class="field-row">
       <select id="case-s" onchange="paint('c-case','case-s')">
-        <option>Good</option>
-        <option>Notable</option>
-        <option>Issue</option>
+        <option>Good</option><option>Notable</option><option>Issue</option>
       </select>
       <input type="text" id="case-n" placeholder="notes">
     </div>
   </div>
 
-  <!-- CLOSE -->
-  <div class="divider">— Close —</div>
+  <!-- ── CLOSE ── -->
+  <div class="section">— Close —</div>
 
-  <div class="card s-accent">
-    <div class="card-label">Notes</div>
+  <div class="field s-accent">
+    <div class="field-label">Notes</div>
     <textarea id="notes" placeholder="Supply issues, equipment, call-outs, anything opener needs to know..."></textarea>
   </div>
 
-  <div class="card s-accent">
-    <div class="card-row">
+  <div class="field s-accent">
+    <div class="field-row">
       <span class="time-label">Out at</span>
       <input type="time" id="out-time" value="22:00">
     </div>
   </div>
 
-  <button class="btn-generate" onclick="generate()">▶ Generate Text</button>
+  <button class="btn-generate" onclick="generate()">▶ Generate</button>
 
   <div class="output-wrap" id="output-wrap">
     <div class="output-box" id="output-box"></div>
-    <div class="recipient-label">— Send to —</div>
+
+    <div class="send-label">— Send to —</div>
     <div class="btn-row">
       <a class="btn-sms" id="btn-adam" href="#">
         Adam
@@ -431,6 +443,7 @@
         <span class="btn-role">Supervisor</span>
       </a>
     </div>
+
     <button class="btn-copy" id="btn-copy" onclick="copyText()">Copy Text</button>
     <button class="btn-reset" onclick="resetForm()">↺ New Report</button>
   </div>
@@ -438,42 +451,57 @@
 </div><!-- /container -->
 
 <script>
-  // ── Date display ──────────────────────────────────────────
+  // ── Date ─────────────────────────────────────────────────────────────────
   const now = new Date();
   const dateStr = `${now.getMonth()+1}/${now.getDate()}`;
   document.getElementById('hdr-date').textContent = dateStr;
 
-  // ── Card border color by status ───────────────────────────
-  const DONE_VALS    = ['done', 'rotated & full', 'all clear', 'good'];
-  const PARTIAL_VALS = ['partial', 'light', 'watch items', 'notable'];
-  const HELD_VALS    = ['held', 'issue', 'items pulled'];
+  // ── Card color by status ─────────────────────────────────────────────────
+  const DONE    = ['done','rotated & full','all clear','good'];
+  const PARTIAL = ['partial','light','watch items','notable'];
+  const HELD    = ['held','issue','items pulled'];
 
   function paint(cardId, selId) {
     const card = document.getElementById(cardId);
     const val  = document.getElementById(selId).value.toLowerCase();
-    card.className = 'card';
-    if (DONE_VALS.includes(val))    card.classList.add('s-done');
-    else if (PARTIAL_VALS.includes(val)) card.classList.add('s-partial');
-    else if (HELD_VALS.includes(val))    card.classList.add('s-held');
+    card.className = 'field';
+    if (val === 'n/a')              card.classList.add('s-na');
+    else if (DONE.includes(val))    card.classList.add('s-done');
+    else if (PARTIAL.includes(val)) card.classList.add('s-partial');
+    else if (HELD.includes(val))    card.classList.add('s-held');
   }
 
-  // ── Build a single text line ──────────────────────────────
-  function line(label, selId, noteId) {
+  // ── Build a text line ────────────────────────────────────────────────────
+  function line(label, selId, noteId, skipNA = true) {
     const status = document.getElementById(selId).value;
-    const note   = document.getElementById(noteId).value.trim();
+    if (skipNA && status === 'N/A') return null;
+    const note = document.getElementById(noteId).value.trim();
     return note ? `${label}: ${status} — ${note}` : `${label}: ${status}`;
   }
 
-  // ── Format 24h → 12h ─────────────────────────────────────
+  // ── Bricks block ─────────────────────────────────────────────────────────
+  function bricksBlock() {
+    const types = [
+      { label: 'Conv',  sid: 'bricks-conv-s',  nid: 'bricks-conv-n'  },
+      { label: 'OG',    sid: 'bricks-og-s',    nid: 'bricks-og-n'    },
+      { label: 'Wagyu', sid: 'bricks-wagyu-s', nid: 'bricks-wagyu-n' },
+      { label: 'Bison', sid: 'bricks-bison-s', nid: 'bricks-bison-n' },
+    ];
+    const lines = types
+      .map(t => line(t.label, t.sid, t.nid))
+      .filter(Boolean);
+    if (!lines.length) return null;
+    return 'Bricks:\n' + lines.map(l => `  ${l}`).join('\n');
+  }
+
+  // ── Format time ───────────────────────────────────────────────────────────
   function fmt12(val) {
     if (!val) return '—';
     const [h, m] = val.split(':').map(Number);
-    const ap   = h >= 12 ? 'PM' : 'AM';
-    const hour = h % 12 || 12;
-    return `${hour}:${String(m).padStart(2,'0')} ${ap}`;
+    return `${h%12||12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`;
   }
 
-  // ── Generate ──────────────────────────────────────────────
+  // ── Generate ──────────────────────────────────────────────────────────────
   function generate() {
     const notes   = document.getElementById('notes').value.trim();
     const outTime = fmt12(document.getElementById('out-time').value);
@@ -482,14 +510,14 @@
       `${dateStr} Close — Dept 61`,
       ``,
       line('Conv. Poultry',  'conv-s',    'conv-n'),
-      line('Poultry Grinds', 'pgrinds-s', 'pgrinds-n'),
       line('OG Poultry',     'ogp-s',     'ogp-n'),
+      line('Poultry Grinds', 'pgrinds-s', 'pgrinds-n'),
       line('Grinds',         'grinds-s',  'grinds-n'),
-      line('Bricks',         'bricks-s',  'bricks-n'),
+      bricksBlock(),
       line('Cryo',           'cryo-s',    'cryo-n'),
       line('Date Watch',     'date-s',    'date-n'),
       line('Case Condition', 'case-s',    'case-n'),
-    ];
+    ].filter(l => l !== null);
 
     if (notes) rows.push(`Notes: ${notes}`);
     rows.push(``);
@@ -499,7 +527,6 @@
     const output = rows.join('\n');
     document.getElementById('output-box').textContent = output;
 
-    // Wire SMS buttons
     const encoded = encodeURIComponent(output);
     document.getElementById('btn-adam').href = `sms:4805460784?body=${encoded}`;
     document.getElementById('btn-abe').href  = `sms:3233089971?body=${encoded}`;
@@ -509,52 +536,41 @@
     setTimeout(() => wrap.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
   }
 
-  // ── Copy to clipboard ─────────────────────────────────────
+  // ── Copy ──────────────────────────────────────────────────────────────────
   function copyText() {
     const text = document.getElementById('output-box').textContent;
     const btn  = document.getElementById('btn-copy');
-
-    const success = () => {
-      btn.textContent = '✓ Copied — Paste & Send';
+    const done = () => {
+      btn.textContent = '✓ Copied';
       btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = 'Copy & Send';
-        btn.classList.remove('copied');
-      }, 2500);
+      setTimeout(() => { btn.textContent = 'Copy Text'; btn.classList.remove('copied'); }, 2500);
     };
-
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(success).catch(fallback);
-    } else { fallback(); }
-
-    function fallback() {
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done);
+    else {
       const el = document.createElement('textarea');
-      el.value = text;
-      el.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
-      document.body.appendChild(el);
-      el.focus(); el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-      success();
+      el.value = text; el.style.cssText = 'position:fixed;opacity:0;';
+      document.body.appendChild(el); el.select(); document.execCommand('copy');
+      document.body.removeChild(el); done();
     }
   }
 
-  // ── Reset ─────────────────────────────────────────────────
+  // ── Reset ─────────────────────────────────────────────────────────────────
   function resetForm() {
     document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
     document.querySelectorAll('input[type="text"]').forEach(i => i.value = '');
     document.getElementById('notes').value = '';
     document.getElementById('out-time').value = '22:00';
     document.getElementById('output-wrap').classList.remove('visible');
-    document.querySelectorAll('.card').forEach(c => {
-      const keeps = ['s-accent'];
-      c.className = 'card ' + keeps.filter(k => c.classList.contains(k)).join(' ');
+    document.querySelectorAll('.field').forEach(f => {
+      f.className = 'field' + (f.classList.contains('s-accent') ? ' s-accent' : '');
     });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    // Re-date in case midnight crosses
     const d = new Date();
     document.getElementById('hdr-date').textContent = `${d.getMonth()+1}/${d.getDate()}`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // ── Suppress install prompt ───────────────────────────────────────────────
+  window.addEventListener('beforeinstallprompt', e => e.preventDefault());
 </script>
 </body>
 </html>
