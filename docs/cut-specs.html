@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Cut Specs — Dept 61</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface2: #1c1c1c;
+      --border: #252525;
+      --text: #ffffff;
+      --text-dim: #aaa;
+      --text-muted: #555;
+      --red: #cc0000;
+      --prime: #c8960c;
+      --choice: #4a7fbf;
+      --teal: #007a6e;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; display: flex; flex-direction: column; height: 100dvh; }
+
+    /* HEADER */
+    header {
+      background: var(--surface);
+      border-bottom: 3px solid var(--red);
+      padding: 10px 14px 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .back-btn {
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      text-decoration: none;
+      letter-spacing: 1px;
+      padding: 5px 9px;
+      border: 1px solid #333;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .header-info { flex: 1; min-width: 0; }
+    .header-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .header-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    /* SEARCH */
+    .search-wrap {
+      background: var(--surface);
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    #search {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-size: 16px;
+      padding: 9px 12px;
+      outline: none;
+    }
+    #search::placeholder { color: var(--text-muted); }
+    #search:focus { border-color: var(--red); }
+
+    /* SPECIES TABS */
+    .species-bar {
+      display: flex;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .species-bar::-webkit-scrollbar { display: none; }
+    .sp-tab {
+      flex: 1;
+      padding: 10px 6px;
+      border: none;
+      background: none;
+      color: var(--text-dim);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+      transition: all .15s;
+    }
+    .sp-tab.active { color: var(--text); border-bottom-color: var(--red); }
+
+    /* GRADE TABS */
+    .grade-bar {
+      display: flex;
+      gap: 6px;
+      padding: 8px 12px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .grade-bar::-webkit-scrollbar { display: none; }
+    .g-btn {
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-dim);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .15s;
+    }
+    .g-btn.active.all   { background: #333; color: var(--text); border-color: #555; }
+    .g-btn.active.prime { background: var(--prime); color: #000; border-color: var(--prime); }
+    .g-btn.active.choice { background: var(--choice); color: #fff; border-color: var(--choice); }
+    .g-btn.active.other { background: var(--teal); color: #fff; border-color: var(--teal); }
+
+    /* SCROLL CONTENT */
+    #content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 10px 12px 30px; }
+
+    /* CUT COUNT */
+    .cut-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      padding: 0 2px 8px;
+    }
+
+    /* CUT CARD */
+    .cut-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+    .cut-card.prime  { border-left-color: var(--prime); }
+    .cut-card.choice { border-left-color: var(--choice); }
+    .cut-card.other  { border-left-color: var(--teal); }
+    .cut-card.hidden { display: none; }
+
+    .cut-header {
+      padding: 12px 14px 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .cut-header:active { background: rgba(255,255,255,.03); }
+
+    .cut-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .cut-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: .5px;
+      line-height: 1.2;
+    }
+    .cut-toggle {
+      color: var(--text-muted);
+      font-size: 14px;
+      flex-shrink: 0;
+      padding-top: 1px;
+      transition: transform .2s;
+    }
+    .cut-card.open .cut-toggle { transform: rotate(180deg); }
+
+    .cut-ids {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: .5px;
+    }
+    .plu { color: var(--red); font-weight: 600; }
+
+    .cut-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .pill.grade-prime  { background: rgba(200,150,12,.15); color: var(--prime); border: 1px solid rgba(200,150,12,.3); }
+    .pill.grade-choice { background: rgba(74,127,191,.15); color: #7aaff5; border: 1px solid rgba(74,127,191,.3); }
+    .pill.spec         { background: rgba(255,255,255,.05); color: var(--text-dim); border: 1px solid var(--border); }
+    .pill.warn         { background: rgba(255,80,80,.1); color: #ff8080; border: 1px solid rgba(255,80,80,.25); }
+
+    /* STEPS */
+    .cut-steps {
+      display: none;
+      padding: 0 14px 14px;
+      border-top: 1px solid var(--border);
+    }
+    .cut-card.open .cut-steps { display: block; }
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-top: 12px;
+    }
+    .steps-list li {
+      display: flex;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-dim);
+    }
+    .step-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      padding-top: 2px;
+      min-width: 18px;
+    }
+
+    /* EMPTY */
+    .empty {
+      text-align: center;
+      padding: 48px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="back-btn" href="meat.html">← Meat</a>
+  <div class="header-info">
+    <div class="header-title">🔪 Cut Specs</div>
+    <div class="header-sub">DEPT 61 &nbsp;·&nbsp; TEMPE</div>
+  </div>
+</header>
+
+<div class="search-wrap">
+  <input id="search" type="search" placeholder="Search cut name, PLU, item #..." autocomplete="off" autocorrect="off" spellcheck="false">
+</div>
+
+<div class="species-bar">
+  <button class="sp-tab active" data-sp="beef">🥩 Beef</button>
+  <button class="sp-tab" data-sp="seafood">🐟 Seafood</button>
+</div>
+
+<div class="grade-bar" id="grade-bar">
+  <button class="g-btn active all" data-g="all">All</button>
+  <button class="g-btn prime" data-g="prime">Prime</button>
+  <button class="g-btn choice" data-g="choice">Choice</button>
+  <button class="g-btn other" data-g="other">Other</button>
+</div>
+
+<div id="content">
+  <div class="cut-count" id="cut-count"></div>
+  <div id="cut-list"></div>
+  <div class="empty" id="empty" style="display:none">No cuts found</div>
+</div>
+
+<script>
+const CUTS = {
+  beef: [
+    // ── PRIME ──────────────────────────────────────────────────────────
+    {
+      grade: "prime",
+      name: "Ribeye Steak — Boneless (1pc)",
+      plu: "333", item: "34323",
+      pills: ["Tenderize TWICE","Fat cap ¼\"","Mix large/small ends"],
+      warn: [],
+      steps: [
+        "Tenderize TWICE — fat side down",
+        "Trim backstrap. Remove bone chips, bone felt, connective tissue",
+        "Remove all finger meat from bottom. DO NOT remove rib fat",
+        "Scrape exposed ends to remove bone dust",
+        "Cut into steaks — follow angle of vendor break",
+        "Trim external fat to ¼\". Follow contour of steak — both sides",
+        "Trim tail to ¼\" beyond false eye. Remove false lean from lip",
+        "Package large and small end steaks together",
+        "Wrap and label with USDA Prime sticker"
+      ]
+    },
+    {
+      grade: "prime",
+      name: "Ribeye Steak — Boneless (2pc Cap & Eye)",
+      plu: "1775", item: "12234",
+      pills: ["Tenderize TWICE","Eye fat ⅛\"","Separate cap"],
+      warn: [],
+      steps: [
+        "Tenderize TWICE — fat side down",
+        "Trim backstrap. Remove bone chips, bone felt, connective tissue",
+        "Find natural seam — remove false eye/lip from main muscle. Do not cut into primary muscle",
+        "Separate Spinalis cap from main eye muscle. Set cap aside",
+        "Trim fat on EYE muscle to ⅛\"",
+        "Remove remaining rib finger meat",
+        "Scrape exposed ends to remove bone dust",
+        "Cut eye into steaks",
+        "Package large and small end steaks together",
+        "Wrap and label with USDA Prime sticker"
+      ]
+    },
+    {
+      grade: "prime",
+      name: "NY Strip Steak — Boneless",
+      plu: "278", item: "34316",
+      pills: ["Tenderize TWICE","Fat cap ¼\"","Remove backstrap 100%"],
+      warn: [],
+      steps: [
+        "Tenderize TWICE — fat side down",
+        "Remove bone chips, bone felt, connective tissue",
+        "Face cut sirloin end 1½\" left of vendor break. ½ face + first steak MUST go to trim",
+        "Cut whole striploin into steaks — follow angle of vendor break",
+        "Trim and remove backstrap (latissimus dorsi) 100%. Stand steak on fat cap — cut down and away",
+        "Trim external fat to ¼\". Follow contour — both sides",
+        "Trim tail to ¼\" beyond false eye",
+        "Package sirloin end and center cut steaks together",
+        "Wrap and label with USDA Prime sticker"
+      ]
+    },
+    {
+      grade: "prime",
+      name: "Tenderloin Steak — Filet Mignon",
+      plu: "336", item: "34289",
+      pills: ["Do NOT tenderize","2\" steaks","Keep wing muscle"],
+      warn: ["Do NOT tenderize"],
+      steps: [
+        "DO NOT tenderize",
+        "Remove external membrane and fat down to silver skin — pull by hand, do NOT cut into muscle",
+        "Keep side muscle (Psoas Minor) intact and attached to large muscle (Psoas Major)",
+        "Square butt portion to expose minimum 2\" face",
+        "Remove external fat and bone felt from bottom where muscle attached to bone",
+        "Remove fat from between main muscle (Psoas Major) and wing muscle (Iliacus)",
+        "Cut into 2\" steaks — keep wing muscle intact on 3rd steak",
+        "Last steak before tail MUST have 2\" face — add tail to trim",
+        "Trim membrane and external fat exposing silver skin on all steaks"
+      ]
+    },
+    {
+      grade: "prime",
+      name: "Top Sirloin — Cap Off",
+      plu: "1660", item: "42357",
+      pills: ["Tenderize TWICE","Remove sciatic nerve","Split nerve-end steaks"],
+      warn: [],
+      steps: [
+        "Tenderize TWICE — fat side down",
+        "Remove fat, cartilage, connective tissue down to blue membrane",
+        "Cut steaks perpendicular to sciatic nerve — follow vendor break angle",
+        "Steaks from nerve end MUST be split in 2 for full nerve removal",
+        "Split steaks to completely remove nerve — check both sides",
+        "Steaks without nerve can be split or left whole",
+        "Tray like-size steaks together",
+        "Wrap and label with USDA Prime sticker"
+      ]
+    },
+    {
+      grade: "prime",
+      name: "Top Sirloin — Cap Steak (Coulotte)",
+      plu: "1670", item: "42539",
+      pills: ["Tenderize TWICE","Cut across grain","¼\" face on small end"],
+      warn: [],
+      steps: [
+        "Tenderize TWICE — fat side down",
+        "Trim cap to lean red meat. Front and back clean of all fat",
+        "Expose ¼\" face on small end of cap muscle",
+        "Cut into steaks — cut across the grain",
+        "Tray steaks horizontally",
+        "Wrap and label with USDA Prime sticker"
+      ]
+    },
+    {
+      grade: "prime",
+      name: "Tri-Tip Roast",
+      plu: "1271", item: "43273",
+      pills: ["Tenderize TWICE","Trim to blue membrane","2 per pack"],
+      warn: [],
+      steps: [
+        "Tenderize TWICE",
+        "Trim to blue membrane. Remove bone chips, bone felt, connective tissue",
+        "Remove any exposed glands",
+        "Tray 2 roasts per pack — tails at opposite ends for best fit",
+        "Wrap and label with USDA Prime sticker"
+      ]
+    },
+    {
+      grade: "prime",
+      name: "Tri-Tip Steak",
+      plu: "1270", item: "43259",
+      pills: ["Tenderize TWICE","Cut face up","Trim to blue membrane"],
+      warn: [],
+      steps: [
+        "Tenderize TWICE",
+        "Trim to blue membrane. Remove bone chips, bone felt, connective tissue",
+        "Remove any exposed glands",
+        "Cut roasts into steaks — can be left whole or split for packaging",
+        "Display with cut face up in package",
+        "Wrap and label with USDA Prime sticker"
+      ]
+    },
+    {
+      grade: "prime",
+      name: "Top Round Shabu-Shabu",
+      plu: "6905", item: "26905",
+      pills: ["Do NOT tenderize","PUMA 3mm","Freeze 6hrs min"],
+      warn: ["Do NOT tenderize"],
+      steps: [
+        "DO NOT tenderize",
+        "Remove fat, cartilage, connective tissue down to red meat",
+        "Remove gelatinous material and exposed veins from bottom",
+        "Face vendor break ¼\" — fully trim to red",
+        "Split top round in half perpendicular from back point to vendor break",
+        "Place each half in 25/15 tray, NO soaker — freeze minimum 6 hours",
+        "Set PUMA claw to back slot 12MM — place faced end toward blade",
+        "Select Top Round Shabu-Shabu setting (first cut 0mm, cutting length 3mm, remaining 20mm, belt speed 0)",
+        "Run program and remove cut product"
+      ]
+    },
+    // ── CHOICE ────────────────────────────────────────────────────────
+    {
+      grade: "choice",
+      name: "Ribeye Steak — Boneless",
+      plu: "5", item: "33666",
+      pills: ["Tenderize ONCE","Fat cap ¼\"","Mix large/small ends"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — fat side down",
+        "Trim backstrap. Remove bone chips, bone felt, connective tissue",
+        "Remove all finger meat from bottom. DO NOT remove rib fat",
+        "Scrape exposed ends to remove bone dust",
+        "Cut into steaks — follow angle of vendor break",
+        "Trim external fat to ¼\". Follow contour — both sides",
+        "Trim tail to ¼\" beyond false eye. Remove false lean from lip",
+        "Package large and small end steaks together",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Ribeye Roast — Boneless",
+      plu: "53", item: "33670",
+      pills: ["Tenderize ONCE","Fat cap ¼\"","1 per tray"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — fat side down",
+        "Remove backstrap/tendon. Remove bone chips, bone felt, connective tissue",
+        "Remove all finger meat from bottom. DO NOT remove rib fat",
+        "Scrape exposed ends to remove bone dust",
+        "Cut whole ribeye in half or to desired size",
+        "Trim tail to ¼\" beyond false eye. Remove false lean",
+        "Place 1 roast per tray",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Ribeye Steak — Bone-In",
+      plu: "385", item: "34583",
+      pills: ["Tenderize ONCE","Fat cap ¼\"","Rib bones ¼\" beyond false eye"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — bone side down, fat side up",
+        "Trim rib bones to ¼\" beyond false eye on band saw if necessary",
+        "Remove bone felt and feather bones",
+        "Scrape exposed ends to remove bone dust",
+        "Remove backstrap/tendons",
+        "Remove any false lean",
+        "Knife cut steaks between each rib bone",
+        "Tray 2 steaks per package in 25/15P",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Ribeye — Frenched Bone-In",
+      plu: "358", item: "15618",
+      pills: ["Tenderize ONCE","Fat cap ¼\"","Clean bone 100%"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — bone side down, fat side up",
+        "Remove bone chips, bone felt, connective tissue",
+        "Remove fat from ribs",
+        "Score rib ends ¼\" beyond false eye",
+        "Cut scribe line across rib end to end connecting score lines",
+        "Cut down bones to scribe line and remove tail fat. Remove rib meat to scribe line — as close to bone as possible",
+        "Knife cut steaks between each rib",
+        "Trim steaks to ¼\". Remove false lean. Clean bone 100%",
+        "Package 2 steaks — mix small and large ends",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Ribeye — Thin Slice (PUMA)",
+      plu: "1454", item: "44478",
+      pills: ["Tenderize ONCE","PUMA 18MM","7-8 steaks per pkg"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — fat side down",
+        "Trim backstrap. Remove bone chips, bone felt, connective tissue",
+        "Remove all finger meat from bottom. DO NOT remove rib fat",
+        "Scrape exposed ends to remove bone dust",
+        "Set PUMA to Thin Slice Ribeye (18MM). Set claw at 12MM top only",
+        "Place loin fingers up — rib end facing left",
+        "Trim steaks to ¼\" fat beyond false eye",
+        "7-8 steaks per package — equal large and small ends. All package weights ≥ Choice Ribeye #33666",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Rib Roast — Standing Bone-In",
+      plu: "52", item: "33692",
+      pills: ["Tenderize ONCE","Rib bones ¼\" beyond false eye","No single ribs"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — bone side down, fat side up",
+        "Trim rib bones to ¼\" beyond false eye on band saw if necessary",
+        "Remove bone felt and feather bones",
+        "Scrape exposed ends to remove bone dust",
+        "Remove backstrap/tendons",
+        "Remove any false lean",
+        "Knife cut roasts between bones — only 2, 3, 4, 5, and 7 rib cuts (no single rib)",
+        "Package 2-rib roasts standing on end; 3, 4, 5, 7 laying down bone side up",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "NY Strip Steak — Boneless",
+      plu: "2", item: "33593",
+      pills: ["Tenderize ONCE","Fat cap ¼\"","Remove backstrap 100%"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — fat side down",
+        "Remove bone chips, bone felt, connective tissue",
+        "Face cut sirloin end ½\" from vendor break — point to point",
+        "Cut whole striploin into steaks — follow vendor break angle",
+        "Trim and remove backstrap (latissimus dorsi) 100% — stand on fat cap, cut down and away",
+        "Trim external fat to ¼\". Follow contour — both sides",
+        "Trim tail to ¼\" beyond false eye",
+        "Package sirloin end and center cut steaks together",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "NY Strip — Country Style Boneless Ribs",
+      plu: "2883", item: "32883",
+      pills: ["Tenderize ONCE","1.5\" steaks cut in half","Trim to blue membrane"],
+      warn: [],
+      steps: [
+        "Tenderize whole strip loin",
+        "Face cut loin ½\" from vendor break",
+        "Remove 3½\" from sirloin (nerve) end",
+        "Trim and remove backstrap (latissimus dorsi) 100%",
+        "Remove bone chips, bone felt, connective tissue",
+        "Trim away all visible fat without going into red meat — down to blue membrane",
+        "Cut vein end into 1.5\" steaks",
+        "Cut steaks in half down the middle",
+        "Flip steaks to show cut side. Package in 9L tray",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "NY Shabu-Shabu",
+      plu: "514", item: "20397",
+      pills: ["Do NOT tenderize vein end","PUMA 12MM","Freeze 6hrs min"],
+      warn: ["Remove vein end BEFORE tenderizing"],
+      steps: [
+        "Remove vein end PRIOR to tenderizing — cut ~3.5\" from vein end point to point",
+        "Remove bone chips, bone felt, connective tissue",
+        "Trim and remove backstrap (latissimus dorsi) 100%",
+        "Trim all visible fat to blue membrane",
+        "Shape vein end to 25P tray. Place on meat platter rack",
+        "Cover with bakery bag and item label. Freeze minimum 6 hours",
+        "Set PUMA claw to back slot 12MM. Place vein end in gripper",
+        "Select Shabu-Shabu PUMA setting",
+        "Stack and package per spec"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Top Sirloin — Cap Off",
+      plu: "542", item: "29192",
+      pills: ["Tenderize ONCE","Remove sciatic nerve","Split nerve-end steaks"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — fat side down",
+        "Remove fat, cartilage, connective tissue down to blue membrane",
+        "Cut steaks perpendicular to sciatic nerve — follow vendor break",
+        "Nerve-end steak MUST be split in 2 for full nerve removal",
+        "Split steaks to completely remove nerve — check both sides",
+        "Steaks without nerve can be split or left whole",
+        "Tray like-size steaks together",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Top Sirloin — Cap Steak (Coulotte)",
+      plu: "1514", item: "44504",
+      pills: ["Tenderize ONCE","Cut across grain","¼\" face on small end"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — fat side down",
+        "Trim cap to lean red meat",
+        "Expose ¼\" face on small end of cap muscle",
+        "Cut into steaks — cut across the grain",
+        "Tray steaks horizontally",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Top Sirloin — 1 Piece (Cap On, Separated)",
+      plu: "—", item: "—",
+      pills: ["Tenderize ONCE","Separate cap","Remove mouse muscle"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — fat side down",
+        "Remove fat, cartilage, connective tissue down to blue membrane",
+        "Separate cap from main muscle",
+        "Remove secondary muscle (mouse muscle) from main muscle",
+        "Cut sirloin into steaks — perpendicular to sciatic nerve",
+        "Nerve-end steak MUST be split in 2 for full nerve removal",
+        "Steaks without nerve can be split or left whole",
+        "Tray like-size steaks together",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "T-Bone Steak",
+      plu: "—", item: "18277",
+      pills: ["Tenderize ONCE","Fat cap ¼\"","No rib bone in T-bone"],
+      warn: ["No rib bone in any T-bone steak"],
+      steps: [
+        "Tenderize ONCE — New York side up",
+        "Remove remaining spinal cord backstrap and fat in spinal column 100%",
+        "Face cut large end (Porterhouse) ½\"",
+        "Chine backbone on meat saw to remove excess chine bone",
+        "Cut T-bone steaks from large end until ~3\" from 13th rib bone — no rib bone in any T-bone",
+        "Bone remaining small end and process as New York steak specifications",
+        "Trim T-bone steaks to ¼\" external fat, trim ¼\"",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Flank Steak",
+      plu: "13", item: "33977",
+      pills: ["Do NOT tenderize","100% visual lean","2-3 per pkg"],
+      warn: ["Do NOT tenderize"],
+      steps: [
+        "DO NOT tenderize",
+        "Remove any surface fat and steam pasteurization",
+        "Remove continuous material from point of flank steak",
+        "Flank steaks must be 100% visual lean",
+        "Package 2-3 flank steaks per package",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Skirt Steak",
+      plu: "1238", item: "42114",
+      pills: ["Tenderize ONCE","Trim cap to lean","2 per pkg"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE",
+        "Trim cap to lean red meat. Remove fat, connective tissue, and cartilage",
+        "Fold ends underneath center to fit tray",
+        "Tray 2 steaks per package",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Teres Major",
+      plu: "9", item: "32771",
+      pills: ["Do NOT tenderize","5-6 per tray","Remove silver membrane"],
+      warn: ["Do NOT tenderize"],
+      steps: [
+        "DO NOT tenderize",
+        "Remove surface fat from both sides of muscle",
+        "Remove silver membrane from both sides",
+        "Remove steam pasteurization if present",
+        "Place 5-6 filets in 25/15L tray with 2 soaker pads",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Boneless Short Rib",
+      plu: "47", item: "48360",
+      pills: ["Tenderize ONCE","1\"–1½\" thick","Primary muscle only"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — flap meat",
+        "Trim to blue membrane. Remove bone chips, bone felt, connective tissue",
+        "Remove secondary muscle — primary muscle only for short ribs",
+        "Cut to minimum 1\", maximum 1½\" — ensure uniformity",
+        "Display with cut face up in package",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Short Ribs — Bone-In",
+      plu: "130", item: "33981",
+      pills: ["Tenderize ONCE","½\"–¾\" strips across bones","50% lean 50% fat"],
+      warn: [],
+      steps: [
+        "Tenderize — bone side down",
+        "Square cut whole short rib (chuck end) on meat saw",
+        "Saw cut ½\"–¾\" strips across rib bones",
+        "Bone any portion of short ribs that are not meaty (50% lean 50% fat)",
+        "Tray full short ribs with half portions from lean portion near breast bone cut",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Brisket Flat — Boneless",
+      plu: "50", item: "76224",
+      pills: ["Tenderize ONCE","Bottom fat ¼\"","Display fat side down"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE",
+        "Trim to blue membrane. Remove steam pasteurization, bone felt, connective tissue",
+        "Remove secondary deckle muscle from bottom of flat",
+        "Trim bottom fat to ¼\"",
+        "Display fat side down in package",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Tri-Tip Roast",
+      plu: "57", item: "88906",
+      pills: ["Tenderize ONCE","Trim to blue membrane","2 per pack"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE",
+        "Trim to blue membrane. Remove bone chips, bone felt, connective tissue",
+        "Remove any exposed glands",
+        "Tray 2 roasts per pack — tails at opposite ends",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Tri-Tip Steak",
+      plu: "11", item: "33654",
+      pills: ["Tenderize ONCE","Cut face up","Trim to blue membrane"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE",
+        "Trim to blue membrane. Remove bone chips, bone felt, connective tissue",
+        "Remove any exposed glands",
+        "Cut roasts into steaks — can be left whole or split",
+        "Display with cut face up in package",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Chuck Pot Roast",
+      plu: "51", item: "33712",
+      pills: ["Tenderize ONCE","3\" min thickness","2 per pkg"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — whole chuck roll",
+        "Remove bones, bone felt, sinew, connective tissue",
+        "Remove remaining scapula meat from underside",
+        "Remove steam pasteurization",
+        "Square chuck roll just beyond the humph muscle",
+        "Cut into roasts — 3\" minimum thickness",
+        "Tray end cuts and center cuts together — 2 per package",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Chuck Shoulder Roast / Clod",
+      plu: "59", item: "66997",
+      pills: ["Tenderize ONCE","3\" roasts","Fat cap ¼\""],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — whole beef chuck shoulder clod",
+        "Remove bone felt from top of flat iron — do not remove fat on side of shoulder muscle",
+        "Square up each end and cut into 3\" roasts",
+        "Trim external fat to ¼\"",
+        "Place 2 × 3\" clod roasts in 9/15L tray with 2 soaker pads",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Eye of Round Roast",
+      plu: "56", item: "33906",
+      pills: ["Tenderize ONCE","Underside fat ¼\"","2 halves per tray"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — whole eye of round",
+        "Remove surface fat and steam pasteurization — trim to lean red meat",
+        "Trim fat on underside to ¼\"",
+        "Cut whole eye round in half",
+        "Package 2 halves per tray",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Top Round Steak — London Broil",
+      plu: "4", item: "21101",
+      pills: ["Tenderize ONCE","100% visual lean","Mix end/center cuts"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — fat side down",
+        "Remove fat, cartilage, connective tissue down to blue membrane",
+        "Remove gelatinous material",
+        "Remove exposed veins from bottom side",
+        "Cut top round into steaks — follow vendor break angle",
+        "Back side of final steak MUST be minimum 2\" width",
+        "Tray end cut and center cut steaks together",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Sirloin Tip Steak — Boneless",
+      plu: "—", item: "94356",
+      pills: ["Tenderize ONCE","3/8\" thick","Shingle in tray"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — whole peeled beef knuckle (sirloin tip)",
+        "Trim and remove connective tissue from small end/kneecap area",
+        "Remove bone felt, cartilage, and fat",
+        "Cut tip steaks ~3/8\" thick until you see connective tissue",
+        "Shingle sirloin tip steaks in tray and wrap"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Top Round Roast",
+      plu: "—", item: "33716",
+      pills: ["Tenderize ONCE","Split in 2 halves","2\" min face"],
+      warn: [],
+      steps: [
+        "Tenderize ONCE — whole top round (inside)",
+        "Remove dark exposed meat from top of inside muscle",
+        "Remove bones, cartilage, blood veins, and lymph glands",
+        "First cut of top round: face cut ~1\" off the round — use for ground beef",
+        "Back of inside: face cut exposing 2\" minimum surface",
+        "Split top round into 2 equal halves lengthwise",
+        "Package per spec"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Stew Meat",
+      plu: "20", item: "33734",
+      pills: ["Do NOT tenderize","1×1\" cubes","100% visual lean"],
+      warn: ["Do NOT tenderize","Only authorized cuts — no unauthorized by-products"],
+      steps: [
+        "DO NOT tenderize",
+        "Only items authorized by beef buying team should be processed into stew",
+        "Remove any surface fat",
+        "Separate and remove vein",
+        "Process into 1×1\" cubes",
+        "Stew meat must be free of connective tissue, bone, and cartilage — 100% visual lean",
+        "Wrap and label with USDA Choice sticker"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Ground Beef — Extra Lean 88/12",
+      plu: "90", item: "33724",
+      pills: ["88% lean 12% fat","Bulk","See Ground Products Policy"],
+      warn: [],
+      steps: [
+        "Refer to Costco Ground Products Company Policy",
+        "88% lean / 12% fat"
+      ]
+    },
+    {
+      grade: "choice",
+      name: "Ground Beef Patties — Extra Lean 88/12",
+      plu: "93", item: "69509",
+      pills: ["88% lean 12% fat","Patties","See Ground Products Policy"],
+      warn: [],
+      steps: [
+        "Refer to Costco Ground Products Company Policy",
+        "88% lean / 12% fat"
+      ]
+    },
+    // ── OTHER ─────────────────────────────────────────────────────────
+    {
+      grade: "other",
+      name: "Beef Tongue — Sliced",
+      plu: "—", item: "—",
+      pills: ["PUMA 9MM","Discard all trim — no grind","First cut 0mm / 9mm cutting"],
+      warn: ["DISCARD ALL TRIM — Do NOT use for grind"],
+      steps: [
+        "Remove tongue from package",
+        "Place tongue in PUMA gripper — claw to back slot at 12MM",
+        "Place tongue with thickest point under claw. Tip facing blade. Tongue on its side — bottom on base, top facing top of cavity",
+        "PUMA settings: First cut 0mm / Cutting length 9mm / Remaining cut 0mm",
+        "Remove tongue from belt",
+        "DISCARD ALL TRIMMINGS — do NOT use for grind. Rendering can only",
+        "Take end piece out of claw — also DISCARD",
+        "Split end piece into 2 even slices"
+      ]
+    }
+  ],
+  seafood: [
+    {
+      grade: "other",
+      name: "Salmon Steak",
+      plu: "—", item: "—",
+      pills: ["1½\" steaks","2½\" min diameter on tail-end","Remove all fins"],
+      warn: [],
+      steps: [
+        "Remove collar just behind the pectoral fin — clean face once collar removed",
+        "Remove all fins: dorsal, adipose, anal, and pelvic fins",
+        "Cut salmon into ~1½\" steaks beginning at the head end toward the tail",
+        "Last steak: cut no more than ¼\" behind the anal fin — minimum 2½\" diameter on small side",
+        "Discard uncut tail portion",
+        "Clean both sides of each steak with a bone scraper",
+        "Place larger pieces in 25P, tail-end pieces in 8P styrofoam trays"
+      ]
+    },
+    {
+      grade: "other",
+      name: "Whole Salmon",
+      plu: "—", item: "—",
+      pills: ["Remove collars & pectoral fins","Remove dark flesh","Angled toward head"],
+      warn: [],
+      steps: [
+        "All whole salmon MUST have collars and pectoral fins removed",
+        "Trim off pectoral fins and collar with knife angled toward the head of the salmon",
+        "Trimmed salmon should have clean facing angled toward the head of the fish",
+        "Remove all dark flesh — clean, fresh appearance"
+      ]
+    },
+    {
+      grade: "other",
+      name: "ABF Portion Cut Salmon Fillet — Skin-On (Norway)",
+      plu: "1329", item: "22647",
+      pills: ["Product of Norway","25P tray","7-8 portions per tray"],
+      warn: [],
+      steps: [
+        "Receiving item #22362",
+        "Selling item #22647 — PLU #1329",
+        "Product of Norway",
+        "25P tray with 2 soaker pads — 7-8 portions"
+      ]
+    },
+    {
+      grade: "other",
+      name: "ABF Portion Cut Salmon Fillet — Skin-On (Chile)",
+      plu: "1330", item: "22691",
+      pills: ["Product of Chile","25P tray","7-8 portions per tray"],
+      warn: [],
+      steps: [
+        "Receiving item #22362",
+        "Selling item #22691 — PLU #1330",
+        "Product of Chile",
+        "25P tray with 2 soaker pads — 7-8 portions"
+      ]
+    }
+  ]
+};
+
+let currentSpecies = "beef";
+let currentGrade   = "all";
+let searchQuery    = "";
+
+function render() {
+  const list  = document.getElementById("cut-list");
+  const empty = document.getElementById("empty");
+  const count = document.getElementById("cut-count");
+  const data  = CUTS[currentSpecies] || [];
+  const q     = searchQuery.toLowerCase();
+
+  let visible = 0;
+  const cards = list.querySelectorAll(".cut-card");
+
+  // Remove old cards
+  list.innerHTML = "";
+
+  data.forEach((cut, i) => {
+    const matchGrade  = currentGrade === "all" || cut.grade === currentGrade;
+    const matchSearch = !q || cut.name.toLowerCase().includes(q)
+                            || cut.plu.includes(q)
+                            || cut.item.includes(q)
+                            || cut.pills.some(p => p.toLowerCase().includes(q));
+    if (!matchGrade || !matchSearch) return;
+
+    visible++;
+    const card = document.createElement("div");
+    card.className = `cut-card ${cut.grade}`;
+
+    const pillsHTML = [
+      `<span class="pill grade-${cut.grade}">${cut.grade.toUpperCase()}</span>`,
+      ...cut.pills.map(p => `<span class="pill spec">${p}</span>`),
+      ...cut.warn.map(w => `<span class="pill warn">⚠ ${w}</span>`)
+    ].join("");
+
+    const stepsHTML = cut.steps.map((s, n) =>
+      `<li><span class="step-num">${n+1}.</span><span>${s}</span></li>`
+    ).join("");
+
+    card.innerHTML = `
+      <div class="cut-header" onclick="toggle(this.closest('.cut-card'))">
+        <div class="cut-top">
+          <div class="cut-name">${cut.name}</div>
+          <div class="cut-toggle">▼</div>
+        </div>
+        <div class="cut-ids">
+          <span class="plu">PLU #${cut.plu}</span> &nbsp;·&nbsp; Item #${cut.item}
+        </div>
+        <div class="cut-pills">${pillsHTML}</div>
+      </div>
+      <div class="cut-steps">
+        <ol class="steps-list">${stepsHTML}</ol>
+      </div>
+    `;
+
+    list.appendChild(card);
+  });
+
+  count.textContent = `${visible} cut${visible !== 1 ? "s" : ""}`;
+  empty.style.display = visible === 0 ? "block" : "none";
+}
+
+function toggle(card) {
+  card.classList.toggle("open");
+}
+
+// Species tabs
+document.querySelectorAll(".sp-tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".sp-tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    currentSpecies = tab.dataset.sp;
+    currentGrade   = "all";
+    document.querySelectorAll(".g-btn").forEach(b => b.classList.remove("active"));
+    document.querySelector(".g-btn.all").classList.add("active");
+    render();
+  });
+});
+
+// Grade tabs
+document.querySelectorAll(".g-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".g-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentGrade = btn.dataset.g;
+    render();
+  });
+});
+
+// Search
+document.getElementById("search").addEventListener("input", e => {
+  searchQuery = e.target.value;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
