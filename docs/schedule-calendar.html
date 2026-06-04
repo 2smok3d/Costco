@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Calendar — Dept 61</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0a0a0a;--surface:#141414;--surface2:#1c1c1c;--border:#252525;--text:#fff;--dim:#aaa;--muted:#555;--blue:#0055a5;--accent:#4a90d9;--r:8px}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100dvh;display:flex;flex-direction:column}
+    header{background:var(--surface);border-bottom:3px solid var(--blue);padding:10px 14px 8px;flex-shrink:0;display:flex;align-items:center;gap:12px}
+    .back{color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 9px;border:1px solid #333;border-radius:4px;white-space:nowrap}
+    .htitle{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:3px;text-transform:uppercase}
+    .hsub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+    #cal-frame{flex:1;width:100%;border:none;display:none;background:var(--bg)}
+    .setup-screen{flex:1;display:flex;flex-direction:column;padding:20px 16px;gap:16px;overflow-y:auto}
+    .setup-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}
+    .step-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--r);padding:14px 16px}
+    .step-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+    .step-text{font-size:15px;line-height:1.5;color:var(--dim)}
+    .step-text strong{color:var(--text)}
+    .url-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;padding:10px 12px;outline:none;margin-top:10px}
+    .url-input:focus{border-color:var(--accent)}
+    .btn-connect{background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:14px;width:100%;cursor:pointer}
+    .btn-connect:active{background:#3070b0}
+    .btn-gcal{background:transparent;border:2px solid var(--accent);border-radius:var(--r);color:var(--accent);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:12px;width:100%;text-decoration:none;text-align:center;display:block}
+    .or-line{text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px}
+    .connected-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 14px;display:none;align-items:center;justify-content:space-between;flex-shrink:0}
+    .connected-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#4caf6e;letter-spacing:1px}
+    .btn-reset{background:none;border:none;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;letter-spacing:1px}
+  </style>
+</head>
+<body>
+<header>
+  <a class="back" href="schedule.html">← Schedule</a>
+  <div>
+    <div class="htitle">📆 Calendar</div>
+    <div class="hsub">WORK SCHEDULE</div>
+  </div>
+</header>
+
+<div class="connected-bar" id="connected-bar">
+  <span class="connected-label">✓ CALENDAR CONNECTED</span>
+  <button class="btn-reset" onclick="disconnect()">Disconnect</button>
+</div>
+
+<iframe id="cal-frame" title="Work Calendar"></iframe>
+
+<div class="setup-screen" id="setup-screen">
+  <div class="setup-title">Connect Your Calendar</div>
+
+  <div class="step-card">
+    <div class="step-num">Step 1</div>
+    <div class="step-text">Open <strong>Google Calendar</strong> on desktop (calendar.google.com)</div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num">Step 2</div>
+    <div class="step-text">Find your <strong>Work Schedule</strong> calendar in the left sidebar → click the three dots → <strong>Settings and sharing</strong></div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num">Step 3</div>
+    <div class="step-text">Scroll down to <strong>Integrate calendar</strong> → copy the <strong>Embed code</strong> URL (the src="..." part inside the iframe tag)</div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-num">Step 4</div>
+    <div class="step-text">Paste the URL below</div>
+    <input class="url-input" id="embed-url" type="url" placeholder="https://calendar.google.com/calendar/embed?src=...">
+  </div>
+
+  <button class="btn-connect" onclick="connect()">Connect Calendar</button>
+
+  <div class="or-line">— or open directly —</div>
+
+  <a class="btn-gcal" href="https://calendar.google.com" target="_blank">Open Google Calendar ↗</a>
+</div>
+
+<script>
+const KEY = 'cal_embed_url';
+
+function init() {
+  const saved = localStorage.getItem(KEY);
+  if (saved) showCalendar(saved);
+}
+
+function connect() {
+  const url = document.getElementById('embed-url').value.trim();
+  if (!url || !url.includes('calendar.google.com')) {
+    document.getElementById('embed-url').style.borderColor = '#e05555';
+    return;
+  }
+  localStorage.setItem(KEY, url);
+  showCalendar(url);
+}
+
+function showCalendar(url) {
+  const frame = document.getElementById('cal-frame');
+  const setup = document.getElementById('setup-screen');
+  const bar   = document.getElementById('connected-bar');
+  // Force dark skin and no title
+  let u = url;
+  if (!u.includes('showTitle')) u += '&showTitle=0';
+  if (!u.includes('bgcolor')) u += '&bgcolor=%230a0a0a';
+  if (!u.includes('color')) u += '&color=%234a90d9';
+  frame.src = u;
+  frame.style.display = 'block';
+  setup.style.display = 'none';
+  bar.style.display = 'flex';
+}
+
+function disconnect() {
+  localStorage.removeItem(KEY);
+  document.getElementById('cal-frame').style.display = 'none';
+  document.getElementById('cal-frame').src = '';
+  document.getElementById('setup-screen').style.display = 'flex';
+  document.getElementById('connected-bar').style.display = 'none';
+}
+
+init();
+</script>
+</body>
+</html>

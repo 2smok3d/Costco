@@ -455,6 +455,14 @@ function buildCard(cut) {
 }
 
 function render() {
+  const gradeOrder = ['choice','prime','wagyu','other'];
+  const pluNum = p => (p === '—' || p === '' ? 99999 : parseInt(p));
+  function getSorted(data, filterG) {
+    if (filterG === 'all') {
+      return gradeOrder.flatMap(g => data.filter(c => c.grade === g).sort((a,b) => pluNum(a.plu) - pluNum(b.plu)));
+    }
+    return data.filter(c => c.grade === filterG).sort((a,b) => pluNum(a.plu) - pluNum(b.plu));
+  }
   const list = document.getElementById("cut-list");
   const empty = document.getElementById("empty");
   const count = document.getElementById("cut-count");
@@ -462,10 +470,10 @@ function render() {
   const q = query.toLowerCase();
   let visible = 0, html = "";
 
-  data.forEach(cut => {
-    const matchG = currentG === "all" || cut.grade === currentG;
+  const sorted = getSorted(data, currentG);
+  sorted.forEach(cut => {
     const matchQ = !q || cut.name.toLowerCase().includes(q) || cut.plu.includes(q) || cut.item.includes(q) || cut.pills.some(p => p.toLowerCase().includes(q));
-    if (!matchG || !matchQ) return;
+    if (!matchQ) return;
     visible++;
     html += buildCard(cut);
   });
