@@ -16,23 +16,23 @@
 
     /* ─── HUB HEADER ─── */
     header{
-      display:grid;grid-template-columns:auto 1fr;grid-template-rows:1fr auto;
+      display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:1fr auto;
       padding:0 14px 8px;height:66px;background:#000;
-      border-bottom:1.5px solid #cc1020;flex-shrink:0;position:relative;
+      border-bottom:1.5px solid #cc1020;flex-shrink:0;
     }
     /* Logo — spans both rows, vertically centered */
-    .clogo{grid-column:1;grid-row:1/3;align-self:center;background:#8b0000;border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:4px 9px;text-align:center;line-height:1.2;margin-right:0}
+    .clogo{grid-column:1;grid-row:1/3;align-self:center;background:#8b0000;border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:4px 9px;text-align:center;line-height:1.2}
     .cl1{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff;letter-spacing:.08em}
     .cl2{font-size:7px;font-weight:700;color:#5b9bd5;letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
-    /* WAREHOUSE — centered in 1fr (logo right-edge → screen right-edge) */
-    .hc{grid-column:2;grid-row:1;text-align:center;align-self:center;pointer-events:none}
+    /* WAREHOUSE — 1fr centered between logo and #436 Tempe column */
+    .hc{grid-column:2;grid-row:1/3;text-align:center;align-self:center;pointer-events:none}
     .wn{
       font-family:'Cormorant SC',serif;font-size:26px;font-weight:600;
       color:#c0c0c0;letter-spacing:6px;line-height:1;
       text-shadow:0 1px 12px rgba(200,200,200,.08);
     }
-    /* #436 Tempe — absolute bottom-right, out of grid flow */
-    .wr{position:absolute;right:14px;bottom:8px}
+    /* #436 Tempe — right column, bottom-aligned */
+    .wr{grid-column:3;grid-row:1/3;align-self:end;text-align:right}
     .wsub{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:#aaa;letter-spacing:1.5px}
 
     /* ─── MAIN ─── */
