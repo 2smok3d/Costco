@@ -16,14 +16,14 @@
 
     /* ─── HUB HEADER ─── */
     header{
-      position:relative;display:flex;align-items:center;justify-content:space-between;
+      position:relative;display:flex;align-items:stretch;justify-content:space-between;
       padding:0 14px;height:66px;background:#000;
       border-bottom:1.5px solid #cc1020;flex-shrink:0;
     }
-    .logo-wrap{flex-shrink:0;line-height:0;z-index:1}
-    /* WAREHOUSE — absolutely centered */
+    .logo-wrap{flex-shrink:0;line-height:0;z-index:1;display:flex;align-items:center}
+    /* WAREHOUSE — absolutely centered near top */
     .hc{
-      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+      position:absolute;left:50%;top:12px;transform:translateX(-50%);
       text-align:center;pointer-events:none;white-space:nowrap;
     }
     .wn{
@@ -31,10 +31,9 @@
       color:#c0c0c0;letter-spacing:6px;line-height:1;
       text-shadow:0 1px 12px rgba(200,200,200,.08);
     }
-    /* #436 TEMPE — right side, stacked */
-    .wr{flex-shrink:0;text-align:right;z-index:1}
-    .wnum{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:#fff;letter-spacing:1.5px}
-    .wcity{font-family:'JetBrains Mono',monospace;font-size:9px;color:#777;letter-spacing:2.5px;text-transform:uppercase;margin-top:2px}
+    /* #436 Tempe — bottom-right, one line */
+    .wr{flex-shrink:0;text-align:right;z-index:1;display:flex;align-items:flex-end;padding-bottom:10px}
+    .wsub{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:#aaa;letter-spacing:1.5px}
 
     /* ─── MAIN ─── */
     #main{flex:1;display:flex;flex-direction:column;padding:10px 12px 8px;min-height:0;overflow:hidden}
@@ -95,8 +94,7 @@
   <div class="hc"><div class="wn">Warehouse</div></div>
 
   <div class="wr">
-    <div class="wnum">#436</div>
-    <div class="wcity">Tempe</div>
+    <span class="wsub">#436 Tempe</span>
   </div>
 </header>
 
