@@ -4,97 +4,160 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#0a0a0a">
+  <meta name="theme-color" content="#000000">
   <link rel="manifest" href="manifest.json">
   <title>Costco Warehouse #436</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700;900&family=JetBrains+Mono:wght@400;600&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#0a0a0a;--sf:#111;--bd:#242424;--tx:#fff;--dm:#ccc;--mt:#888;--r:10px}
+    :root{--bg:#000;--sf:#0e0e0e;--bd:#222;--tx:#fff;--dm:#ccc;--mt:#666;--r:10px}
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     html,body{height:100%;overflow:hidden}
     body{background:var(--bg);color:var(--tx);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
 
-    /* HEADER */
+    /* ─── HUB HEADER ─── */
+    header{
+      position:relative;display:flex;align-items:center;justify-content:space-between;
+      padding:0 14px;height:62px;background:#000;
+      border-bottom:1.5px solid #cc1020;flex-shrink:0;
+    }
+    /* Left: Costco logo */
+    .logo-wrap{flex-shrink:0;z-index:1;line-height:0}
+    /* Center: WAREHOUSE */
+    .hc{position:absolute;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;white-space:nowrap}
+    .wn{font-family:'Cinzel',serif;font-size:21px;font-weight:700;color:#fff;letter-spacing:5px;text-transform:uppercase;line-height:1}
+    /* Right: #436 TEMPE */
+    .wr{text-align:right;flex-shrink:0;z-index:1}
+    .wnum{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:#fff;letter-spacing:1.5px}
+    .wcity{font-family:'JetBrains Mono',monospace;font-size:9px;color:#bbb;letter-spacing:2.5px;text-transform:uppercase;margin-top:2px;text-align:right}
 
-    /* MAIN LAYOUT */
+    /* ─── MAIN ─── */
     #main{flex:1;display:flex;flex-direction:column;padding:10px 12px 8px;min-height:0;overflow:hidden}
 
-    /* FIELD GUIDE */
-    .fg{display:flex;align-items:center;gap:14px;background:var(--sf);border:1px solid var(--bd);border-left:4px solid #cc1020;border-radius:var(--r);padding:14px 16px;text-decoration:none;color:var(--tx);flex-shrink:0;transition:transform .12s}
+    /* FIELD GUIDE BANNER */
+    .fg{display:flex;align-items:center;gap:14px;background:var(--sf);border:2px solid #cc1020;border-radius:var(--r);padding:13px 15px;text-decoration:none;color:var(--tx);flex-shrink:0;transition:transform .12s;box-shadow:0 0 12px rgba(204,16,32,.15)}
     .fg:active{transform:scale(.98)}
-    .fg-ico{font-size:30px;flex-shrink:0}
-    .fg-name{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;letter-spacing:2px;text-transform:uppercase;line-height:1}
+    .fg-ico{font-size:28px;flex-shrink:0}
+    .fg-name{font-family:'Barlow Condensed',sans-serif;font-size:23px;font-weight:900;letter-spacing:2px;text-transform:uppercase;line-height:1}
     .fg-desc{font-size:12px;color:var(--dm);margin-top:2px}
     .fg-tag{margin-left:auto;background:#cc1020;color:#fff;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:3px;flex-shrink:0}
 
     /* SEARCH */
-    .sw{flex-shrink:0;padding:10px 0}
+    .sw{flex-shrink:0;padding:9px 0}
     .si{position:relative;display:flex;align-items:center}
     .si-ico{position:absolute;left:12px;color:var(--mt);font-size:14px;pointer-events:none}
-    #hs{width:100%;background:var(--sf);border:1px solid var(--bd);border-radius:22px;color:var(--tx);font-family:'Barlow',sans-serif;font-size:15px;padding:10px 14px 10px 36px;outline:none;-webkit-appearance:none}
+    #hs{width:100%;background:var(--sf);border:1px solid rgba(255,255,255,.28);border-radius:22px;color:var(--tx);font-family:'Barlow',sans-serif;font-size:15px;padding:10px 14px 10px 36px;outline:none;-webkit-appearance:none;transition:border-color .15s}
     #hs::placeholder{color:var(--mt)}
-    #hs:focus{border-color:#555}
+    #hs:focus{border-color:rgba(255,255,255,.75)}
     .sh{display:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);padding:5px 4px 0;text-align:center}
     .sh a{color:#cc1020;text-decoration:none}
 
-    /* TILE GRID — fills remaining space, 3 rows × 2 cols */
-    .gg{height:4px;flex-shrink:0}
+    /* TILE GRID */
+    .gg{height:3px;flex-shrink:0}
     .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:8px;min-height:0}
-    .tile{background:var(--sf);border:1px solid var(--bd);border-left:4px solid;border-radius:var(--r);padding:13px 13px 10px;text-decoration:none;color:var(--tx);display:flex;flex-direction:column;gap:4px;position:relative;transition:transform .12s;overflow:hidden;min-height:0}
+    .tile{
+      background:var(--sf);
+      border:1.5px solid var(--bd);
+      border-radius:var(--r);
+      padding:10px 8px;
+      text-decoration:none;color:var(--tx);
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      text-align:center;gap:3px;
+      position:relative;transition:transform .12s;
+      overflow:hidden;min-height:0;
+    }
     .tile:active{transform:scale(.97)}
     .tile.hd{display:none}
     .ti{font-size:22px;line-height:1;flex-shrink:0}
-    .tn{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;line-height:1.1}
-    .td{font-size:11px;color:var(--dm);line-height:1.3;margin-top:auto}
-    .ts{position:absolute;top:7px;right:9px;font-family:'JetBrains Mono',monospace;font-size:8px;color:#555;letter-spacing:.5px}
-      /* ─── HUB HEADER ─── */
-    header{display:flex;align-items:center;gap:12px;padding:10px 14px;height:58px;background:#0a0a0a;border-bottom:1px solid #1e1e1e;flex-shrink:0}
-    .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:3px 8px;text-align:center;flex-shrink:0;line-height:1.2}
-    .cl1{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff;letter-spacing:.08em}
-    .cl2{font-size:7px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
-    .wn{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:#fff;line-height:1}
-    .ws{font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;letter-spacing:2px;margin-top:2px}
+    .tn{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;line-height:1.1}
+    .td{font-size:10px;color:var(--dm);line-height:1.3;margin-top:2px}
   </style>
 </head>
 <body>
 <header>
-  <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
-  <div><div class="wn">Warehouse</div><div class="ws">#436 TEMPE</div></div>
+  <!-- Costco Wholesale Logo -->
+  <div class="logo-wrap">
+    <svg width="74" height="38" viewBox="0 0 92 46" xmlns="http://www.w3.org/2000/svg">
+      <rect width="92" height="46" rx="4" fill="#cc1020"/>
+      <text x="46" y="21" text-anchor="middle"
+        font-family="Impact,'Arial Narrow',Arial,sans-serif"
+        font-weight="900" font-size="18" fill="#fff" letter-spacing="1.5">COSTCO</text>
+      <line x1="8" y1="27" x2="84" y2="27" stroke="rgba(255,255,255,.25)" stroke-width=".8"/>
+      <text x="46" y="40" text-anchor="middle"
+        font-family="'Arial Narrow',Arial,sans-serif"
+        font-weight="700" font-size="9.5" fill="rgba(255,255,255,.92)" letter-spacing="3.5">WHOLESALE</text>
+    </svg>
+  </div>
+
+  <!-- Centered Title -->
+  <div class="hc">
+    <div class="wn">Warehouse</div>
+  </div>
+
+  <!-- Right: #436 TEMPE -->
+  <div class="wr">
+    <div class="wnum">#436</div>
+    <div class="wcity">TEMPE</div>
+  </div>
 </header>
+
 <div id="main">
   <a class="fg" href="field-guide.html" data-n="field guide plu commands cut specs procedures reference">
     <span class="fg-ico">📖</span>
     <div><div class="fg-name">Field Guide</div><div class="fg-desc">PLUs · Commands · Cut Specs · Procedures</div></div>
     <span class="fg-tag">MAIN</span>
   </a>
-  <div class="sw"><div class="si"><span class="si-ico">⌕</span>
-    <input id="hs" type="search" placeholder="Search PLUs, tools, commands…" autocomplete="off" autocorrect="off" spellcheck="false">
-  </div><div class="sh" id="sh">No match — <a href="field-guide.html">search Field Guide ↗</a></div></div>
+
+  <div class="sw">
+    <div class="si">
+      <span class="si-ico">⌕</span>
+      <input id="hs" type="search" placeholder="Search PLUs, tools, commands…" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+    <div class="sh" id="sh">No match — <a href="field-guide.html">search Field Guide ↗</a></div>
+  </div>
+
   <div class="gg"></div>
+
   <div class="grid">
-    <!-- Row 1: AS400 | Depts -->
-    <a class="tile" style="border-left-color:#00c87a" href="as400.html" data-n="as400 commands ibm terminal rf scanner">
-      <span class="ti">🖥</span><span class="tn">AS400</span><span class="td">Commands · RF · Dept Sheets</span>
+    <!-- AS400 -->
+    <a class="tile" style="border-color:#00c87a;box-shadow:0 0 8px rgba(0,200,122,.12)" href="as400.html" data-n="as400 commands ibm terminal rf scanner">
+      <span class="ti">🖥</span>
+      <span class="tn">AS400</span>
+      <span class="td">Commands · RF · Dept Sheets</span>
     </a>
-    <a class="tile" style="border-left-color:#1d6a5a" href="depts.html" data-n="depts departments meat produce deli bakery front end">
-      <span class="ti">🏪</span><span class="tn">Depts</span><span class="td">All Departments</span>
+    <!-- Depts -->
+    <a class="tile" style="border-color:#1d8a7a;box-shadow:0 0 8px rgba(29,138,122,.12)" href="depts.html" data-n="depts departments meat produce deli bakery front end">
+      <span class="ti">🏪</span>
+      <span class="tn">Depts</span>
+      <span class="td">All Departments</span>
     </a>
-    <!-- Row 2: Blue Book | Tools -->
-    <a class="tile" style="border-left-color:#1a6bb5" href="blue-book.html" data-n="blue book supervisor register procedures">
-      <span class="ti">📘</span><span class="tn">Blue Book</span><span class="td">Supervisor Reference</span>
+    <!-- Blue Book -->
+    <a class="tile" style="border-color:#1a6bb5;box-shadow:0 0 8px rgba(26,107,181,.12)" href="blue-book.html" data-n="blue book supervisor register procedures">
+      <span class="ti">📘</span>
+      <span class="tn">Blue Book</span>
+      <span class="td">Supervisor Reference</span>
     </a>
-    <a class="tile" style="border-left-color:#e07b00" href="tools.html" data-n="tools closing template retail cases plu cut specs cut log">
-      <span class="ti">🔧</span><span class="tn">Tools</span><span class="td">Close · Cases · PLU · Cuts</span>
+    <!-- Tools -->
+    <a class="tile" style="border-color:#e07b00;box-shadow:0 0 8px rgba(224,123,0,.12)" href="tools.html" data-n="tools closing template retail cases plu cut specs cut log">
+      <span class="ti">🔧</span>
+      <span class="tn">Tools</span>
+      <span class="td">Close · Cases · PLU · Cuts</span>
     </a>
-    <!-- Row 3: Files | Career -->
-    <a class="tile" style="border-left-color:#b8860b" href="docs-page.html" data-n="files docs manuals operations equipment">
-      <span class="ti">📁</span><span class="tn">Files</span><span class="td">Manuals · References</span>
+    <!-- Files -->
+    <a class="tile" style="border-color:#b8860b;box-shadow:0 0 8px rgba(184,134,11,.12)" href="docs-page.html" data-n="files docs manuals operations equipment">
+      <span class="ti">📁</span>
+      <span class="tn">Files</span>
+      <span class="td">Manuals · References</span>
     </a>
-    <a class="tile" style="border-left-color:#8850c8" href="career.html" data-n="career goals sit supervisor schedule shifts ukg">
-      <span class="ti">🎯</span><span class="tn">Career</span><span class="td">Goals · Schedule · SIT</span>
+    <!-- Career -->
+    <a class="tile" style="border-color:#8850c8;box-shadow:0 0 8px rgba(136,80,200,.12)" href="career.html" data-n="career goals sit supervisor schedule shifts ukg">
+      <span class="ti">🎯</span>
+      <span class="tn">Career</span>
+      <span class="td">Goals · Schedule · SIT</span>
     </a>
   </div>
 </div>
+
 <script>
 const hs=document.getElementById('hs'),sh=document.getElementById('sh');
 const tiles=document.querySelectorAll('.tile,.fg');
