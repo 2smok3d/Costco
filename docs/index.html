@@ -16,23 +16,20 @@
 
     /* ─── HUB HEADER ─── */
     header{
-      position:relative;display:flex;align-items:stretch;justify-content:space-between;
+      position:relative;display:flex;align-items:center;
       padding:0 14px;height:66px;background:#000;
       border-bottom:1.5px solid #cc1020;flex-shrink:0;
     }
-    .logo-wrap{flex-shrink:0;line-height:0;z-index:1;display:flex;align-items:center}
-    /* WAREHOUSE — absolutely centered near top */
-    .hc{
-      position:absolute;left:50%;top:12px;transform:translateX(-50%);
-      text-align:center;pointer-events:none;white-space:nowrap;
-    }
+    .logo-wrap{flex-shrink:0;line-height:0;display:flex;align-items:center}
+    /* WAREHOUSE — centered in remaining space after logo */
+    .hc{flex:1;text-align:center;pointer-events:none;padding-top:0}
     .wn{
       font-family:'Cormorant SC',serif;font-size:26px;font-weight:600;
       color:#c0c0c0;letter-spacing:6px;line-height:1;
       text-shadow:0 1px 12px rgba(200,200,200,.08);
     }
-    /* #436 Tempe — bottom-right, one line */
-    .wr{flex-shrink:0;text-align:right;z-index:1;display:flex;align-items:flex-end;padding-bottom:10px}
+    /* #436 Tempe — absolute bottom-right */
+    .wr{position:absolute;right:14px;bottom:9px}
     .wsub{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:#aaa;letter-spacing:1.5px}
 
     /* ─── MAIN ─── */
