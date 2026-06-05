@@ -37,7 +37,7 @@
     .pn{display:none;padding:10px 12px 50px;max-width:560px;margin:0 auto}
     .pn.on{display:block}
     /* SECTION / COUNT */
-    .sl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ft);letter-spacing:2px;text-transform:uppercase;padding:10px 2px 4px}
+    .sl{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;color:var(--g);letter-spacing:3px;text-transform:uppercase;padding:14px 0 5px 10px;border-left:3px solid var(--g);margin-top:4px}
     #rc{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);padding:0 2px 4px}
     /* COMMAND CARDS */
     .cc{background:var(--sf);border:1px solid var(--bd);border-left:4px solid var(--bd);border-radius:var(--r);margin-bottom:7px}
@@ -146,6 +146,36 @@
 
 <!-- ════════════════════════ QUICK REFERENCE ════════════════════════ -->
 <div class="pn on" id="pn-quick">
+  <!-- RF SCANNER QUICK REFERENCE — pinned at top -->
+  <div class="gc" style="border-left:4px solid var(--g);margin-bottom:12px">
+    <div class="gtt" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('.rftog').textContent=this.nextElementSibling.style.display==='none'?'&#9660;':'&#9650;'">
+      <span>&#128241; RF Scanner Quick Reference</span>
+      <span class="rftog" style="font-size:11px;color:var(--mt)">&#9660;</span>
+    </div>
+    <div id="rfqr">
+      <table class="gt" style="margin-top:8px">
+        <tr><th>Opt</th><th>Function</th><th>Notes</th></tr>
+        <tr><td>07</td><td>Print Depot Labels</td><td>1=RCV · 2=RTV</td></tr>
+        <tr><td>11</td><td>Item Inquiry &#11088;</td><td>Scan or key item # → on-hand &amp; dept</td></tr>
+        <tr><td>13</td><td>Item Alpha Inquiry</td><td>Search by description + dept</td></tr>
+        <tr><td>16</td><td>UPC Inquiry</td><td>Scan UPC → item # &amp; description</td></tr>
+        <tr><td>18</td><td>Item Sales Report</td><td>Enter whse + date → scan items → F21</td></tr>
+        <tr><td>19</td><td>Item Group Maintenance</td><td>F4 add items · F10 review · 4 remove</td></tr>
+        <tr><td>20</td><td>Merchandise Audit Entry</td><td>Scan counts for physical inventory</td></tr>
+        <tr><td>21</td><td>Clear Audit Count List</td><td>Clears all option 20 counts</td></tr>
+        <tr><td>22</td><td>Print Audit Report</td><td>Prints counts from option 20</td></tr>
+        <tr><td>23</td><td>EDP Sign Requests &#11088;</td><td>Size → items → F10 review → F21 print</td></tr>
+        <tr><td>36</td><td>Print Pallet Tag</td><td>Printer → item → qty → optional PO</td></tr>
+        <tr><td>63</td><td>Fresh Foods Inventory</td><td>Period-end count entry (13&#xD7;/year)</td></tr>
+        <tr><td>72</td><td>Scan Trash &#11088;</td><td>TSH password required · negative = reverse</td></tr>
+        <tr><td>88</td><td>Item/UPC Cross Reference</td><td>Same as desktop IXI</td></tr>
+        <tr><td>98</td><td>Item/UPC Check</td><td>Description, item #, UPC, price, multipack</td></tr>
+        <tr><td>8</td><td>Pre-Scan</td><td>Scan member → up to 8 items → F21 done</td></tr>
+      </table>
+      <p style="font-size:11px;color:var(--mt);margin-top:6px">&#9888; Reverse a same-day RF 72 entry: key a negative amount in the Sell Unit field. Research past entries with AS400 option TSH. Older reversals via RTV option NSE18.</p>
+    </div>
+  </div>
+
   <div class="sl">— Top Commands —</div>
   <div class="qr">
     <div class="qc" style="border-left-color:#4a90d9" onclick="go('IAI')"><div class="qk">IAI</div><div class="qn">Item Alpha Inquiry — start here</div></div>
@@ -1376,7 +1406,7 @@
 <!-- ════════════════════════ DEPT SHEETS ════════════════════════ -->
 <div class="pn" id="pn-dept">
 
-  <div class="ds op">
+  <div class="ds">
     <div class="dh" onclick="togD(this)"><span class="di">&#129385;</span><span class="dti">Meat</span><span class="dn">Dept 61</span><span class="ct2">&#9660;</span></div>
     <div class="db">
       <div class="dpt">&#11088; Daily Essentials</div>
@@ -1412,7 +1442,7 @@
   </div>
 
   <div class="ds">
-    <div class="dh" onclick="togD(this)"><span class="di">&#128179;</span><span class="dti">Front End</span><span class="dn">Reg 1–50 · SCO 201–212</span><span class="ct2">&#9660;</span></div>
+    <div class="dh" onclick="togD(this)"><span class="di">&#127975;</span><span class="dti">Front End</span><span class="dn">Reg 1–50 · SCO 201–212</span><span class="ct2">&#9660;</span></div>
     <div class="db">
       <div class="dpt">&#11088; Daily Essentials</div>
       <div class="dr"><span class="dc">LSDT</span><span class="dd">Sales + labor today (near real-time). Call in / send home decisions. View in 15/30/60-min intervals.</span><span class="dstar">&#11088;</span></div>
@@ -1433,7 +1463,7 @@
   </div>
 
   <div class="ds">
-    <div class="dh" onclick="togD(this)"><span class="di">&#129467;</span><span class="dti">Membership</span><span class="dn">Reg 191–199</span><span class="ct2">&#9660;</span></div>
+    <div class="dh" onclick="togD(this)"><span class="di">&#128179;</span><span class="dti">Membership</span><span class="dn">Reg 191–199</span><span class="ct2">&#9660;</span></div>
     <div class="db">
       <div class="dpt">&#11088; Daily Essentials</div>
       <div class="dr"><span class="dc">MBA</span><span class="dd">Full membership edit — create, edit, cancel, refund, upgrade. Requires personal login.</span><span class="dstar">&#11088;</span></div>
@@ -1464,7 +1494,7 @@
   </div>
 
   <div class="ds">
-    <div class="dh" onclick="togD(this)"><span class="di">&#127829;</span><span class="dti">Service Deli</span><span class="dn">Dept 19</span><span class="ct2">&#9660;</span></div>
+    <div class="dh" onclick="togD(this)"><span class="di">&#127831;</span><span class="dti">Deli</span><span class="dn">Dept 19</span><span class="ct2">&#9660;</span></div>
     <div class="db">
       <div class="dpt">&#11088; Daily Essentials</div>
       <div class="dr"><span class="dc">STK</span><span class="dd">4-week D&amp;D for deli items. Over-production on rotisserie = high DOS = shrink. 2-hour hot-hold limit is strictly enforced.</span><span class="dstar">&#11088;</span></div>
@@ -1491,6 +1521,31 @@
       <div class="dr"><span class="dc">RF 72</span><span class="dd">Scan out pull-date, quality-cull (broken/underweight/misshapen), and unsold. TSH password required.</span><span class="dstar">&#11088;</span></div>
       <div class="dr"><span class="dc">DSL</span><span class="dd">Dept 32 sales — spot overproduction on any SKU vs. trailing average.</span></div>
       <div class="dr"><span class="dc">MACR</span><span class="dd">Full Dept 32 inventory for period-end count (13&#xD7;/year).</span></div>
+    </div>
+  </div>
+
+  <div class="ds">
+    <div class="dh" onclick="togD(this)"><span class="di">&#127829;</span><span class="dti">Food Court</span><span class="dn">Dept 88 &#183; Reg 501&#8211;508</span><span class="ct2">&#9660;</span></div>
+    <div class="db">
+      <div class="dpt">&#11088; Daily Essentials</div>
+      <div class="dr"><span class="dc">FCP</span><span class="dd">Food Court Printer Config &#8212; program item #s to kitchen pizza printer. F22 to delete unused items. Must update whenever menu items change.</span><span class="dstar">&#11088;</span></div>
+      <div class="dr"><span class="dc">STK</span><span class="dd">4-week D&amp;D for Dept 88. Track which items move fastest. Hot dog combo is the benchmark &#8212; if it&#8217;s down, foot traffic is down.</span><span class="dstar">&#11088;</span></div>
+      <div class="dr"><span class="dc">ITMW</span><span class="dd">Real-time on-hand for food court items. Check before peak hours (lunch, 4&#8211;6pm). Never run out of hot dogs.</span><span class="dstar">&#11088;</span></div>
+      <div class="dr"><span class="dc">DSL</span><span class="dd">Dept 88 sales vs. LY and plan. Food court is a traffic driver and a loyalty tool &#8212; executives track it closely.</span></div>
+      <div class="dr"><span class="dc">LSDT</span><span class="dd">Today&#8217;s labor vs. sales. Food court labor is tight &#8212; every labor hour counts against a very thin margin.</span></div>
+      <div class="dr"><span class="dc">RF 72</span><span class="dd">Scan out expired, wasted, or out-of-temp food items. TSH password required. Critical for food safety compliance.</span></div>
+      <div class="dr"><span class="dc">MACR</span><span class="dd">Dept 88 on-hand listing for period-end inventory (13&#xD7;/year).</span></div>
+      <div class="dr"><span class="dc">RF 63</span><span class="dd">Fresh Foods Inventory entry on scanner &#8212; use for period-end physical count.</span></div>
+      <div class="dpt">Food Court Notes</div>
+      <div class="dr" style="flex-direction:column;gap:5px;border-bottom:none">
+        <span class="dd" style="color:var(--mt)">&#8226; Registers 501&#8211;508. Food court sales do NOT accept IRC coupons, member discounts, or EBT.</span>
+        <span class="dd" style="color:var(--mt)">&#8226; The $1.50 hot dog + soda combo has been unchanged since 1985. Jim Sinegal famously told the Costco president &#8220;if you raise the price of the [hot dog], I will kill you.&#8221; It is a loss leader and member loyalty cornerstone.</span>
+        <span class="dd" style="color:var(--mt)">&#8226; Kitchen printer setup: FCP programs specific item numbers to route whole pizza orders to the kitchen. Update immediately when menu items are added or discontinued.</span>
+        <span class="dd" style="color:var(--mt)">&#8226; Temperature compliance: hot-hold items must stay at 135&#xB0;F+. Cold-hold items at 41&#xB0;F or below. Violations go to RF 72 immediately.</span>
+        <span class="dd" style="color:var(--mt)">&#8226; Physical inventory: 13&#xD7; per year. All food court items counted including condiments, packaging, and paper goods assigned to Dept 88.</span>
+        <span class="dd" style="color:var(--mt)">&#8226; Food court often reports directly to the AGM or Operations Manager, not through standard dept manager chain. Know your chain of command.</span>
+        <span class="dd" style="color:var(--mt)">&#8226; IXI + EPC: if a food court item won&#8217;t ring, check IXI for UPC setup and run an EPC download if the UPC is set up but not scanning.</span>
+      </div>
     </div>
   </div>
 
