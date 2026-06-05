@@ -10,173 +10,171 @@
   <meta name="theme-color" content="#0a0a0a">
   <link rel="manifest" href="manifest.json">
   <title>Costco Warehouse — Dept 61</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#0a0a0a;--surface:#161616;--border:#2a2a2a;--text:#fff;--dim:#ccc;--muted:#999;--red:#cc0000;--blue:#0055a5;--amber:#e07b00;--teal:#007a6e;--green:#2a7040;--purple:#5a3f8a;--r:8px}
+    :root{
+      --bg:#0a0a0a;--sf:#161616;--s2:#1e1e1e;--bd:#2a2a2a;
+      --tx:#fff;--dm:#ccc;--mt:#999;
+      --red:#cc0000;
+      --c-as400:#00c87a;
+      --c-blue:#1a6bb5;
+      --c-amber:#c8960c;
+      --c-teal:#1d8a7a;
+      --c-purple:#8850c8;
+      --c-yellow:#b8860b;
+      --r:10px;
+    }
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     html,body{height:100%;overflow:hidden}
-    body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
+    body{background:var(--bg);color:var(--tx);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
 
-    /* HEADER */
-    header{background:var(--surface);border-bottom:3px solid var(--red);padding:11px 14px 9px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center}
-    .logo-row{display:flex;align-items:center;gap:10px}
-    .costco-badge{background:var(--red);color:#fff;font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:4px 8px 3px;border-radius:3px}
-    .header-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;letter-spacing:3px;text-transform:uppercase}
-    .header-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+    /* ── HEADER ── */
+    header{background:var(--sf);border-bottom:3px solid var(--red);padding:12px 16px 10px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center}
+    .logo{display:flex;align-items:center;gap:10px}
+    .badge{background:var(--red);color:#fff;font-size:11px;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;padding:4px 9px 3px;border-radius:3px}
+    .app-name{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;letter-spacing:3px;text-transform:uppercase}
+    .header-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);letter-spacing:1px}
 
-    /* SCROLL AREA */
-    #scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 20px}
+    /* ── MAIN SCROLL (no overflow) ── */
+    #main{flex:1;display:flex;flex-direction:column;padding:12px 12px 10px;min-height:0;overflow:hidden}
 
-    /* FIELD GUIDE — primary, wider */
-    .fg-card{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--blue);border-radius:var(--r);padding:18px 18px;text-decoration:none;color:var(--text);margin-bottom:0;transition:transform .12s}
-    .fg-card:active{transform:scale(.98)}
-    .fg-icon{font-size:36px;flex-shrink:0}
-    .fg-name{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
-    .fg-desc{font-size:13px;color:var(--dim);margin-top:3px}
-    .fg-badge{margin-left:auto;background:var(--blue);color:#fff;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:3px;flex-shrink:0;white-space:nowrap}
+    /* ── FIELD GUIDE ── */
+    .fg{display:flex;align-items:center;gap:14px;background:var(--sf);border:1px solid var(--bd);border-top:4px solid var(--c-blue);border-radius:var(--r);padding:15px 16px;text-decoration:none;color:var(--tx);flex-shrink:0;transition:transform .12s}
+    .fg:active{transform:scale(.98)}
+    .fg-icon{font-size:34px;flex-shrink:0}
+    .fg-name{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;line-height:1}
+    .fg-desc{font-size:13px;color:var(--dm);margin-top:3px}
+    .fg-badge{margin-left:auto;background:var(--c-blue);color:#fff;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:3px;flex-shrink:0}
 
-    /* SEARCH — inline below field guide */
-    .search-wrap-inline{padding:8px 0 2px}
+    /* ── SEARCH — sits below FG with breathing room ── */
+    .search-wrap{flex-shrink:0;margin-top:14px}
     .search-inner{position:relative;display:flex;align-items:center}
-    .search-icon{position:absolute;left:11px;color:var(--muted);font-size:14px;pointer-events:none}
-    #hub-search{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:20px;color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;padding:9px 12px 9px 34px;outline:none;transition:border-color .15s}
-    #hub-search:focus{border-color:var(--red)}
-    #hub-search::placeholder{color:var(--muted)}
-    .search-hint{display:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);padding:5px 4px 0;text-align:center;letter-spacing:.5px}
-    .search-hint a{color:var(--red);text-decoration:none}
+    .s-icon{position:absolute;left:13px;color:var(--mt);font-size:15px;pointer-events:none}
+    #hs{width:100%;background:var(--sf);border:1px solid var(--bd);border-radius:24px;color:var(--tx);font-family:'Barlow',sans-serif;font-size:16px;padding:11px 14px 11px 38px;outline:none;transition:border-color .15s;-webkit-appearance:none}
+    #hs::placeholder{color:var(--mt)}
+    #hs:focus{border-color:var(--red)}
+    .s-hint{display:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);padding:6px 6px 0;text-align:center;letter-spacing:.5px}
+    .s-hint a{color:var(--red);text-decoration:none}
 
-    /* 6-TILE GRID */
-    .divider{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#333;text-align:center;padding:4px 0 6px}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    /* ── TILE GRID — fills remaining space ── */
+    .grid-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#333;text-align:center;padding:10px 0 6px;flex-shrink:0}
+    .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:8px;min-height:0}
 
-    .tile{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--border);border-radius:var(--r);padding:12px 12px 10px;text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:5px;min-height:76px;position:relative;transition:transform .12s;overflow:hidden}
+    .tile{background:var(--sf);border:1px solid var(--bd);border-top:4px solid;border-radius:var(--r);padding:14px 14px 10px;text-decoration:none;color:var(--tx);display:flex;flex-direction:column;gap:6px;position:relative;transition:transform .12s;overflow:hidden;min-height:0}
     .tile:active{transform:scale(.97)}
-    .tile.blue  {border-top-color:var(--blue)}
-    .tile.red   {border-top-color:var(--red)}
-    .tile.teal  {border-top-color:var(--teal)}
-    .tile.amber {border-top-color:var(--amber)}
-    .tile.green {border-top-color:var(--green)}
-    .tile.purple{border-top-color:var(--purple)}
-
-    .tile-icon{font-size:20px;line-height:1}
-    .tile-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;letter-spacing:1px;text-transform:uppercase;line-height:1.1}
-    .tile-desc{font-size:11px;color:var(--dim);line-height:1.3;margin-top:auto}
-    .tile-tag{position:absolute;top:7px;right:8px;font-family:'JetBrains Mono',monospace;font-size:8px;color:#444;letter-spacing:.5px;text-transform:uppercase}
     .tile.hidden{display:none}
 
-    footer{text-align:center;padding:8px;font-family:'JetBrains Mono',monospace;font-size:9px;color:#222;letter-spacing:1px}
+    .tile-icon{font-size:24px;line-height:1;flex-shrink:0}
+    .tile-name{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;line-height:1.1}
+    .tile-desc{font-size:12px;color:var(--dm);line-height:1.35;margin-top:auto}
+    .tile-soon{position:absolute;top:8px;right:10px;font-family:'JetBrains Mono',monospace;font-size:8px;color:#444;letter-spacing:.5px;text-transform:uppercase}
+
   </style>
 </head>
 <body>
 
 <header>
-  <div class="logo-row">
-    <span class="costco-badge">Costco</span>
-    <span class="header-title">Warehouse</span>
+  <div class="logo">
+    <span class="badge">Costco</span>
+    <span class="app-name">Warehouse</span>
   </div>
   <div class="header-sub">BRANDON · DEPT 61 · TEMPE</div>
 </header>
 
-<div id="scroll">
-  <!-- FIELD GUIDE -->
-  <a class="fg-card" href="field-guide.html" data-name="field guide plu commands reference">
+<div id="main">
+
+  <a class="fg" href="field-guide.html" data-name="field guide plu commands reference procedures">
     <span class="fg-icon">📖</span>
     <div>
       <div class="fg-name">Field Guide</div>
-      <div class="fg-desc">PLUs · AS400 · Procedures · Cut Specs</div>
+      <div class="fg-desc">PLUs · Commands · Cut Specs · Procedures</div>
     </div>
     <span class="fg-badge">MAIN</span>
   </a>
 
-  <div class="search-wrap-inline">
+  <div class="search-wrap">
     <div class="search-inner">
-      <span class="search-icon">⌕</span>
-      <input id="hub-search" type="search" placeholder="Search tools, PLU, commands..." autocomplete="off" autocorrect="off" spellcheck="false">
+      <span class="s-icon">⌕</span>
+      <input id="hs" type="search" placeholder="Search tools, PLU, commands…" autocomplete="off" autocorrect="off" spellcheck="false">
     </div>
-    <div class="search-hint" id="search-hint">
-      No tool found — <a id="fg-link" href="field-guide.html">search Field Guide ↗</a>
-    </div>
+    <div class="s-hint" id="s-hint">No match — <a id="fg-link" href="field-guide.html">search Field Guide ↗</a></div>
   </div>
 
-  <div class="divider">— Tools —</div>
+  <div class="grid-label">— Tools —</div>
 
   <div class="grid" id="tile-grid">
 
-    <a class="tile teal" href="as400.html" data-name="as400 commands ibm reference rf scanner sign inquiry item lookup">
+    <a class="tile" style="border-top-color:var(--c-as400)" href="as400.html" data-name="as400 commands ibm terminal green reference rf scanner">
       <span class="tile-icon">🖥</span>
       <span class="tile-name">AS400</span>
       <span class="tile-desc">Commands · RF Scanner · Dept Sheets</span>
     </a>
 
-    <a class="tile red" href="meat.html" data-name="meat cut specs closing template plu poultry">
-      <span class="tile-icon">🥩</span>
-      <span class="tile-name">Meat</span>
-      <span class="tile-desc">Specs · Template · PLUs</span>
-    </a>
-
-    <a class="tile purple" href="career.html" data-name="career goals sit supervisor promotion" onclick="return nolink(event)">
-      <span class="tile-tag">Soon</span>
-      <span class="tile-icon">🎯</span>
-      <span class="tile-name">Career</span>
-      <span class="tile-desc">Goals & milestones</span>
-    </a>
-
-
-    <a class="tile green" href="schedule.html" data-name="schedule ukg shifts calendar">
-      <span class="tile-icon">📅</span>
-      <span class="tile-name">Schedule</span>
-      <span class="tile-desc">UKG · Calendar · Sync</span>
-    </a>
-
-    <a class="tile amber" href="blue-book.html" data-name="blue book supervisor manager register procedures">
+    <a class="tile" style="border-top-color:var(--c-blue)" href="blue-book.html" data-name="blue book supervisor register procedures troubleshooting">
       <span class="tile-icon">📘</span>
       <span class="tile-name">Blue Book</span>
-      <span class="tile-desc">Supervisor quick ref</span>
+      <span class="tile-desc">Supervisor quick reference</span>
     </a>
 
-    <a class="tile blue" href="docs-page.html" data-name="docs manuals operations equipment">
+    <a class="tile" style="border-top-color:var(--red)" href="meat.html" data-name="depts meat cut specs closing template plu poultry tracker">
+      <span class="tile-icon">🥩</span>
+      <span class="tile-name">Depts</span>
+      <span class="tile-desc">Meat · Cut Specs · Tracker · PLUs</span>
+    </a>
+
+    <a class="tile" style="border-top-color:var(--c-teal)" href="schedule.html" data-name="schedule ukg shifts calendar sync">
+      <span class="tile-icon">📅</span>
+      <span class="tile-name">Schedule</span>
+      <span class="tile-desc">UKG Pro · Calendar · Sync</span>
+    </a>
+
+    <a class="tile" style="border-top-color:var(--c-purple)" href="career.html" data-name="career goals sit supervisor promotion advancement" onclick="return nolink(event)">
+      <span class="tile-soon">Soon</span>
+      <span class="tile-icon">🎯</span>
+      <span class="tile-name">Career</span>
+      <span class="tile-desc">SIT · Goals · Milestones</span>
+    </a>
+
+    <a class="tile" style="border-top-color:var(--c-yellow)" href="docs-page.html" data-name="docs manuals operations equipment edp as400 guide">
       <span class="tile-icon">📁</span>
       <span class="tile-name">Docs</span>
-      <span class="tile-desc">Ops & manuals</span>
+      <span class="tile-desc">Manuals · Ops References</span>
     </a>
 
   </div>
-
-  <footer>DEPT 61 · COSTCO TEMPE · 03.25.26</footer>
 </div>
 
 <script>
-  const search  = document.getElementById('hub-search');
-  const hint    = document.getElementById('search-hint');
-  const fgLink  = document.getElementById('fg-link');
-  const tiles   = document.querySelectorAll('.tile, .fg-card');
+const hs = document.getElementById('hs');
+const hint = document.getElementById('s-hint');
+const fgLink = document.getElementById('fg-link');
+const tiles = document.querySelectorAll('.tile, .fg');
 
-  search.addEventListener('input', () => {
-    const q = search.value.trim().toLowerCase();
-    fgLink.href = `field-guide.html${q ? '#search='+encodeURIComponent(q) : ''}`;
-    let anyVisible = false;
-
-    tiles.forEach(t => {
-      const name = (t.dataset.name || t.querySelector('.tile-name,fg-name')?.textContent || '').toLowerCase();
-      const show = !q || name.includes(q);
-      t.classList.toggle('hidden', !show);
-      if (show && t.classList.contains('tile')) anyVisible = true;
-    });
-
-    hint.style.display = (q && !anyVisible) ? 'block' : 'none';
+hs.addEventListener('input', () => {
+  const q = hs.value.trim().toLowerCase();
+  fgLink.href = `field-guide.html${q ? '#search='+encodeURIComponent(q) : ''}`;
+  let any = false;
+  tiles.forEach(t => {
+    const n = (t.dataset.name || '').toLowerCase();
+    const show = !q || n.includes(q);
+    t.classList.toggle('hidden', !show);
+    if (show && t.classList.contains('tile')) any = true;
   });
+  hint.style.display = (q && !any) ? 'block' : 'none';
+});
 
-  function nolink(e) {
-    e.preventDefault();
-    const tag = e.currentTarget.querySelector('.tile-tag');
-    const orig = tag.textContent;
-    tag.textContent = 'Coming soon';
-    tag.style.color = '#888';
-    setTimeout(() => { tag.textContent = orig; tag.style.color = ''; }, 1500);
-    return false;
-  }
+function nolink(e) {
+  e.preventDefault();
+  const s = e.currentTarget.querySelector('.tile-soon');
+  if (!s) return false;
+  const orig = s.textContent;
+  s.textContent = 'Coming soon';
+  s.style.color = '#888';
+  setTimeout(() => { s.textContent = orig; s.style.color = ''; }, 1500);
+  return false;
+}
 
-  window.addEventListener('beforeinstallprompt', e => e.preventDefault());
+window.addEventListener('beforeinstallprompt', e => e.preventDefault());
 </script>
 </body>
 </html>
