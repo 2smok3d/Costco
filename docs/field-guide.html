@@ -12,7 +12,7 @@
 <style>
 :root{
   --red:#cc1020;--red2:#e8192c;--blue:#005dab;
-  --bg:#0d0f14;--surface:#161a22;--surface2:#1e2330;
+  --bg:#0a0a0a;--surface:#111111;--surface2:#1e2330;
   --border:#2a3044;--text:#eaecf2;--muted:#7a8499;
   --accent:#3b82f6;--good:#22c55e;--warn:#f59e0b;
   --gold:#d4af37;--gold2:#f5d76e;
@@ -20,7 +20,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--bg);overscroll-behavior:none}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--text);font-size:15px;line-height:1.5}
+body{font-family:'Barlow',sans-serif;color:var(--text);font-size:15px;line-height:1.5}
 
 /* APP SHELL */
 #app{display:flex;flex-direction:column;height:100dvh;width:100%;max-width:640px;margin:0 auto;overflow:hidden;will-change:height}
@@ -120,8 +120,8 @@ details.shelf-toggle[open] .shelf-chev{transform:rotate(180deg)}
 .as400-group.visible{display:block}
 .cat-label{font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text);margin:14px 0 8px;padding:8px 0 7px;border-bottom:2px solid var(--red);position:sticky;top:0;background:var(--bg);z-index:10}
 .cat-label:first-child{margin-top:0}
-details.cmd-detail{margin-bottom:7px}
-details.cmd-detail summary{list-style:none;cursor:pointer;touch-action:manipulation}
+details.cmd-detail{background:#111;border:1px solid #1e1e1e;border-left:4px solid #1a6bb5;border-radius:8px;margin-bottom:7px;overflow:hidden}
+details.cmd-detail summary{padding:12px 14px;cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#fff}
 details.cmd-detail summary::-webkit-details-marker{display:none}
 .cmd-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;display:flex;flex-direction:column;gap:4px}
 details.cmd-detail[open] .cmd-summary{border-radius:var(--radius) var(--radius) 0 0;border-bottom-color:transparent}
@@ -200,7 +200,22 @@ details.bb-detail[open] .bb-chevron{transform:rotate(180deg)}
     .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.18);border-radius:5px;padding:4px 8px;text-align:center;flex-shrink:0;line-height:1.2}
     .cl1{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff;letter-spacing:.08em}
     .cl2{font-size:7px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
-  </style>
+  
+    /* PLU species colors */
+    .plu-row.c-beef{border-left:3px solid #8b2020}
+    .plu-row.c-pork{border-left:3px solid #c05878}
+    .plu-row.c-poultry{border-left:3px solid #c9a000}
+    .plu-row.c-turkey{border-left:3px solid #8a6800}
+    .plu-row.c-lamb{border-left:3px solid #8a5a35}
+    .plu-row.c-seafood{border-left:3px solid #1a6bb5}
+    .plu-row.c-grinds{border-left:3px solid #5a5a5a}
+    .plu-group-beef .plu-group-title{color:#c04040}
+    .plu-group-pork .plu-group-title{color:#c05878}
+    .plu-group-poultry .plu-group-title{color:#c9a000}
+    .plu-group-turkey .plu-group-title{color:#8a6800}
+    .plu-group-lamb .plu-group-title{color:#a0784a}
+    .plu-group-seafood .plu-group-title{color:#4a90d9}
+</style>
 </head>
 <body>
 <div id="app">

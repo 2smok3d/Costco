@@ -4,323 +4,56 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#cc1020">
-  <title>Career — Costco Warehouse</title>
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Career — Costco #436</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#0a0a0a;--sf:#161616;--s2:#1e1e1e;--bd:#262626;--tx:#fff;--dm:#ccc;--mt:#999;--ft:#555;
-      --red:#cc1020;--pu:#8850c8;--grn:#00c87a;--amb:#e07b00;--blue:#1a6bb5;--r:8px}
+    :root{--bg:#0a0a0a;--sf:#111;--bd:#1e1e1e;--tx:#fff;--dm:#ccc;--mt:#888;--r:10px}
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;overflow:hidden}
     body{background:var(--bg);color:var(--tx);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
-    header{background:var(--red);padding:11px 14px 9px;flex-shrink:0;display:flex;align-items:center;gap:12px}
-    .bk{color:var(--mt);font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 9px;border:1px solid #333;border-radius:4px;flex-shrink:0}
-    .ht{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:#fff}
-    .hs{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);letter-spacing:1px}
-    #scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 50px;max-width:540px;margin:0 auto;width:100%}
-    .sl{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;color:var(--pu);letter-spacing:3px;text-transform:uppercase;padding:14px 0 5px 10px;border-left:3px solid var(--pu);margin-top:4px;margin-bottom:6px}
-    .sl.grn{color:var(--grn);border-left-color:var(--grn)}
-    .sl.amb{color:var(--amb);border-left-color:var(--amb)}
-    .sl.red{color:var(--red);border-left-color:var(--red)}
-    .sl.blue{color:var(--blue);border-left-color:var(--blue)}
-
-    /* PATH STEPS */
-    .path{display:flex;flex-direction:column;gap:0;margin-bottom:10px}
-    .step{background:var(--sf);border:1px solid var(--bd);border-left:4px solid var(--bd);border-radius:var(--r);padding:13px 14px;margin-bottom:6px;position:relative;cursor:pointer;-webkit-user-select:none;user-select:none}
-    .step.current{border-left-color:var(--grn)}
-    .step.next{border-left-color:var(--pu)}
-    .step.future{border-left-color:var(--ft)}
-    .step-hd{display:flex;align-items:center;gap:10px}
-    .step-icon{font-size:20px;flex-shrink:0}
-    .step-name{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;flex:1}
-    .step-tag{font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 7px;border-radius:3px;flex-shrink:0;font-weight:700;letter-spacing:.5px}
-    .tag-now{background:rgba(0,200,122,.15);color:var(--grn);border:1px solid rgba(0,200,122,.3)}
-    .tag-next{background:rgba(136,80,200,.15);color:var(--pu);border:1px solid rgba(136,80,200,.3)}
-    .tag-future{background:rgba(85,85,85,.15);color:#666;border:1px solid #333}
-    .step-sub{font-size:13px;color:var(--mt);margin-top:3px}
-    .step-body{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);flex-direction:column;gap:6px}
-    .step.op .step-body{display:flex}
-    .step-chev{color:var(--ft);font-size:11px;transition:transform .2s;flex-shrink:0}
-    .step.op .step-chev{transform:rotate(180deg)}
-
-    /* CHECKLIST */
-    .check-list{display:flex;flex-direction:column;gap:6px}
-    .check-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)}
-    .check-item:last-child{border-bottom:none}
-    .check-box{width:22px;height:22px;border:2px solid var(--bd);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;margin-top:1px}
-    .check-box.done{background:var(--grn);border-color:var(--grn)}
-    .check-box.done::after{content:'✓';color:#000;font-size:13px;font-weight:900}
-    .check-label{font-size:14px;color:var(--dm);line-height:1.4;flex:1}
-    .check-label.done{color:var(--ft);text-decoration:line-through}
-    .check-tag{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mt);margin-top:3px}
-
-    /* PROGRESS BAR */
-    .progress-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px}
-    .progress-label{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mt);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-    .progress-pct{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--pu)}
-    .progress-bar{height:8px;background:#222;border-radius:4px;overflow:hidden}
-    .progress-fill{height:100%;background:linear-gradient(90deg,var(--pu),var(--grn));border-radius:4px;transition:width .4s ease}
-
-    /* TIMELINE */
-    .timeline{display:flex;flex-direction:column;gap:0;margin-bottom:10px}
-    .tl-item{display:flex;gap:12px;padding:0 0 18px 0;position:relative}
-    .tl-item:last-child{padding-bottom:0}
-    .tl-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:36px}
-    .tl-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;margin-top:3px}
-    .tl-dot.done{background:var(--grn)}
-    .tl-dot.active{background:var(--pu);box-shadow:0 0 8px var(--pu)}
-    .tl-dot.pending{background:var(--bd);border:2px solid #444}
-    .tl-line{flex:1;width:2px;background:var(--bd);margin-top:4px}
-    .tl-item:last-child .tl-line{display:none}
-    .tl-right{flex:1;padding-bottom:4px}
-    .tl-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);letter-spacing:1px;margin-bottom:2px}
-    .tl-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--tx)}
-    .tl-desc{font-size:12px;color:var(--mt);line-height:1.4;margin-top:2px}
-
-    /* INFO CARDS */
-    .info-card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:13px 14px;margin-bottom:8px}
-    .ic-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--dm);margin-bottom:8px}
-    .note{font-size:13px;color:var(--dm);line-height:1.5;display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--bd)}
-    .note:last-child{border-bottom:none}
-    .note::before{content:'›';color:var(--ft);flex-shrink:0}
-    kbd{font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(0,200,122,.12);border:1px solid rgba(0,200,122,.25);border-radius:3px;padding:1px 5px;color:var(--grn)}
-      .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.18);border-radius:5px;padding:4px 8px;text-align:center;flex-shrink:0;line-height:1.2}
+    header{position:relative;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;height:58px;background:#0a0a0a;border-bottom:1px solid #1e1e1e;flex-shrink:0}
+    .bk{color:#666;font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 10px;border:1px solid #2a2a2a;border-radius:4px;white-space:nowrap;flex-shrink:0}
+    .hc{position:absolute;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;min-width:160px}
+    .ht{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#fff;letter-spacing:2px;text-transform:uppercase;line-height:1.1}
+    .hs{font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;letter-spacing:1.5px;margin-top:2px}
+    .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:3px 8px;text-align:center;flex-shrink:0;line-height:1.2}
     .cl1{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff;letter-spacing:.08em}
-    .cl2{font-size:7px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
+    .cl2{font-size:7px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
+    #main{flex:1;display:flex;flex-direction:column;padding:16px 14px;min-height:0;gap:12px}
+    .tile{background:var(--sf);border:1px solid var(--bd);border-left:4px solid;border-radius:var(--r);padding:22px 18px;text-decoration:none;color:var(--tx);display:flex;align-items:center;gap:16px;flex:1;transition:transform .12s;min-height:0}
+    .tile:active{transform:scale(.98)}
+    .ti{font-size:32px;flex-shrink:0}
+    .tile-text{flex:1}
+    .tn{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;letter-spacing:2px;text-transform:uppercase;line-height:1}
+    .td{font-size:13px;color:var(--dm);margin-top:4px;line-height:1.4}
+    .arr{color:#333;font-size:20px;flex-shrink:0}
   </style>
 </head>
 <body>
 <header>
-  <a class="bk" href="index.html">&#8592; Hub</a>
-  <div>
-    <div class="ht">&#127919; Career</div>
-    <div class="hs">ADVANCEMENT PATH · DEPT 61</div>
-  </div>
+  <a class="bk" href="index.html">← Hub</a>
+  <div class="hc"><div class="ht">Career</div><div class="hs">#436 TEMPE</div></div>
+  <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
 </header>
-<div id="scroll">
-
-<!-- PROGRESS -->
-<div class="sl">SIT Readiness</div>
-<div class="progress-wrap">
-  <div class="progress-label">
-    <span>Overall Progress</span>
-    <span class="progress-pct" id="pct-label">0%</span>
-  </div>
-  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
-  <div style="font-size:11px;color:var(--ft);font-family:'JetBrains Mono',monospace;margin-top:8px;letter-spacing:.5px" id="prog-sub">Loading...</div>
+<div id="main">
+  <a class="tile" style="border-left-color:#8850c8" href="advancement.html">
+    <span class="ti">🎯</span>
+    <div class="tile-text">
+      <div class="tn">Advancement</div>
+      <div class="td">SIT path · Milestones · Interview prep · AS400 goals · Daily habits</div>
+    </div>
+    <span class="arr">›</span>
+  </a>
+  <a class="tile" style="border-left-color:#8b1a2a" href="schedule.html">
+    <span class="ti">📅</span>
+    <div class="tile-text">
+      <div class="tn">Schedule</div>
+      <div class="td">UKG Pro · View shifts · Calendar sync · Screenshot import</div>
+    </div>
+    <span class="arr">›</span>
+  </a>
 </div>
-
-<!-- CAREER PATH -->
-<div class="sl">The Path</div>
-<div class="path">
-  <div class="step current op" onclick="togStep(this)">
-    <div class="step-hd">
-      <span class="step-icon">📦</span>
-      <div style="flex:1"><div class="step-name">Meat Wrapper</div><div class="step-sub">Where you are now — Mar 2026</div></div>
-      <span class="step-tag tag-now">NOW</span>
-      <span class="step-chev">▼</span>
-    </div>
-    <div class="step-body">
-      <div class="note">Build speed and precision on the wrapper. Wrappers who get to supervisor know the floor better than anyone.</div>
-      <div class="note">Learn every PLU, every cut spec, every pull date. Be the person who already knows before being asked.</div>
-      <div class="note">Volunteer for closing. Closers see how the department actually works — the manager notices who steps up.</div>
-      <div class="note">Ask Adam or Abe about the closing template and how they want the report. Then do it without being asked.</div>
-      <div class="note">Watch how the cut list is built and why. Understanding the business logic is what separates SIT candidates.</div>
-    </div>
-  </div>
-  <div class="step next" onclick="togStep(this)">
-    <div class="step-hd">
-      <span class="step-icon">📋</span>
-      <div style="flex:1"><div class="step-name">SIT Program</div><div class="step-sub">Supervisor In Training — 12 weeks · Target: 2027</div></div>
-      <span class="step-tag tag-next">NEXT</span>
-      <span class="step-chev">▼</span>
-    </div>
-    <div class="step-body">
-      <div class="note">12-week structured program. You're evaluated on AS400 proficiency, floor presence, member interactions, and leadership behaviors.</div>
-      <div class="note">Must complete 1,040 hours to be eligible for merit increases. At 40hrs/wk, that's ~6 months — you likely hit this by September 2026.</div>
-      <div class="note">No formal application process — management nominates you. You get selected by consistently behaving like a supervisor before you are one.</div>
-      <div class="note">SIT interview questions always include: "Give me an example of a time you took initiative" and "How do you handle a difficult member?"</div>
-      <div class="note">The single biggest differentiator: do you know AS400? Most hourly employees don't. Learn it deeply and use it publicly.</div>
-    </div>
-  </div>
-  <div class="step future" onclick="togStep(this)">
-    <div class="step-hd">
-      <span class="step-icon">🔑</span>
-      <div style="flex:1"><div class="step-name">Supervisor</div><div class="step-sub">After SIT — handles shifts, AS400, team direction</div></div>
-      <span class="step-tag tag-future">FUTURE</span>
-      <span class="step-chev">▼</span>
-    </div>
-    <div class="step-body">
-      <div class="note">Supervisors run shifts, manage register overrides, coordinate with receiving, and own the close report.</div>
-      <div class="note">You get access to more AS400 commands — WPM, EPC, SAST, WFBRP, and full IAFEP access.</div>
-      <div class="note">$26–$32/hr range (warehouse-dependent, tenure-dependent). Merit increases continue.</div>
-      <div class="note">Next step is Merchandise Training Course (12 weeks) for the path to Department Manager.</div>
-    </div>
-  </div>
-  <div class="step future" onclick="togStep(this)">
-    <div class="step-hd">
-      <span class="step-icon">📊</span>
-      <div style="flex:1"><div class="step-name">Dept Manager</div><div class="step-sub">Merchandise Training Course — owns a dept</div></div>
-      <span class="step-tag tag-future">FUTURE</span>
-      <span class="step-chev">▼</span>
-    </div>
-    <div class="step-body">
-      <div class="note">Dept Managers own all P&L for their department: sales, shrink, labor, inventory, and scheduling.</div>
-      <div class="note">AS400 access expands significantly — DSL, IATOP, LSCM, budget screens, MACR, period-end control.</div>
-      <div class="note">$35–$55K salary + annual profit-sharing bonus (averages $3–6K for DMs at mature warehouses).</div>
-    </div>
-  </div>
-  <div class="step future" onclick="togStep(this)">
-    <div class="step-hd">
-      <span class="step-icon">🏪</span>
-      <div style="flex:1"><div class="step-name">AGM → GM</div><div class="step-sub">Assistant General Manager → General Manager</div></div>
-      <span class="step-tag tag-future">FUTURE</span>
-      <span class="step-chev">▼</span>
-    </div>
-    <div class="step-body">
-      <div class="note">~85% of Costco GMs started hourly. The path from hourly to GM is a minimum 8–12 year journey, but it's real.</div>
-      <div class="note">GMs at large warehouses earn $180–$250K+ including profit-sharing. Profit-sharing at the GM level is substantial.</div>
-      <div class="note">GMs own the entire warehouse P&L: $100M–$300M+ in annual revenue. Full AS400 access including financial screens (FSI1, GLI, GMD).</div>
-    </div>
-  </div>
-</div>
-
-<!-- TIMELINE -->
-<div class="sl amb">Realistic Timeline</div>
-<div class="timeline">
-  <div class="tl-item">
-    <div class="tl-left"><div class="tl-dot done"></div><div class="tl-line"></div></div>
-    <div class="tl-right"><div class="tl-date">MAR 25, 2026</div><div class="tl-name">Day 1 — Meat Wrapper</div><div class="tl-desc">Started at Costco Tempe Dept 61</div></div>
-  </div>
-  <div class="tl-item">
-    <div class="tl-left"><div class="tl-dot active"></div><div class="tl-line"></div></div>
-    <div class="tl-right"><div class="tl-date">NOW — JUN 2026</div><div class="tl-name">Building Foundation</div><div class="tl-desc">Learning the floor, PLUs, cut specs, AS400 basics, closing template</div></div>
-  </div>
-  <div class="tl-item">
-    <div class="tl-left"><div class="tl-dot pending"></div><div class="tl-line"></div></div>
-    <div class="tl-right"><div class="tl-date">SEP 2026</div><div class="tl-name">1,040 Hours Hit</div><div class="tl-desc">Merit increase eligible. First performance review window. SIT radar starts here.</div></div>
-  </div>
-  <div class="tl-item">
-    <div class="tl-left"><div class="tl-dot pending"></div><div class="tl-line"></div></div>
-    <div class="tl-right"><div class="tl-date">Q4 2026 – Q1 2027</div><div class="tl-name">SIT Nomination Window</div><div class="tl-desc">Management nominates you. The daily behaviors you've built get noticed here.</div></div>
-  </div>
-  <div class="tl-item">
-    <div class="tl-left"><div class="tl-dot pending"></div><div class="tl-line"></div></div>
-    <div class="tl-right"><div class="tl-date">2027</div><div class="tl-name">SIT Program (12 weeks)</div><div class="tl-desc">Structured training. AS400, FE, membership, supervisor procedures.</div></div>
-  </div>
-  <div class="tl-item">
-    <div class="tl-left"><div class="tl-dot pending"></div><div class="tl-line"></div></div>
-    <div class="tl-right"><div class="tl-date">2027–2028</div><div class="tl-name">Supervisor</div><div class="tl-desc">Shift ownership, register access, team direction, closing authority.</div></div>
-  </div>
-  <div class="tl-item">
-    <div class="tl-left"><div class="tl-dot pending"></div><div class="tl-line"></div></div>
-    <div class="tl-right"><div class="tl-date">2028–2030</div><div class="tl-name">Department Manager</div><div class="tl-desc">Merchandise Training Course → own a dept P&L.</div></div>
-  </div>
-</div>
-
-<!-- SIT CHECKLIST -->
-<div class="sl grn">SIT Readiness Checklist</div>
-<div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:0 12px;margin-bottom:10px">
-  <div class="check-list" id="checklist">
-    <!-- injected by JS -->
-  </div>
-</div>
-
-<!-- AS400 MASTERY GOALS -->
-<div class="sl">AS400 Mastery Goals</div>
-<div class="info-card">
-  <div class="ic-title">Commands to Master (in order)</div>
-  <div class="note"><kbd>IAI</kbd> — Item Alpha Inquiry. Know every opt code. Should be instant.</div>
-  <div class="note"><kbd>ITMW</kbd> — Real-time on-hand and next delivery at a glance.</div>
-  <div class="note"><kbd>STK</kbd> — 4-week D&D. Understand cover days. Build the cut list from this.</div>
-  <div class="note"><kbd>DSL</kbd> — Dept sales vs. LY and plan. Know this number every single shift.</div>
-  <div class="note"><kbd>RHI</kbd> — Receiving history. Catch vendor discrepancies same day.</div>
-  <div class="note"><kbd>RF 11 · RF 72 · RF 23</kbd> — Scanner essentials. Own these before SIT.</div>
-  <div class="note"><kbd>IRCI</kbd> — IRC coupon lookup. Drops the last digit at register. Know this cold.</div>
-  <div class="note"><kbd>EDSR</kbd> — Sign printing. Walk the case with a printout every morning.</div>
-  <div class="note"><kbd>LSDT</kbd> — Labor + sales today. SITs and supervisors use this constantly.</div>
-  <div class="note"><kbd>WII</kbd> — Member purchase history. Refund desk essentials.</div>
-</div>
-
-<!-- SIT INTERVIEW PREP -->
-<div class="sl red">SIT Interview Prep</div>
-<div class="info-card">
-  <div class="ic-title">Common Questions + AS400 Angles</div>
-  <div class="note">"Tell me about a time you took initiative." → Describe catching a receiving discrepancy via RHI before anyone else noticed. Quantify the dollar amount.</div>
-  <div class="note">"How do you prioritize on a busy shift?" → Walk the case with EDSR, check on-hand with RF 11, verify DOS on STK, and build the cut list in priority order.</div>
-  <div class="note">"Give me an example of when you used data to make a decision." → "I used STK to see that ribeye DOS was 6 days. I recommended cutting the next order by 2 cases. That saved approximately $X in shrink."</div>
-  <div class="note">"How do you handle a team member not pulling their weight?" → Address it directly and privately. Document with the close report. Escalate to Adam/Abe if it continues.</div>
-  <div class="note">"What does a successful close look like?" → Every item has a sign, the case is full and faced, production is logged, shrink is entered in AS400, and the close report is sent before out time.</div>
-  <div class="note">"Why do you want to be a supervisor?" → Don't say money. Say: "I want to build something. I want to be the person the team looks to. And I already know the systems — I just want the authority to use them."</div>
-</div>
-
-<!-- DAILY HABITS -->
-<div class="sl blue">Daily Habits That Get You There</div>
-<div class="info-card">
-  <div class="ic-title">Do These Without Being Asked</div>
-  <div class="note">Every shift: open AS400, pull DSL for Dept 61. Know the number before your manager does.</div>
-  <div class="note">Every shift: walk the case with an EDSR printout. Find mismatched signs before members do.</div>
-  <div class="note">Every delivery: verify RHI same day. Flag any discrepancy to Adam/Abe immediately.</div>
-  <div class="note">Every close: fill out the closing template completely. Send it to Adam and Abe before leaving.</div>
-  <div class="note">Weekly: run STK on your top-10 SKUs. Know your cover days. Flag anything over 4 days.</div>
-  <div class="note">Ongoing: teach one team member one AS400 command per week. Teaching accelerates your own mastery.</div>
-  <div class="note">Before every buyer visit: pull IATOP and IIL. Know your top sellers and any OOS risk before they ask.</div>
-</div>
-
-</div><!-- /scroll -->
-<script>
-const CHECKS=[
-  {id:'hrs1040',label:'1,040 hours worked (6+ months)',tag:'Merit increase eligible'},
-  {id:'plu100',label:'Know 100+ Dept 61 PLUs by memory',tag:'Wrapper foundation'},
-  {id:'iai',label:'IAI — run daily, chain to ITMW and RHI',tag:'AS400 core'},
-  {id:'stk',label:'STK — read the 4-week D&D and explain cover days',tag:'AS400 core'},
-  {id:'dsl',label:'DSL — know Dept 61 number every shift',tag:'AS400 core'},
-  {id:'rf11',label:'RF 11 — use on every cooler walk',tag:'Scanner'},
-  {id:'rf72',label:'RF 72 — know the shrink entry process (TSH password)',tag:'Scanner'},
-  {id:'rf23',label:'RF 23 — print a sign from the scanner',tag:'Scanner'},
-  {id:'edsr',label:'EDSR — walk the case with a printout every morning',tag:'Signs'},
-  {id:'close5',label:'Closed the department 5+ times solo',tag:'Leadership'},
-  {id:'templ',label:'Submit closing template to Adam & Abe consistently',tag:'Leadership'},
-  {id:'init1',label:'Caught a receiving discrepancy via RHI (document it)',tag:'Initiative'},
-  {id:'init2',label:'Flagged a cut-list issue before it became a shrink problem',tag:'Initiative'},
-  {id:'irci',label:'IRCI — look up an IRC coupon without help',tag:'AS400 situational'},
-  {id:'iatop',label:'IATOP — ran before a buyer/manager walk-through',tag:'AS400 situational'},
-  {id:'lsdt',label:'LSDT — explained labor vs. sales to a coworker',tag:'AS400 advanced'},
-  {id:'interview',label:'Practice-answered all 6 SIT interview questions',tag:'Prep'},
-  {id:'cutspec',label:'Know every Beef Choice spec (trim, weight, steps)',tag:'Craft'},
-  {id:'prime',label:'Know every Prime spec and how it differs from Choice',tag:'Craft'},
-  {id:'adam',label:'Had a direct conversation with Adam about your career goals',tag:'Critical'}
-];
-function loadChecks(){return JSON.parse(localStorage.getItem('career_checks')||'{}')}
-function saveChecks(d){localStorage.setItem('career_checks',JSON.stringify(d))}
-function togStep(el){el.classList.toggle('op')}
-function render(){
-  const d=loadChecks();
-  let done=0;
-  const cl=document.getElementById('checklist');
-  cl.innerHTML=CHECKS.map(c=>{
-    const checked=!!d[c.id];
-    if(checked)done++;
-    return`<div class="check-item">
-      <div class="check-box${checked?' done':''}" onclick="togCheck('${c.id}')"></div>
-      <div style="flex:1">
-        <div class="check-label${checked?' done':''}">${c.label}</div>
-        <div class="check-tag">${c.tag}</div>
-      </div>
-    </div>`;
-  }).join('');
-  const pct=Math.round(done/CHECKS.length*100);
-  document.getElementById('pct-label').textContent=pct+'%';
-  document.getElementById('prog-fill').style.width=pct+'%';
-  document.getElementById('prog-sub').textContent=done+' of '+CHECKS.length+' milestones complete';
-}
-function togCheck(id){
-  const d=loadChecks();
-  d[id]=!d[id];
-  saveChecks(d);
-  render();
-}
-render();
-window.addEventListener('beforeinstallprompt',e=>e.preventDefault());
-</script>
+<script>window.addEventListener('beforeinstallprompt',e=>e.preventDefault())</script>
 </body>
 </html>

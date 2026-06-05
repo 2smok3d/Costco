@@ -11,7 +11,7 @@
     :root{--bg:#0a0a0a;--surface:#161616;--s2:#1e1e1e;--border:#2a2a2a;--text:#fff;--dim:#ccc;--muted:#999;--red:#cc0000;--amber:#e07b00;--prime:#c8960c;--choice:#4a7fbf;--wagyu:#9b4dca;--teal:#007a6e;--r:6px}
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
-    header{background:#0a0a0a;border-bottom:2px solid #222; var(--red);padding:10px 14px 8px;flex-shrink:0;display:flex;align-items:center;gap:12px}
+    
     .back{color:var(--mt);font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 9px;border:1px solid #333;border-radius:4px;white-space:nowrap;flex-shrink:0}
     .htitle{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;letter-spacing:3px;text-transform:uppercase}
     .hsub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);letter-spacing:1px}
@@ -24,12 +24,12 @@
     .cat-bar{display:flex;gap:6px;padding:8px 12px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
     .cat-bar::-webkit-scrollbar{display:none}
     .cat-btn{padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:all .15s}
-    .cat-btn.active.all{background:#333;color:var(--text);border-color:#555}
+        .cat-btn.active.all{background:#2a2a2a;color:var(--text);border-color:#444}
     .cat-btn.active.beef{background:#8b2020;color:#fff;border-color:#8b2020}
-    .cat-btn.active.pork{background:#7a5c2a;color:#fff;border-color:#7a5c2a}
-    .cat-btn.active.poultry{background:#4a7040;color:#fff;border-color:#4a7040}
-    .cat-btn.active.seafood{background:var(--teal);color:#fff;border-color:var(--teal)}
-    .cat-btn.active.grinds{background:#555;color:#fff;border-color:#777}
+    .cat-btn.active.pork{background:#c05878;color:#fff;border-color:#c05878}
+    .cat-btn.active.poultry{background:#c9a000;color:#000;border-color:#c9a000}
+    .cat-btn.active.seafood{background:#1a6bb5;color:#fff;border-color:#1a6bb5}
+    .cat-btn.active.grinds{background:#5a5a5a;color:#fff;border-color:#777}
 
     #plu-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
     .plu-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);padding:6px 14px 2px;letter-spacing:1px}
@@ -46,19 +46,27 @@
     .plu-row.flash{background:rgba(224,123,0,.12)}
 
     .empty{text-align:center;padding:40px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mt);letter-spacing:1px}
-      .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.18);border-radius:5px;padding:4px 8px;text-align:center;flex-shrink:0;line-height:1.2}
+      
+    
+    
+      /* ─── UNIFIED HEADER ─── */
+    header{position:relative;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;height:58px;background:#0a0a0a;border-bottom:1px solid #1e1e1e;flex-shrink:0}
+    .bk{color:#666;font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 10px;border:1px solid #2a2a2a;border-radius:4px;white-space:nowrap;flex-shrink:0}
+    .bk:active{background:#1a1a1a;color:#999}
+    .hc{position:absolute;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;min-width:160px}
+    .ht{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#fff;letter-spacing:2px;text-transform:uppercase;line-height:1.1}
+    .hs{font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;letter-spacing:1.5px;margin-top:2px}
+    .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:3px 8px;text-align:center;flex-shrink:0;line-height:1.2}
     .cl1{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff;letter-spacing:.08em}
-    .cl2{font-size:7px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
+    .cl2{font-size:7px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
   </style>
 </head>
 <body>
 
 <header>
-  <a class="back" href="meat.html">← Meat</a>
-  <div>
-    <div class="htitle">PLU Lookup</div>
-    <div class="hsub">DEPT 61 · TAP TO COPY</div>
-  </div>
+  <a class="bk" href="tools.html">← Back</a>
+  <div class="hc"><div class="ht">PLU Lookup</div><div class="hs">#436 TEMPE</div></div>
+  <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
 </header>
 
 <div class="search-wrap">
@@ -242,9 +250,12 @@ function render() {
     return catMatch && qMatch;
   });
 
+  // category color map
+  const catColors = {beef:'#8b2020',pork:'#c05878',poultry:'#c9a000',seafood:'#1a6bb5',grinds:'#5a5a5a'};
   filtered.forEach(d => {
     if (d.g !== lastGroup) {
-      html += `<div class="group-header">${d.g}</div>`;
+      const col = catColors[d.c] || '#444';
+      html += `<div class="group-header" style="border-left:3px solid ${col};padding-left:10px;color:${col}">${d.g}</div>`;
       lastGroup = d.g;
     }
     html += `<div class="plu-row" onclick="copyPlu(this, '${d.p}')">
