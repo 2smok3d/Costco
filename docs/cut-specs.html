@@ -12,9 +12,16 @@
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     html,body{height:100%}
     body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
-    header{background:var(--surface);border-bottom:3px solid var(--red);padding:10px 14px 8px;flex-shrink:0;display:flex;align-items:center;gap:12px}
-    .back{color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;letter-spacing:1px;padding:5px 9px;border:1px solid #333;border-radius:4px;white-space:nowrap;flex-shrink:0}
-    .htitle{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:3px;text-transform:uppercase}
+    /* ─── UNIFIED HEADER ─── */
+    header{position:relative;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;height:58px;background:#0a0a0a;border-bottom:1px solid #1e1e1e;flex-shrink:0}
+    .bk{color:#666;font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 10px;border:1px solid #2a2a2a;border-radius:4px;white-space:nowrap;flex-shrink:0}
+    .bk:active{background:#1a1a1a;color:#999}
+    .hc{position:absolute;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;min-width:160px}
+    .ht{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#fff;letter-spacing:2px;text-transform:uppercase;line-height:1.1}
+    .hs{font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;letter-spacing:1.5px;margin-top:2px}
+    .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:3px 8px;text-align:center;flex-shrink:0;line-height:1.2}
+    .cl1{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff;letter-spacing:.08em}
+    .cl2{font-size:7px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
     .hsub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
     .search-wrap{background:var(--surface);padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
     #search{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Barlow',sans-serif;font-size:16px;padding:9px 12px;outline:none}
@@ -76,11 +83,9 @@
 <body>
 
 <header>
-  <a class="back" href="meat.html">← Meat</a>
-  <div>
-    <div class="htitle">🔪 Cut Specs</div>
-    <div class="hsub">DEPT 61 &nbsp;·&nbsp; TEMPE</div>
-  </div>
+  <a class="bk" href="tools.html">← Back</a>
+  <div class="hc"><div class="ht">Cut Specs</div><div class="hs">#436 TEMPE</div></div>
+  <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
 </header>
 
 <div class="search-wrap">
