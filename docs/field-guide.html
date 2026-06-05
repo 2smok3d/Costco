@@ -29,8 +29,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;c
 #header{flex-shrink:0;background:var(--red);padding:0;position:relative;z-index:200;-webkit-transform:translateZ(0)}
 
 /* BRAND BAR */
-#header-brand{display:flex;align-items:center;gap:10px;padding:8px 12px 6px 12px}
-#back-hub{display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:rgba(255,255,255,.85);font-size:11px;font-weight:700;letter-spacing:.06em;padding:5px 9px;text-decoration:none;white-space:nowrap;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+#header-brand{display:flex;align-items:center;gap:12px;padding:10px 14px 9px}
+#back-hub{display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.25);border-radius:4px;color:rgba(255,255,255,.85);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;padding:5px 9px;text-decoration:none;white-space:nowrap;flex-shrink:0;-webkit-tap-highlight-color:transparent}
 #back-hub:active{background:rgba(0,0,0,.6)}
 .brand-badge{background:rgba(68,4,4,.9);border:1px solid rgba(255,255,255,.18);border-radius:7px;padding:4px 9px;text-align:center;flex-shrink:0;line-height:1.2}
 .badge-line1{font-size:14px;font-weight:900;color:#fff;letter-spacing:.08em}
@@ -209,44 +209,10 @@ details.bb-detail[open] .bb-chevron{transform:rotate(180deg)}
       <div class="badge-line1">COSTCO</div>
       <div class="badge-line2">WHOLESALE</div>
     </div>
-    <div class="brand-wordmark">
-      <svg width="100%" height="52" viewBox="0 0 230 52" preserveAspectRatio="xMidYMid meet" style="display:block;overflow:visible">
-        <defs>
-          <linearGradient id="gFG" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%"   stop-color="#ffe060"/>
-            <stop offset="22%"  stop-color="#fffbe0"/>
-            <stop offset="52%"  stop-color="#ffc820"/>
-            <stop offset="80%"  stop-color="#fff5c0"/>
-            <stop offset="100%" stop-color="#ffe060"/>
-          </linearGradient>
-          <linearGradient id="uFG" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%"   stop-color="rgba(255,200,40,0)"/>
-            <stop offset="50%"  stop-color="rgba(255,225,80,.95)"/>
-            <stop offset="100%" stop-color="rgba(255,200,40,0)"/>
-          </linearGradient>
-          <linearGradient id="uField" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%"   stop-color="rgba(255,200,40,0)"/>
-            <stop offset="50%"  stop-color="rgba(255,225,80,.85)"/>
-            <stop offset="100%" stop-color="rgba(255,200,40,0)"/>
-          </linearGradient>
-          <filter id="glFG" x="-20%" y="-80%" width="140%" height="260%">
-            <feGaussianBlur stdDeviation="2" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <text x="14" y="16"
-          font-family="'Amanda Black','Amanda',Palatino,'Palatino Linotype','Book Antiqua',serif"
-          font-style="italic" font-weight="700" font-size="18"
-          fill="url(#gFG)" letter-spacing="1.5" filter="url(#glFG)">Field</text>
-        <rect x="14" y="19" width="46" height="1.2" fill="url(#uField)" rx="1"/>
-        <text x="55" y="47"
-          font-family="'Amanda Black','Amanda',Palatino,'Palatino Linotype','Book Antiqua',serif"
-          font-style="italic" font-weight="700" font-size="34"
-          fill="url(#gFG)" filter="url(#glFG)">GUIDE</text>
-        <rect x="55" y="50" width="150" height="1.5" fill="url(#uFG)" rx="1"/>
-      </svg>
+    <div style="flex:1;min-width:0">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:#fff;line-height:1">Field Guide</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.55);letter-spacing:1.5px;margin-top:2px">PLUs · COMMANDS · PROCEDURES</div>
     </div>
-    <div class="brand-version">v1.3</div>
   </div>
   <div id="search-wrap">
     <svg id="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
