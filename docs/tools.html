@@ -20,7 +20,8 @@
     
     
     #main{flex:1;display:flex;flex-direction:column;padding:12px 12px 10px;min-height:0;overflow:hidden}
-    .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:8px;min-height:0}
+    .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;min-height:0}
+    .tile.wide{grid-column:1/-1}
     .tile{background:var(--sf);border:1px solid var(--bd);border-left:4px solid;border-radius:var(--r);padding:14px 13px 10px;text-decoration:none;color:var(--tx);display:flex;flex-direction:column;gap:5px;transition:transform .12s;overflow:hidden;min-height:0}
     .tile:active{transform:scale(.97)}
     .ti{font-size:24px;line-height:1;flex-shrink:0}
@@ -50,19 +51,10 @@
       <span class="ti">📋</span><span class="tn">Closing Update</span><span class="td">Nightly close report</span>
     </a>
     <a class="tile" style="border-left-color:#e07b00" href="retail-cases.html">
-      <span class="ti">📦</span><span class="tn">Retail Case Log</span><span class="td">Daily case counter</span>
+      <span class="ti">📦</span><span class="tn">Production Log</span><span class="td">Daily case counter</span>
     </a>
-    <a class="tile" style="border-left-color:#cc0000" href="meat-plu.html">
-      <span class="ti">🔢</span><span class="tn">PLU Lookup</span><span class="td">Beef · Pork · Poultry · Seafood</span>
-    </a>
-    <a class="tile" style="border-left-color:#1d8a7a" href="cut-specs.html">
-      <span class="ti">🔪</span><span class="tn">Cut Specs</span><span class="td">Beef · Pork · Lamb · Seafood</span>
-    </a>
-    <a class="tile" style="border-left-color:#8850c8" href="cut-log.html">
+    <a class="tile wide" style="border-left-color:#8850c8" href="cut-log.html">
       <span class="ti">📝</span><span class="tn">Cut Log</span><span class="td">Daily cut tracking</span>
-    </a>
-    <a class="tile" style="border-left-color:#2a7040" href="depts.html">
-      <span class="ti">🏪</span><span class="tn">Departments</span><span class="td">Dept reference &amp; AS400</span>
     </a>
   </div>
 </div>

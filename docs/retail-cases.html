@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0a0a0a">
-  <title>Retail Case Log — #436</title>
+  <title>Retail Production Log — #436</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <style>
     :root{--bg:#0a0a0a;--sf:#111;--s2:#191919;--bd:#242424;--tx:#fff;--dm:#ccc;--mt:#888;--ft:#555;--r:8px}
@@ -83,7 +83,7 @@
 <body>
 <header>
   <a class="bk" href="tools.html">← Back</a>
-  <div class="hc"><div class="ht">Retail Cases</div><div class="hs">#436 TEMPE</div></div>
+  <div class="hc"><div class="ht">Production Log</div><div class="hs">#436 TEMPE</div></div>
   <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
 </header>
 
@@ -107,7 +107,7 @@
 
 <div class="modal-bg" id="modal" onclick="closeModal(event)">
   <div class="modal">
-    <div class="modal-title">Retail Cases</div>
+    <div class="modal-title">Production Log</div>
     <div class="rbox" id="rbox"></div>
     <div class="m-btns">
       <button class="m-btn" style="background:#e07b00;color:#fff" id="btn-copy" onclick="copyRpt()">Copy</button>
@@ -119,21 +119,13 @@
 <script>
 const SECS = [
   {id:'grinds',name:'Grinds',ico:'⚙️',color:'#6a5a4a',unit:'cs',
-   items:['OG','Wagyu','Bison']},
-  {id:'beef-cuts',name:'Beef Cuts',ico:'🥩',color:'#8b1c1c',unit:'ea',
-   items:['Chuck Steak','Top Sirloin','New York','Ribeye','Tenderloin','Flap','Flank','Stew','Eye of Round','Rib Roast','Shabu-Shabu','Tri-Tip','Milanese','Prime Ribeye','Prime NY','Prime Tenderloin','Prime Tri-Tip','Prime Top Sirloin','Prime Tomahawk']},
+   items:['OG Beef','Wagyu','Bison','Butterball Grinds','OG Turkey Grinds']},
   {id:'beef-cryo',name:'Beef Cryo',ico:'📦',color:'#7a2020',unit:'cs',
    items:['Tenderloin','Ribeye','New York','Brisket','Ribs']},
-  {id:'pork-cuts',name:'Pork Cuts',ico:'🐷',color:'#c05878',unit:'ea',
-   items:['Bone-In Chops','Boneless Chops','Thin Chops','Belly','Boneless Country-Style','Rib-Tips']},
   {id:'pork-cryo',name:'Pork Cryo',ico:'📦',color:'#a03a58',unit:'cs',
    items:['Tenderloin','Boneless Loin','Back Ribs','Spare Ribs','Belly','Butt']},
-  {id:'lamb',name:'Lamb',ico:'🐑',color:'#8a5a35',unit:'ea',
-   items:['Ribs','Leg','Loin Chops']},
-  {id:'chicken',name:'Chicken',ico:'🐔',color:'#c9a000',unit:'cs',
-   items:['Whole Birds','B/S Breast','Tenders','B/S Thighs','Thighs','Drumsticks','Wings','OG Whole Bird','OG Breast','OG B/S Thighs','OG Drumstick','OG Tenders']},
-  {id:'turkey',name:'Turkey',ico:'🦃',color:'#8a6800',unit:'cs',
-   items:['Butterball Grinds','OG Grinds']},
+  {id:'poultry',name:'Poultry',ico:'🐔',color:'#c9a000',unit:'cs',
+   items:['Whole Birds','B/S Breasts','Tenders','B/S Thighs','Drumsticks','Thighs','Wings','OG Whole Birds','OG B/S Breasts','OG Tenders','OG B/S Thighs','OG Drumsticks']},
   {id:'seafood',name:'Seafood',ico:'🐟',color:'#1a6bb5',unit:'cs',
    items:['Crab','Lobster','Atlantic Salmon','Steelhead','Tuna','Sea Bass','Catfish','Tilapia','Shrimp Bags','Shrimp Tray Pack']},
 ];
@@ -245,7 +237,7 @@ function showReport(){
   load();
   const d = curDate();
   const dFmt = new Date(d+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-  let lines = [`Retail Cases — ${dFmt}`, ''];
+  let lines = [`Retail Production Log — ${dFmt}`, ''];
   let hasAny = false;
   SECS.forEach(sec => {
     const filled = sec.items.filter(n=>get(sec.id,n)>0);

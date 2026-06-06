@@ -131,21 +131,13 @@
 <script>
 const SECS = [
   {id:'grinds',name:'Grinds',ico:'⚙️',color:'#6a5a4a',
-   items:['OG','Wagyu','Bison']},
-  {id:'beef-cuts',name:'Beef Cuts',ico:'🥩',color:'#8b1c1c',
-   items:['Chuck Steak','Top Sirloin','New York','Ribeye','Tenderloin','Flap','Flank','Stew','Eye of Round','Rib Roast','Shabu-Shabu','Tri-Tip','Milanese','Prime Ribeye','Prime NY','Prime Tenderloin','Prime Tri-Tip','Prime Top Sirloin','Prime Tomahawk']},
+   items:['OG Beef','Wagyu','Bison','Butterball Grinds','OG Turkey Grinds']},
   {id:'beef-cryo',name:'Beef Cryo',ico:'📦',color:'#7a2020',
    items:['Tenderloin','Ribeye','New York','Brisket','Ribs']},
-  {id:'pork-cuts',name:'Pork Cuts',ico:'🐷',color:'#c05878',
-   items:['Bone-In Chops','Boneless Chops','Thin Chops','Belly','Boneless Country-Style','Rib-Tips']},
   {id:'pork-cryo',name:'Pork Cryo',ico:'📦',color:'#a03a58',
    items:['Tenderloin','Boneless Loin','Back Ribs','Spare Ribs','Belly','Butt']},
-  {id:'lamb',name:'Lamb',ico:'🐑',color:'#8a5a35',
-   items:['Ribs','Leg','Loin Chops']},
   {id:'chicken',name:'Chicken',ico:'🐔',color:'#c9a000',
    items:['Whole Birds','B/S Breast','Tenders','B/S Thighs','Thighs','Drumsticks','Wings','OG Whole Bird','OG Breast','OG B/S Thighs','OG Drumstick','OG Tenders']},
-  {id:'turkey',name:'Turkey',ico:'🦃',color:'#8a6800',
-   items:['Butterball Grinds','OG Grinds']},
   {id:'seafood',name:'Seafood',ico:'🐟',color:'#1a6bb5',
    items:['Crab','Lobster','Atlantic Salmon','Steelhead','Tuna','Sea Bass','Catfish','Tilapia','Shrimp Bags','Shrimp Tray Pack']},
 ];
@@ -207,7 +199,7 @@ function updateRow(secId, name){
     } else if(item.status==='light'){
       fields.style.display='flex';
       fields.innerHTML = `
-        <div class="field-group"><div class="field-label">Cases on floor</div>
+        <div class="field-group"><div class="field-label">Cases remaining</div>
           <input class="field-in" type="number" min="0" value="${item.cases||''}" placeholder="0" oninput="setItem('${secId}','${name}','cases',this.value)"></div>`;
     } else {
       fields.style.display='none';
@@ -247,7 +239,7 @@ function render(){
           <div class="field-group"><div class="field-label">Cases</div><input class="field-in" type="number" min="0" value="${item.cases||''}" placeholder="0" oninput="setItem('${sec.id}','${name}','cases',this.value)"></div>
         </div>`;
       } else if(item.status==='light'){
-        extraFields=`<div class="item-fields"><div class="field-group"><div class="field-label">Cases on floor</div><input class="field-in" type="number" min="0" value="${item.cases||''}" placeholder="0" oninput="setItem('${sec.id}','${name}','cases',this.value)"></div></div>`;
+        extraFields=`<div class="item-fields"><div class="field-group"><div class="field-label">Cases remaining</div><input class="field-in" type="number" min="0" value="${item.cases||''}" placeholder="0" oninput="setItem('${sec.id}','${name}','cases',this.value)"></div></div>`;
       } else {
         extraFields='<div class="item-fields" style="display:none"></div>';
       }
