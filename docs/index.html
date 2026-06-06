@@ -21,9 +21,8 @@
       border-bottom:2px solid #cc1020;flex-shrink:0;
       gap:12px;
     }
-    /* Logo wrapper — takes all available width left of warehouse info */
-    .logo-wrap{flex:1;min-width:0;background:#f0f0f0;border-radius:8px;padding:6px 10px;display:flex;align-items:center}
-    .hlogo{width:100%;height:auto;display:block}
+    /* Logo — fixed height to balance with warehouse text, width scales naturally */
+    .hlogo{height:40px;width:auto;display:block}
     /* Warehouse + location — right side, stacked */
     .wr{flex-shrink:0;text-align:right}
     .wn{font-family:'Cormorant SC',serif;font-size:15px;font-weight:700;color:#cc1020;letter-spacing:4px;text-transform:uppercase;line-height:1}
@@ -72,9 +71,7 @@
 </head>
 <body>
 <header>
-  <div class="logo-wrap">
-    <img src="img/costco-logo.png" alt="Costco Wholesale" class="hlogo">
-  </div>
+  <img src="img/costco-logo.png" alt="Costco Wholesale" class="hlogo">
   <div class="wr">
     <div class="wn">Warehouse</div>
     <span class="wsub">#436 · Tempe</span>
