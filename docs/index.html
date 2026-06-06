@@ -16,24 +16,18 @@
 
     /* ─── HUB HEADER ─── */
     header{
-      display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:1fr auto;
-      padding:0 14px 8px;height:66px;background:#000;
-      border-bottom:1.5px solid #cc1020;flex-shrink:0;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 14px;background:#000;
+      border-bottom:2px solid #cc1020;flex-shrink:0;
+      gap:12px;
     }
-    /* Logo — spans both rows, vertically centered */
-    .clogo{grid-column:1;grid-row:1/3;align-self:center;background:#8b0000;border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:4px 9px;text-align:center;line-height:1.2}
-    .cl1{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff;letter-spacing:.08em}
-    .cl2{font-size:7px;font-weight:700;color:#5b9bd5;letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
-    /* WAREHOUSE — 1fr centered between logo and #436 Tempe column */
-    .hc{grid-column:2;grid-row:1/3;text-align:center;align-self:center;pointer-events:none}
-    .wn{
-      font-family:'Cormorant SC',serif;font-size:26px;font-weight:700;
-      color:#c0c0c0;letter-spacing:6px;line-height:1;
-      text-shadow:0 1px 12px rgba(200,200,200,.08);
-    }
-    /* #436 Tempe — right column, bottom-aligned */
-    .wr{grid-column:3;grid-row:1/3;align-self:end;text-align:right}
-    .wsub{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:#aaa;letter-spacing:1.5px}
+    /* Logo wrapper — takes all available width left of warehouse info */
+    .logo-wrap{flex:1;min-width:0;background:#f0f0f0;border-radius:8px;padding:6px 10px;display:flex;align-items:center}
+    .hlogo{width:100%;height:auto;display:block}
+    /* Warehouse + location — right side, stacked */
+    .wr{flex-shrink:0;text-align:right}
+    .wn{font-family:'Cormorant SC',serif;font-size:15px;font-weight:700;color:#cc1020;letter-spacing:4px;text-transform:uppercase;line-height:1}
+    .wsub{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:#888;letter-spacing:1px;display:block;margin-top:4px}
 
     /* ─── MAIN ─── */
     #main{flex:1;display:flex;flex-direction:column;padding:10px 12px 8px;min-height:0;overflow:hidden}
@@ -78,12 +72,12 @@
 </head>
 <body>
 <header>
-  <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
-
-  <div class="hc"><div class="wn">Warehouse</div></div>
-
+  <div class="logo-wrap">
+    <img src="img/costco-logo.png" alt="Costco Wholesale" class="hlogo">
+  </div>
   <div class="wr">
-    <span class="wsub">#436 Tempe</span>
+    <div class="wn">Warehouse</div>
+    <span class="wsub">#436 · Tempe</span>
   </div>
 </header>
 
