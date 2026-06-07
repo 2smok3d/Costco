@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -35,7 +35,7 @@
     body{background:var(--bg);color:var(--tx);font-family:var(--font-body);display:flex;flex-direction:column;height:100dvh}
 
     /* ─── UNIFIED HEADER ─── */
-    header{display:flex;align-items:center;height:var(--header-h);padding:0 14px;background:var(--bg);border-bottom:1px solid var(--bd);gap:10px;flex-shrink:0}
+    header{position:relative;display:flex;align-items:center;height:var(--header-h);padding:0 14px;background:var(--bg);border-bottom:1px solid var(--bd);gap:10px;flex-shrink:0}
     .bk{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--ft);font-size:18px;line-height:1;text-decoration:none;flex-shrink:0;transition:background .15s}
     .bk:active{background:var(--sf)}
     .hc{flex:1;text-align:center}
@@ -50,7 +50,7 @@
     .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:8px;min-height:0}
 
     /* ─── TILES ─── */
-    .tile{background:var(--sf);border:1.5px solid var(--bd);border-radius:var(--r);padding:10px 8px;text-decoration:none;color:var(--tx);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;transition:transform .12s;overflow:hidden;min-height:0}
+    .tile{background:var(--sf);border:1.5px solid var(--bd);border-radius:var(--r);padding:16px 10px;text-decoration:none;color:var(--tx);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;transition:transform .12s;overflow:hidden;min-height:0}
     .tile:active{transform:scale(.97)}
     .ti{font-size:20px;line-height:1;flex-shrink:0;margin-bottom:10px}
     .tn{font-family:var(--font-body);font-size:13px;font-weight:800;font-style:italic;letter-spacing:.06em;text-transform:uppercase;line-height:1.1;margin-bottom:6px}
@@ -60,8 +60,7 @@
 <body>
 <header>
   <a class="bk" href="index.html">←</a>
-  <div class="hc"><div class="ht">Tools</div><div class="hs">#436 · TEMPE</div></div>
-  <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
+  <div class="hc"><div class="ht">Tools</div><div class="hs">#436 · TEMPE</div></div><div class="cl2">WHOLESALE</div></div>
 </header>
 <div id="main">
   <div class="grid">

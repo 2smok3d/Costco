@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -36,7 +36,7 @@
     header{position:relative;display:flex;align-items:center;height:var(--header-h);padding:0 14px;background:var(--bg);border-bottom:1px solid var(--bd);gap:10px;flex-shrink:0}
     .bk{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--ft);font-size:18px;line-height:1;text-decoration:none;flex-shrink:0;transition:background .15s}
     .bk:active{background:var(--sf)}
-    .hc{flex:1;text-align:center;pointer-events:none}
+    .hc{position:absolute;left:0;right:0;text-align:center;pointer-events:none}
     .ht{font-family:var(--font-body);font-weight:700;font-size:15px;color:var(--tx);letter-spacing:.02em;line-height:1.1}
     .hs{font-family:var(--font-body);font-weight:500;font-size:10px;color:var(--xt);letter-spacing:.08em;margin-top:2px}
     .clogo{background:var(--brand);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:5px 9px;text-align:center;flex-shrink:0;line-height:1.2;box-shadow:0 0 14px rgba(139,0,0,.55),0 0 4px rgba(139,0,0,.9)}
@@ -99,8 +99,7 @@
 <body>
 <header>
   <a class="bk" href="depts.html">←</a>
-  <div class="hc"><div class="ht">Meat</div><div class="hs">DEPT 61 · #436</div></div>
-  <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
+  <div class="hc"><div class="ht">Meat</div><div class="hs">DEPT 61 · #436</div></div><div class="cl2">WHOLESALE</div></div>
 </header>
 
 <div class="container">
