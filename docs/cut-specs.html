@@ -6,33 +6,33 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0a0a0a">
   <title>Cut Specs — Dept 61</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root{--bg:#0a0a0a;--surface:#141414;--surface2:#1c1c1c;--border:#252525;--text:#fff;--dim:#aaa;--muted:#999;--red:#cc0000;--prime:#c8960c;--choice:#4a7fbf;--wagyu:#9b4dca;--teal:#007a6e;--r:8px}
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     html,body{height:100%}
-    body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
+    body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;display:flex;flex-direction:column;height:100dvh}
     /* ─── UNIFIED HEADER ─── */
-    header{position:relative;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;height:58px;background:#0a0a0a;border-bottom:1px solid #1e1e1e;flex-shrink:0}
-    .bk{color:#666;font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 10px;border:1px solid #2a2a2a;border-radius:4px;white-space:nowrap;flex-shrink:0}
-    .bk:active{background:#1a1a1a;color:#999}
-    .hc{position:absolute;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;min-width:160px}
-    .ht{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#fff;letter-spacing:2px;text-transform:uppercase;line-height:1.1}
-    .hs{font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;letter-spacing:1.5px;margin-top:2px}
-    .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:3px 8px;text-align:center;flex-shrink:0;line-height:1.2}
-    .cl1{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff;letter-spacing:.08em}
-    .cl2{font-size:7px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
+    header{display:flex;align-items:center;height:58px;padding:0 14px;background:#0a0a0a;border-bottom:1px solid #2a2a2a;gap:10px;flex-shrink:0}
+    .bk{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid #2a2a2a;border-radius:6px;color:#666;font-size:18px;line-height:1;text-decoration:none;flex-shrink:0;transition:background .15s}
+    .bk:active{background:#141414}
+    .hc{flex:1;text-align:center;pointer-events:none}
+    .ht{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;font-style:italic;color:#fff;letter-spacing:.02em;line-height:1.1}
+    .hs{font-family:'Montserrat',sans-serif;font-weight:500;font-size:10px;color:#444;letter-spacing:.08em;margin-top:2px}
+    .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:5px 9px;text-align:center;flex-shrink:0;line-height:1.2;box-shadow:0 0 14px rgba(139,0,0,.55),0 0 4px rgba(139,0,0,.9)}
+    .cl1{font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#fff;letter-spacing:.05em;text-shadow:0 0 10px rgba(255,150,150,.45)}
+    .cl2{font-family:'Montserrat',sans-serif;font-weight:600;font-size:7px;color:rgba(255,255,255,.5);letter-spacing:.22em;text-transform:uppercase;margin-top:2px}
     .hsub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
     .search-wrap{background:var(--surface);padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
-    #search{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Barlow',sans-serif;font-size:16px;padding:9px 12px;outline:none}
+    #search{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:16px;padding:9px 12px;outline:none}
     #search::placeholder{color:var(--muted)}
     #search:focus{border-color:var(--red)}
     .sp-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
-    .sp-tab{font-size:15px;flex:1;padding:10px 6px;border:none;background:none;color:var(--dim);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-bottom:3px solid transparent;transition:all .15s}
+    .sp-tab{font-size:15px;flex:1;padding:10px 6px;border:none;background:none;color:var(--dim);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-bottom:3px solid transparent;transition:all .15s}
     .sp-tab.active{color:var(--text);border-bottom-color:var(--red)}
     .g-bar{display:flex;gap:6px;padding:8px 12px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
     .g-bar::-webkit-scrollbar{display:none}
-    .g-btn{font-size:13px;padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--dim);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:all .15s}
+    .g-btn{font-size:13px;padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--dim);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:all .15s}
     .g-btn.active.all{background:#333;color:var(--text);border-color:var(--muted)}
     .g-btn.active.prime{background:var(--prime);color:#000;border-color:var(--prime)}
     .g-btn.active.choice{background:var(--choice);color:#fff;border-color:var(--choice)}
@@ -48,7 +48,7 @@
     .cut-header{padding:12px 14px 10px;cursor:pointer;display:flex;flex-direction:column;gap:6px}
     .cut-header:active{background:rgba(255,255,255,.03)}
     .cut-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-    .cut-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;letter-spacing:.5px;line-height:1.2}
+    .cut-name{font-family:'Montserrat',sans-serif;font-size:17px;font-weight:800;letter-spacing:.5px;line-height:1.2}
     .cut-toggle{color:var(--muted);font-size:14px;flex-shrink:0;padding-top:1px;transition:transform .2s}
     .cut-card.open .cut-toggle{transform:rotate(180deg)}
     .cut-ids{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.5px}
@@ -83,8 +83,8 @@
 <body>
 
 <header>
-  <a class="bk" href="tools.html">← Back</a>
-  <div class="hc"><div class="ht">Cut Specs</div><div class="hs">#436 TEMPE</div></div>
+  <a class="bk" href="meat.html">←</a>
+  <div class="hc"><div class="ht">Cut Specs</div><div class="hs">Dept 61 · #436</div></div>
   <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
 </header>
 

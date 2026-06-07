@@ -6,17 +6,17 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0a0a0a">
   <title>Meat — Dept 61</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     :root{--bg:#0a0a0a;--sf:#111;--bd:#1e1e1e;--tx:#fff;--dm:#ccc;--mt:#888;--r:10px;
       --red:#cc0000;--amber:#e07b00;--teal:#007a6e}
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    body{background:var(--bg);color:var(--tx);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
+    body{background:var(--bg);color:var(--tx);font-family:'Montserrat',sans-serif;display:flex;flex-direction:column;height:100dvh}
     #main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
     .container{max-width:480px;margin:0 auto;padding:16px 12px;display:flex;flex-direction:column;gap:10px}
 
     .section-label {
-      font-family: 'Barlow Condensed', sans-serif;
+      font-family: 'Montserrat', sans-serif;
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 3px;
@@ -27,11 +27,11 @@
     }
 
     .tool-card{background:var(--sf);border:1px solid var(--bd);
-      border-left: 4px solid var(--border);
+      border-left: 4px solid var(--bd);
       border-radius: 8px;
       padding: 20px 18px;
       text-decoration: none;
-      color: var(--text);
+      color: var(--tx);
       display: flex;
       align-items: center;
       gap: 16px;
@@ -48,9 +48,9 @@
     .card-icon { font-size: 32px; flex-shrink: 0; }
     .card-text { display: flex; flex-direction: column; gap: 4px; }
     .card-name {
-      font-family: 'Barlow Condensed', sans-serif;
+      font-family: 'Montserrat', sans-serif;
       font-size: 20px;
-      font-weight: 900;
+      font-weight: 800;
       letter-spacing: 1.5px;
       text-transform: uppercase;
     }
@@ -67,23 +67,23 @@
       
     
     
-      /* ─── UNIFIED HEADER ─── */
-    header{position:relative;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;height:58px;background:#0a0a0a;border-bottom:1px solid #1e1e1e;flex-shrink:0}
-    .bk{color:#666;font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 10px;border:1px solid #2a2a2a;border-radius:4px;white-space:nowrap;flex-shrink:0}
-    .bk:active{background:#1a1a1a;color:#999}
-    .hc{position:absolute;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;min-width:160px}
-    .ht{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#fff;letter-spacing:2px;text-transform:uppercase;line-height:1.1}
-    .hs{font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;letter-spacing:1.5px;margin-top:2px}
-    .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:3px 8px;text-align:center;flex-shrink:0;line-height:1.2}
-    .cl1{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff;letter-spacing:.08em}
-    .cl2{font-size:7px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
+    /* ─── UNIFIED HEADER ─── */
+    header{display:flex;align-items:center;height:58px;padding:0 14px;background:#0a0a0a;border-bottom:1px solid #2a2a2a;gap:10px;flex-shrink:0}
+    .bk{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid #2a2a2a;border-radius:6px;color:#666;font-size:18px;line-height:1;text-decoration:none;flex-shrink:0;transition:background .15s}
+    .bk:active{background:#141414}
+    .hc{flex:1;text-align:center;pointer-events:none}
+    .ht{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;font-style:italic;color:#fff;letter-spacing:.02em;line-height:1.1}
+    .hs{font-family:'Montserrat',sans-serif;font-weight:500;font-size:10px;color:#444;letter-spacing:.08em;margin-top:2px}
+    .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:5px 9px;text-align:center;flex-shrink:0;line-height:1.2;box-shadow:0 0 14px rgba(139,0,0,.55),0 0 4px rgba(139,0,0,.9)}
+    .cl1{font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#fff;letter-spacing:.05em;text-shadow:0 0 10px rgba(255,150,150,.45)}
+    .cl2{font-family:'Montserrat',sans-serif;font-weight:600;font-size:7px;color:rgba(255,255,255,.5);letter-spacing:.22em;text-transform:uppercase;margin-top:2px}
   </style>
 </head>
 <body>
 
 <header>
-  <a class="bk" href="depts.html">← Back</a>
-  <div class="hc"><div class="ht">Meat</div><div class="hs">#436 TEMPE</div></div>
+  <a class="bk" href="depts.html">←</a>
+  <div class="hc"><div class="ht">Meat</div><div class="hs">Dept 61 · #436</div></div>
   <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
 </header>
 

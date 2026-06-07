@@ -7,12 +7,33 @@
   <meta name="theme-color" content="#000000">
   <link rel="manifest" href="manifest.json">
   <title>Costco Warehouse #436</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&family=Cormorant+SC:wght@500;600;700&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=JetBrains+Mono:wght@400;500;600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#000;--sf:#0e0e0e;--bd:#222;--tx:#fff;--dm:#ccc;--mt:#666;--r:10px}
+    :root{
+      --bg:#0a0a0a;--sf:#141414;--s2:#1e1e1e;--s3:#252525;
+      --bd:#2a2a2a;--bd-lite:#222;
+      --tx:#fff;--dm:#ccc;--mt:#999;--ft:#666;--xt:#444;
+      --brand:#8b0000;
+      --red:#cc0000;--red-dk:#8b1010;--amber:#e07b00;--amber-dk:#8a6020;
+      --green:#00c87a;--green-dk:#2e7d42;--blue:#1a6bb5;--blue-lt:#4a90d9;
+      --teal:#007a6e;--purple:#8850c8;--purple-dk:#5a3a8a;--pink:#c05878;
+      --gold:#c8a000;--gold-lt:#e8c97a;--brown:#8a5a35;
+      --prime:#c8960c;--choice:#4a7fbf;--wagyu:#9b4dca;
+      --beef-cryo:#7a1c1c;--pork-clr:#c05878;--poultry:#c9a000;--turkey:#8a6800;
+      --seafood:#1a6bb5;--grinds:#6a5a4a;--lamb-clr:#8a5a35;
+      --st-dw:#e07b00;--st-lt:#c8a000;--st-oos:#cc0000;--st-na:#555;
+      --sp-xs:4px;--sp-sm:8px;--sp-md:12px;--sp-lg:16px;--sp-xl:24px;
+      --r-sm:6px;--r:8px;--r-lg:12px;--r-pill:999px;
+      --sh-sm:0 1px 4px rgba(0,0,0,.4);--sh:0 2px 10px rgba(0,0,0,.5);
+      --header-h:58px;
+      --font-body:'Montserrat',sans-serif;--font-mono:'JetBrains Mono',monospace;
+      --accent:#cc0000;--accent-bg:rgba(204,0,0,.10);--accent-bd:rgba(204,0,0,.25);
+    }
+    :root{--accent:#cc1020;--accent-bg:rgba(204,16,32,.10);--accent-bd:rgba(204,16,32,.25)}
+
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     html,body{height:100%;overflow:hidden}
-    body{background:var(--bg);color:var(--tx);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
+    body{background:var(--bg);color:var(--tx);font-family:var(--font-body);display:flex;flex-direction:column;height:100dvh}
 
     /* ─── HUB HEADER ─── */
     header{
@@ -21,11 +42,9 @@
       border-bottom:2px solid #cc1020;flex-shrink:0;
       gap:12px;
     }
-    /* Logo — fixed height to balance with warehouse text, width scales naturally */
     .hlogo{height:40px;width:auto;display:block}
-    /* Warehouse + location — right side, stacked */
     .wr{flex-shrink:0;text-align:right}
-    .wn{font-family:'Cormorant SC',serif;font-size:15px;font-weight:700;color:#cc1020;letter-spacing:4px;text-transform:uppercase;line-height:1}
+    .wn{font-family:var(--font-body);font-size:14px;font-weight:800;font-style:italic;color:#cc1020;letter-spacing:.08em;text-transform:uppercase;line-height:1}
     .wsub{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:#888;letter-spacing:1px;display:block;margin-top:4px}
 
     /* ─── MAIN ─── */
@@ -34,39 +53,44 @@
     /* FIELD GUIDE */
     .fg{display:flex;align-items:center;gap:14px;background:var(--sf);border:1.5px solid #6b1015;border-radius:var(--r);padding:13px 15px;text-decoration:none;color:var(--tx);flex-shrink:0;transition:transform .12s;box-shadow:0 0 18px rgba(107,16,21,.25)}
     .fg:active{transform:scale(.98)}
+    .fg.hd{display:none}
     .fg-ico{font-size:26px;flex-shrink:0}
     .fg-name{
       font-family:'Cinzel Decorative',serif;font-size:17px;font-weight:700;
       color:#e8c97a;letter-spacing:1.5px;line-height:1;
       text-shadow:0 0 18px rgba(232,196,100,.45),0 0 40px rgba(232,196,100,.15);
     }
-    .fg-desc{font-size:12px;color:var(--dm);margin-top:3px;font-family:'Barlow',sans-serif}
-    .fg-tag{margin-left:auto;background:#6b1015;color:rgba(255,255,255,.6);font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:3px;flex-shrink:0}
+    .fg-desc{font-size:12px;color:var(--dm);margin-top:3px;font-family:var(--font-body)}
+    .fg-tag{margin-left:auto;background:#6b1015;color:rgba(255,255,255,.6);font-family:var(--font-mono);font-size:8px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:3px;flex-shrink:0}
 
     /* SEARCH */
     .sw{flex-shrink:0;padding:9px 0}
     .si{position:relative;display:flex;align-items:center}
     .si-ico{position:absolute;left:12px;color:var(--mt);font-size:14px;pointer-events:none}
-    #hs{width:100%;background:var(--sf);border:1px solid rgba(255,255,255,.42);border-radius:22px;color:var(--tx);font-family:'Barlow',sans-serif;font-size:15px;padding:10px 14px 10px 36px;outline:none;-webkit-appearance:none;transition:border-color .15s}
+    #hs{width:100%;background:var(--sf);border:1px solid rgba(255,255,255,.42);border-radius:22px;color:var(--tx);font-family:var(--font-body);font-size:15px;padding:10px 14px 10px 36px;outline:none;-webkit-appearance:none;transition:border-color .15s}
     #hs::placeholder{color:var(--mt)}
     #hs:focus{border-color:rgba(255,255,255,.82)}
-    .sh{display:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);padding:5px 4px 0;text-align:center}
+    .sh{display:none;font-family:var(--font-mono);font-size:10px;color:var(--mt);padding:5px 4px 0;text-align:center}
     .sh a{color:#cc1020;text-decoration:none}
 
     /* TILE GRID */
     .gg{height:3px;flex-shrink:0}
     .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:8px;min-height:0}
+
     .tile{
       background:var(--sf);border:1.5px solid var(--bd);border-radius:var(--r);
-      padding:8px 6px;text-decoration:none;color:var(--tx);
+      padding:10px 8px;text-decoration:none;color:var(--tx);
       display:flex;flex-direction:column;align-items:center;justify-content:center;
       text-align:center;position:relative;transition:transform .12s;overflow:hidden;min-height:0;
     }
     .tile:active{transform:scale(.97)}
     .tile.hd{display:none}
-    .ti{font-size:20px;line-height:1;flex-shrink:0;margin-bottom:18px}
-    .tn{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;letter-spacing:1px;text-transform:uppercase;line-height:1.1;margin-bottom:15px}
-    .td{font-size:10px;color:var(--dm);line-height:1.3}
+
+    .tile-wide{grid-column:1/-1}
+
+    .ti{font-size:18px;line-height:1;flex-shrink:0;margin-bottom:6px}
+    .tn{font-family:var(--font-body);font-size:15px;font-weight:800;font-style:italic;letter-spacing:.06em;text-transform:uppercase;line-height:1.1;margin-bottom:4px}
+    .td{font-size:10px;color:var(--dm);font-family:var(--font-body);font-weight:400;line-height:1.3}
   </style>
 </head>
 <body>
@@ -91,7 +115,7 @@
   <div class="sw">
     <div class="si">
       <span class="si-ico">⌕</span>
-      <input id="hs" type="search" placeholder="Search   PLUs, tools, commands…" autocomplete="off" autocorrect="off" spellcheck="false">
+      <input id="hs" type="search" placeholder="Search PLUs, tools, commands…" autocomplete="off" autocorrect="off" spellcheck="false">
     </div>
     <div class="sh" id="sh">No match — <a href="field-guide.html">search Field Guide ↗</a></div>
   </div>
@@ -99,23 +123,30 @@
   <div class="gg"></div>
 
   <div class="grid">
-    <a class="tile" style="border-color:#00c87a;box-shadow:0 0 8px rgba(0,200,122,.1)" href="as400.html" data-n="as400 commands ibm terminal rf scanner">
-      <span class="ti">🖥</span><span class="tn">AS400</span><span class="td">Commands · RF · Dept Sheets</span>
+    <a class="tile" style="border-color:#00c87a;box-shadow:0 0 10px rgba(0,200,122,.12)" href="as400.html" data-n="as400 commands ibm terminal rf scanner dept sheets">
+      <span class="ti">🖥</span>
+      <span class="tn">AS400</span>
+      <span class="td">Commands · RF · Dept Sheets</span>
     </a>
-    <a class="tile" style="border-color:#c05878;box-shadow:0 0 8px rgba(192,88,120,.1)" href="depts.html" data-n="depts departments meat produce deli bakery front end">
-      <span class="ti">🏪</span><span class="tn">Depts</span><span class="td">All Departments</span>
+    <a class="tile" style="border-color:#c05878;box-shadow:0 0 10px rgba(192,88,120,.12)" href="depts.html" data-n="depts departments meat produce deli bakery front end">
+      <span class="ti">🏪</span>
+      <span class="tn">Depts</span>
+      <span class="td">Departments</span>
     </a>
-    <a class="tile" style="border-color:#1a6bb5;box-shadow:0 0 8px rgba(26,107,181,.1)" href="blue-book.html" data-n="blue book supervisor register procedures">
-      <span class="ti">📘</span><span class="tn">Blue Book</span><span class="td">Supervisor Reference</span>
+    <a class="tile" style="border-color:#e07b00;box-shadow:0 0 10px rgba(224,123,0,.12)" href="tools.html" data-n="tools closing production template retail cases plu cut specs">
+      <span class="ti">🔧</span>
+      <span class="tn">Tools</span>
+      <span class="td">Closing · Production</span>
     </a>
-    <a class="tile" style="border-color:#e07b00;box-shadow:0 0 8px rgba(224,123,0,.1)" href="tools.html" data-n="tools closing template retail cases plu cut specs cut log">
-      <span class="ti">🔧</span><span class="tn">Tools</span><span class="td">Close · Cases · PLU · Cuts</span>
+    <a class="tile" style="border-color:#b8860b;box-shadow:0 0 10px rgba(184,134,11,.12)" href="docs-page.html" data-n="docs files manuals reference blue book supervisor operations">
+      <span class="ti">📁</span>
+      <span class="tn">Docs</span>
+      <span class="td">Reference · Blue Book</span>
     </a>
-    <a class="tile" style="border-color:#b8860b;box-shadow:0 0 8px rgba(184,134,11,.1)" href="docs-page.html" data-n="files docs manuals operations equipment">
-      <span class="ti">📁</span><span class="tn">Files</span><span class="td">Manuals · References</span>
-    </a>
-    <a class="tile" style="border-color:#8850c8;box-shadow:0 0 8px rgba(136,80,200,.1)" href="career.html" data-n="career goals sit supervisor schedule shifts ukg">
-      <span class="ti">🎯</span><span class="tn">Career</span><span class="td">Goals · Schedule · SIT</span>
+    <a class="tile tile-wide" style="border-color:#8850c8;box-shadow:0 0 10px rgba(136,80,200,.12)" href="career.html" data-n="career goals schedule advancement sit supervisor ukg shifts">
+      <span class="ti">🎯</span>
+      <span class="tn">Career</span>
+      <span class="td">Goals · Schedule · Advancement</span>
     </a>
   </div>
 </div>

@@ -5,522 +5,175 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0a0a0a">
-  <title>Depts — Costco Warehouse</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <title>Depts — Costco #436</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#0a0a0a;--sf:#161616;--s2:#1e1e1e;--bd:#262626;
-      --tx:#fff;--dm:#ccc;--mt:#999;--ft:#555;
-      --red:#cc0000;--amb:#e07b00;--grn:#00c87a;--blue:#1a6bb5;
-      --teal:#1d8a7a;--pu:#8850c8;--yel:#c8a000;--pink:#c05878;--brn:#8a5a35;
-      --r:8px;
+      --bg:#0a0a0a;--sf:#141414;--s2:#1e1e1e;--s3:#252525;
+      --bd:#2a2a2a;--bd-lite:#222;
+      --tx:#fff;--dm:#ccc;--mt:#999;--ft:#666;--xt:#444;
+      --brand:#8b0000;
+      --red:#cc0000;--red-dk:#8b1010;--amber:#e07b00;--amber-dk:#8a6020;
+      --green:#00c87a;--green-dk:#2e7d42;--blue:#1a6bb5;--blue-lt:#4a90d9;
+      --teal:#007a6e;--purple:#8850c8;--purple-dk:#5a3a8a;--pink:#c05878;
+      --gold:#c8a000;--gold-lt:#e8c97a;--brown:#8a5a35;
+      --prime:#c8960c;--choice:#4a7fbf;--wagyu:#9b4dca;
+      --beef-cryo:#7a1c1c;--pork-clr:#c05878;--poultry:#c9a000;--turkey:#8a6800;
+      --seafood:#1a6bb5;--grinds:#6a5a4a;--lamb-clr:#8a5a35;
+      --st-dw:#e07b00;--st-lt:#c8a000;--st-oos:#cc0000;--st-na:#555;
+      --sp-xs:4px;--sp-sm:8px;--sp-md:12px;--sp-lg:16px;--sp-xl:24px;
+      --r-sm:6px;--r:8px;--r-lg:12px;--r-pill:999px;
+      --sh-sm:0 1px 4px rgba(0,0,0,.4);--sh:0 2px 10px rgba(0,0,0,.5);
+      --header-h:58px;
+      --font-body:'Montserrat',sans-serif;--font-mono:'JetBrains Mono',monospace;
+      --accent:#cc0000;--accent-bg:rgba(204,0,0,.10);--accent-bd:rgba(204,0,0,.25);
     }
+    :root{--accent:var(--pink);--accent-bg:rgba(192,88,120,.10);--accent-bd:rgba(192,88,120,.25)}
+
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    body{background:var(--bg);color:var(--tx);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;height:100dvh}
-    #scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 50px;max-width:540px;margin:0 auto;width:100%}
+    body{background:var(--bg);color:var(--tx);font-family:var(--font-body);min-height:100dvh;padding-bottom:40px}
 
-    /* SECTION LABEL */
-    .sl{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;color:var(--red);letter-spacing:3px;text-transform:uppercase;padding:14px 0 5px 10px;border-left:3px solid var(--red);margin-top:4px}
-    .sl.grn{color:var(--grn);border-left-color:var(--grn)}
-    .sl.amb{color:var(--amb);border-left-color:var(--amb)}
-    .sl.blue{color:var(--blue);border-left-color:var(--blue)}
+    /* ─── UNIFIED HEADER ─── */
+    header{display:flex;align-items:center;height:var(--header-h);padding:0 14px;background:var(--bg);border-bottom:1px solid var(--bd);gap:10px;flex-shrink:0}
+    .bk{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--ft);font-size:18px;line-height:1;text-decoration:none;flex-shrink:0;transition:background .15s}
+    .bk:active{background:var(--sf)}
+    .hc{flex:1;text-align:center;pointer-events:none}
+    .ht{font-family:var(--font-body);font-weight:700;font-size:15px;font-style:italic;color:var(--tx);letter-spacing:.02em;line-height:1.1}
+    .hs{font-family:var(--font-body);font-weight:500;font-size:10px;color:var(--xt);letter-spacing:.08em;margin-top:2px}
+    .clogo{background:var(--brand);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:5px 9px;text-align:center;flex-shrink:0;line-height:1.2;box-shadow:0 0 14px rgba(139,0,0,.55),0 0 4px rgba(139,0,0,.9)}
+    .cl1{font-family:var(--font-body);font-weight:800;font-size:15px;color:#fff;letter-spacing:.05em;text-shadow:0 0 10px rgba(255,150,150,.45)}
+    .cl2{font-family:var(--font-body);font-weight:600;font-size:7px;color:rgba(255,255,255,.5);letter-spacing:.22em;text-transform:uppercase;margin-top:2px}
 
-    /* QUICK-ACCESS TILES (Meat tools) */
-    .tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-    .tl{background:var(--sf);border:1px solid var(--bd);border-top:3px solid;border-radius:var(--r);padding:13px 13px 11px;text-decoration:none;color:var(--tx);display:flex;flex-direction:column;gap:5px;transition:transform .12s}
-    .tl:active{transform:scale(.97)}
-    .tl-icon{font-size:22px}
-    .tl-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase}
-    .tl-desc{font-size:12px;color:var(--dm)}
+    /* ─── LAYOUT ─── */
+    .container{max-width:480px;margin:0 auto;padding:12px 12px}
 
-    /* CONTACT CARD */
-    .contact-row{background:var(--sf);border:1px solid var(--bd);border-left:4px solid var(--red);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
-    .contact-role{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--mt);width:80px;flex-shrink:0}
-    .contact-name{font-size:16px;font-weight:600;flex:1}
-    .contact-num{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--red)}
-    .sms-btn{background:var(--red);color:#fff;border:none;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.5px;padding:6px 10px;cursor:pointer;flex-shrink:0;text-decoration:none}
+    /* ─── SECTION LABEL ─── */
+    .section-label{font-family:var(--font-body);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--pink);padding:12px 4px 5px;border-left:3px solid var(--pink);padding-left:10px;margin-top:2px}
 
-    /* DEPT ACCORDION */
-    .dept{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
-    .dept-hd{padding:13px 14px;cursor:pointer;display:flex;align-items:center;gap:12px;-webkit-user-select:none;user-select:none}
-    .dept-hd:active{background:rgba(255,255,255,.03)}
-    .dept-icon{font-size:22px;flex-shrink:0}
-    .dept-info{flex:1}
-    .dept-name{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:2px;text-transform:uppercase;line-height:1}
-    .dept-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);margin-top:2px}
-    .dept-chev{color:var(--ft);font-size:12px;transition:transform .2s;flex-shrink:0}
-    .dept.op .dept-chev{transform:rotate(180deg)}
-    .dept-body{display:none;border-top:1px solid var(--bd);padding:12px 14px 14px;flex-direction:column;gap:10px}
-    .dept.op .dept-body{display:flex}
-
-    /* Dept body internals */
-    .db-label{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mt);margin-top:2px;margin-bottom:2px}
-    .cmd-row{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid var(--bd)}
-    .cmd-row:last-child{border-bottom:none}
-    .cmd-code{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--grn);min-width:58px;flex-shrink:0;padding-top:1px}
-    .cmd-desc{font-size:13px;color:var(--dm);line-height:1.4;flex:1}
-    .cmd-star{color:var(--amb);font-size:10px;flex-shrink:0}
-
-    .note-row{font-size:12px;color:var(--mt);line-height:1.5;padding:3px 0;display:flex;gap:8px}
-    .note-row::before{content:'•';color:var(--ft);flex-shrink:0}
-
-    /* Key facts pill row */
-    .pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
-    .pill{font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--s2);border:1px solid var(--bd);border-radius:20px;padding:4px 10px;color:var(--dm);white-space:nowrap}
-    .pill.red{border-color:var(--red);color:var(--red)}
-    .pill.grn{border-color:var(--grn);color:var(--grn)}
-    .pill.amb{border-color:var(--amb);color:var(--amb)}
-
-    kbd{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--s2);border:1px solid var(--bd);border-radius:3px;padding:1px 5px;color:var(--grn)}
-
-    /* AS400 quick strip */
-    .as-strip{background:rgba(0,200,122,.06);border:1px solid rgba(0,200,122,.2);border-radius:6px;padding:10px 12px}
-    .as-strip-title{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--grn);margin-bottom:6px}
-      
-    
-    
-      /* ─── UNIFIED HEADER ─── */
-    header{position:relative;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;height:58px;background:#0a0a0a;border-bottom:1px solid #1e1e1e;flex-shrink:0}
-    .bk{color:#666;font-family:'JetBrains Mono',monospace;font-size:11px;text-decoration:none;padding:5px 10px;border:1px solid #2a2a2a;border-radius:4px;white-space:nowrap;flex-shrink:0}
-    .bk:active{background:#1a1a1a;color:#999}
-    .hc{position:absolute;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;min-width:160px}
-    .ht{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#fff;letter-spacing:2px;text-transform:uppercase;line-height:1.1}
-    .hs{font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;letter-spacing:1.5px;margin-top:2px}
-    .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:3px 8px;text-align:center;flex-shrink:0;line-height:1.2}
-    .cl1{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff;letter-spacing:.08em}
-    .cl2{font-size:7px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
+    /* ─── DEPT CARDS ─── */
+    .dept-card{background:var(--sf);border:1px solid var(--bd);border-left:4px solid var(--bd);border-radius:var(--r);padding:14px 16px;text-decoration:none;color:var(--tx);display:flex;align-items:center;gap:14px;margin-bottom:8px;transition:transform .12s;position:relative}
+    .dept-card:active{transform:scale(.97)}
+    .dept-card.red    {border-left-color:var(--red)}
+    .dept-card.blue   {border-left-color:var(--blue)}
+    .dept-card.green  {border-left-color:var(--green-dk)}
+    .dept-card.amber  {border-left-color:var(--amber)}
+    .dept-card.gold   {border-left-color:var(--gold)}
+    .dept-card.purple {border-left-color:var(--purple)}
+    .dept-card.teal   {border-left-color:var(--teal)}
+    .dept-card.pink   {border-left-color:var(--pink)}
+    .dept-card.gray   {border-left-color:var(--ft);opacity:.55;pointer-events:none}
+    .dept-icon{font-size:26px;flex-shrink:0}
+    .dept-text{flex:1;min-width:0}
+    .dept-name{font-family:var(--font-body);font-size:15px;font-weight:700;font-style:italic;letter-spacing:.03em;text-transform:uppercase}
+    .dept-desc{font-size:12px;color:var(--dm);margin-top:2px;line-height:1.4}
+    .dept-num{font-family:var(--font-mono);font-size:9px;color:var(--mt);letter-spacing:.5px;margin-top:3px}
+    .arrow{color:var(--mt);font-size:16px;flex-shrink:0}
+    .cs-badge{font-family:var(--font-mono);font-size:8px;color:var(--ft);background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-pill);padding:2px 7px;margin-left:auto;flex-shrink:0}
   </style>
 </head>
 <body>
 <header>
-  <a class="bk" href="index.html">← Back</a>
-  <div class="hc"><div class="ht">Departments</div><div class="hs">#436 TEMPE</div></div>
+  <a class="bk" href="index.html">←</a>
+  <div class="hc"><div class="ht">Depts</div><div class="hs">#436 · TEMPE</div></div>
   <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
 </header>
 
-<div id="scroll">
+<div class="container">
 
-<!-- ═══ MEAT (PRIMARY) ═══════════════════════════════════════════ -->
-<div class="sl">&#129385; Meat — Dept 61</div>
+  <div class="section-label">— Warehouse Departments —</div>
 
-<!-- Quick tool access -->
-<div class="tool-grid">
-  <a class="tl" style="border-top-color:var(--amb)" href="closing-template.html">
-    <span class="tl-icon">📋</span>
-    <span class="tl-name">Close Template</span>
-    <span class="tl-desc">Nightly close report → SMS</span>
+  <!-- ── ACTIVE ── -->
+  <a class="dept-card red" href="meat.html">
+    <span class="dept-icon">🥩</span>
+    <div class="dept-text">
+      <div class="dept-name">Meat</div>
+      <div class="dept-desc">Production · Cut Specs · PLU · AS400 · Contacts</div>
+      <div class="dept-num">DEPT 61</div>
+    </div>
+    <span class="arrow">›</span>
   </a>
-  <a class="tl" style="border-top-color:var(--teal)" href="cut-specs.html">
-    <span class="tl-icon">🔪</span>
-    <span class="tl-name">Cut Specs</span>
-    <span class="tl-desc">Beef · Pork · Lamb · Seafood</span>
-  </a>
-  <a class="tl" style="border-top-color:var(--yel)" href="tracker.html">
-    <span class="tl-icon">📊</span>
-    <span class="tl-name">Prod. Tracker</span>
-    <span class="tl-desc">Count by case / ea / category</span>
-  </a>
-  <a class="tl" style="border-top-color:var(--red)" href="meat-plu.html">
-    <span class="tl-icon">🔢</span>
-    <span class="tl-name">PLU Lookup</span>
-    <span class="tl-desc">Beef · Pork · Poultry · Seafood</span>
-  </a>
-</div>
 
-<!-- Contacts -->
-<div class="sl grn" style="margin-bottom:6px">Contacts</div>
-<div class="contact-row">
-  <div class="contact-role">Dept Mgr</div>
-  <div class="contact-name">Adam</div>
-  <div class="contact-num">480-546-0784</div>
-  <a class="sms-btn" href="sms:4805460784">SMS</a>
-</div>
-<div class="contact-row">
-  <div class="contact-role">Supervisor</div>
-  <div class="contact-name">Abe</div>
-  <div class="contact-num">323-308-9971</div>
-  <a class="sms-btn" href="sms:3233089971">SMS</a>
-</div>
-
-<!-- AS400 commands -->
-<div class="sl amb" style="margin-bottom:6px">AS400 — Daily Commands</div>
-<div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:0 12px;margin-bottom:10px">
-  <div class="cmd-row"><span class="cmd-code">IAI</span><span class="cmd-desc">Look up any item by keyword or PLU — start every item question here</span><span class="cmd-star">★</span></div>
-  <div class="cmd-row"><span class="cmd-code">ITMW</span><span class="cmd-desc">Real-time on-hand, today's sales, next delivery ETA for any item</span><span class="cmd-star">★</span></div>
-  <div class="cmd-row"><span class="cmd-code">STK</span><span class="cmd-desc">4-week sales & D&D — core cut-list planning. High DOS = over-production</span><span class="cmd-star">★</span></div>
-  <div class="cmd-row"><span class="cmd-code">DSL</span><span class="cmd-desc">Dept 61 sales vs. last year and plan — know this every shift</span><span class="cmd-star">★</span></div>
-  <div class="cmd-row"><span class="cmd-code">RHI</span><span class="cmd-desc">Receiving history — verify every meat truck delivery posted correctly</span><span class="cmd-star">★</span></div>
-  <div class="cmd-row"><span class="cmd-code">RF 11</span><span class="cmd-desc">Scan any item on the floor — instant on-hand check</span><span class="cmd-star">★</span></div>
-  <div class="cmd-row"><span class="cmd-code">RF 72</span><span class="cmd-desc">Scan out expired, damaged, trim/fat/bone shrink (TSH password)</span><span class="cmd-star">★</span></div>
-  <div class="cmd-row"><span class="cmd-code">IRCI</span><span class="cmd-desc">Check active IRCs on meat items — know before members ask</span></div>
-  <div class="cmd-row"><span class="cmd-code">EDSR</span><span class="cmd-desc">Print/reprint price signs — walk the case with a printout</span></div>
-  <div class="cmd-row"><span class="cmd-code">IATOP</span><span class="cmd-desc">Top-selling items in Dept 61 — run before buyer walk-throughs</span></div>
-  <div class="cmd-row"><span class="cmd-code">MACR</span><span class="cmd-desc">Full Dept 61 on-hand list for period-end inventory (13×/yr)</span></div>
-  <div class="cmd-row"><span class="cmd-code">DASH</span><span class="cmd-desc">Incoming meat truck schedule — PO, vendor, ETA, door</span></div>
-</div>
-
-<!-- Operational notes -->
-<div class="sl amb" style="margin-bottom:6px">Operational Notes</div>
-<div style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px;margin-bottom:10px;display:flex;flex-direction:column;gap:0">
-  <div class="note-row">Variable-weight items: UPCs start with "2". Scale-printer applies label. First 6 digits = item ID.</div>
-  <div class="note-row">Production yield target: 70–85% on beef sub-primals depending on grade and trim spec.</div>
-  <div class="note-row">Shrink reason codes: Out-of-date · Spoilage · Trim/Fat/Bone · Damage/Leakers · Contamination · Markdown · Internal Use · Donation · Recall/Hold.</div>
-  <div class="note-row">Receiving: each catch-weight case weighed or scanned individually. Total should equal invoice ±0.5%.</div>
-  <div class="note-row">COOL compliance: Country-of-Origin required on imported chicken, lamb, goat muscle cuts. Prints on scale label automatically.</div>
-  <div class="note-row">Days of Supply = on-hand ÷ avg daily sales. DOS > pull-date window = mark down immediately.</div>
-  <div class="note-row">13 physical inventories per year (one per 4-week fiscal period). Pre-count: print IAI opt 1 for every active SKU.</div>
-  <div class="note-row">Costco shrink target: 0.11–0.12% of sales company-wide. Track weekly with STK/DSL.</div>
-  <div class="note-row">Blade-tenderized items require "BLADE TENDERIZED" on label (USDA FSIS). Check before packaging.</div>
-  <div class="note-row">HACCP CCP: check and log cooler temps. Red zone = escalate immediately to supervisor.</div>
-</div>
-
-<!-- Key facts -->
-<div class="pill-row" style="margin-bottom:16px">
-  <span class="pill grn">Dept 61</span>
-  <span class="pill">Tempe Warehouse</span>
-  <span class="pill amb">SW Region</span>
-  <span class="pill">Cooler: 28–34°F</span>
-  <span class="pill red">OOS = call manager</span>
-  <span class="pill">DOS target: ≤3 days</span>
-</div>
-
-<!-- ═══ OTHER DEPARTMENTS ═══════════════════════════════════════ -->
-<div class="sl blue" style="margin-bottom:8px">Other Departments</div>
-
-<!-- PRODUCE -->
-<div class="dept">
-  <div class="dept-hd" onclick="tog(this)">
-    <span class="dept-icon">🥦</span>
-    <div class="dept-info">
-      <div class="dept-name">Produce</div>
-      <div class="dept-num">Dept 65</div>
-    </div>
-    <div class="dept-chev">▼</div>
-  </div>
-  <div class="dept-body">
-    <div class="pill-row"><span class="pill grn">Dept 65</span><span class="pill">Cooler: 33–38°F</span><span class="pill amb">13 inventories/yr</span></div>
-    <div>
-      <div class="db-label">Key AS400</div>
-      <div class="cmd-row"><span class="cmd-code">STK</span><span class="cmd-desc">4-week D&D — core ordering tool. Fresh items: DOS >3 = shrink risk</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">IAI</span><span class="cmd-desc">Item lookup. Use "ORG" keyword to find organic items</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">ITMW</span><span class="cmd-desc">Real-time on-hand for fast-moving seasonal items</span></div>
-      <div class="cmd-row"><span class="cmd-code">RHI</span><span class="cmd-desc">Verify produce deliveries posted correctly same day</span></div>
-      <div class="cmd-row"><span class="cmd-code">DASH</span><span class="cmd-desc">Incoming produce truck schedule</span></div>
-      <div class="cmd-row"><span class="cmd-code">DSL</span><span class="cmd-desc">Dept 65 sales — organic vs. conventional performance</span></div>
-      <div class="cmd-row"><span class="cmd-code">RF 72</span><span class="cmd-desc">Scan out spoilage, pull-date, and damage (TSH password)</span></div>
-    </div>
-    <div>
-      <div class="db-label">Notes</div>
-      <div class="note-row">Organic items carry a premium — USDA certified organic label required</div>
-      <div class="note-row">High water content = fast shrink. Walk daily for quality culls</div>
-      <div class="note-row">COOL required on all fresh produce sold at retail under USDA rules</div>
-    </div>
-  </div>
-</div>
-
-<!-- DELI -->
-<div class="dept">
-  <div class="dept-hd" onclick="tog(this)">
-    <span class="dept-icon">🍗</span>
-    <div class="dept-info">
-      <div class="dept-name">Deli</div>
-      <div class="dept-num">Dept 19</div>
-    </div>
-    <div class="dept-chev">▼</div>
-  </div>
-  <div class="dept-body">
-    <div class="pill-row"><span class="pill grn">Dept 19</span><span class="pill red">2-hr hot-hold</span><span class="pill">165°F+ cooked</span><span class="pill amb">135°F+ hold</span></div>
-    <div>
-      <div class="db-label">Key AS400</div>
-      <div class="cmd-row"><span class="cmd-code">STK</span><span class="cmd-desc">4-week D&D — rotisserie production planning. High DOS = over-production</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">ITMW</span><span class="cmd-desc">Real-time on-hand. Track cook-batch vs. sales velocity</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">RF 72</span><span class="cmd-desc">Scan out hot-hold expired, pull-date, quality rejects</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">DSL</span><span class="cmd-desc">Dept 19 sales vs. LY and plan</span></div>
-      <div class="cmd-row"><span class="cmd-code">FFRRI</span><span class="cmd-desc">Reprocessed items — rotisserie → Alfredo/soup/pot pies</span></div>
-      <div class="cmd-row"><span class="cmd-code">MACR</span><span class="cmd-desc">Full Dept 19 on-hand for period-end count</span></div>
-    </div>
-    <div>
-      <div class="db-label">Notes</div>
-      <div class="note-row">Rotisserie: 90-min cook cycle, strict 2-hour hot-hold. Pack time printed to the minute</div>
-      <div class="note-row">Unsold birds: repurpose to Alfredo/soup/pot pies (component transfer, not shrink) OR shrink at hot-hold limit</div>
-      <div class="note-row">No fresh-sliced lunch meat. "Deli" = rotisserie, ribs, pizza, prepared meals, sushi, platters</div>
-      <div class="note-row">Pull-date foods: cold prep items must be dated and pulled on time</div>
-    </div>
-  </div>
-</div>
-
-<!-- BAKERY -->
-<div class="dept">
-  <div class="dept-hd" onclick="tog(this)">
-    <span class="dept-icon">🥐</span>
-    <div class="dept-info">
-      <div class="dept-name">Bakery</div>
-      <div class="dept-num">Dept 32</div>
-    </div>
-    <div class="dept-chev">▼</div>
-  </div>
-  <div class="dept-body">
-    <div class="pill-row"><span class="pill grn">Dept 32</span><span class="pill">Bakers start 5am</span><span class="pill amb">Sat/Sun peak</span></div>
-    <div>
-      <div class="db-label">Key AS400</div>
-      <div class="cmd-row"><span class="cmd-code">STK</span><span class="cmd-desc">4-week D&D — drives bake schedule. Day-of-week weighted</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">ITMW</span><span class="cmd-desc">Real-time on-hand for finished goods</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">RF 72</span><span class="cmd-desc">Scan out pull-date, quality cull (broken/underweight/misshapen)</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">DSL</span><span class="cmd-desc">Dept 32 sales — spot overproduction vs. trailing average</span></div>
-      <div class="cmd-row"><span class="cmd-code">MACR</span><span class="cmd-desc">Full Dept 32 on-hand for period-end count</span></div>
-    </div>
-    <div>
-      <div class="db-label">Notes</div>
-      <div class="note-row">Scratch baked: muffins, cookies, French bread, dinner rolls, scones</div>
-      <div class="note-row">Thaw-and-bake: croissants, bagels, danishes, some artisan breads</div>
-      <div class="note-row">Culls = shrink. Wrapper enters count at end-of-day. Broken/underweight = quality reject</div>
-      <div class="note-row">Cookies pull life: ~2 days. Unsold = Feeding America donation or markdown</div>
-    </div>
-  </div>
-</div>
-
-<!-- FRONT END -->
-<div class="dept">
-  <div class="dept-hd" onclick="tog(this)">
-    <span class="dept-icon">🏧</span>
-    <div class="dept-info">
+  <!-- ── COMING SOON ── -->
+  <div class="dept-card blue gray">
+    <span class="dept-icon">🛒</span>
+    <div class="dept-text">
       <div class="dept-name">Front End</div>
-      <div class="dept-num">Depts / Reg 1–50 · SCO 201–212</div>
+      <div class="dept-desc">Registers · SCO · Cashier · Supervisor</div>
+      <div class="dept-num">DEPT 10</div>
     </div>
-    <div class="dept-chev">▼</div>
+    <span class="cs-badge">SOON</span>
   </div>
-  <div class="dept-body">
-    <div class="pill-row"><span class="pill">Reg 1–50</span><span class="pill">SCO 201–212</span><span class="pill grn">Control: Reg 800</span></div>
-    <div>
-      <div class="db-label">Key AS400</div>
-      <div class="cmd-row"><span class="cmd-code">LSDT</span><span class="cmd-desc">Sales + labor today — call in / send home decisions</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">IAFEP</span><span class="cmd-desc">Items per minute, MPH by cashier — coaching tool. NOT real-time</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">LSSI</span><span class="cmd-desc">Forecasted vs. scheduled lanes</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">WII</span><span class="cmd-desc">Member purchase history — refund desk. Member # + item OR dept</span></div>
-      <div class="cmd-row"><span class="cmd-code">MBA9</span><span class="cmd-desc">Membership lookup, read-only — safe for floor verification</span></div>
-      <div class="cmd-row"><span class="cmd-code">SAST</span><span class="cmd-desc">Transaction search by register, date, and tender type</span></div>
-      <div class="cmd-row"><span class="cmd-code">RLG</span><span class="cmd-desc">Refund log — Y=dept ring, *=inline, X to drill in</span></div>
-      <div class="cmd-row"><span class="cmd-code">IRCI</span><span class="cmd-desc">IRC coupon number lookup — drop last digit at register</span></div>
-      <div class="cmd-row"><span class="cmd-code">EOI</span><span class="cmd-desc">Ecommerce/BOPIW check-in — F4 serial, F8 confirm, F9 pickup</span></div>
-      <div class="cmd-row"><span class="cmd-code">WFBRP</span><span class="cmd-desc">FE Block Report — print only, not viewable on-screen</span></div>
-      <div class="cmd-row"><span class="cmd-code">MRC</span><span class="cmd-desc">Membership Report Card — signups, upgrades, renewal rate</span></div>
-      <div class="cmd-row"><span class="cmd-code">RF 8</span><span class="cmd-desc">Pre-scan: member + up to 8 items → F21 done</span></div>
-    </div>
-    <div>
-      <div class="db-label">Supervisor Procedures</div>
-      <div class="note-row">Override: &lt;CLEAR&gt; → &lt;OVERRIDE&gt; → supervisor # → ENTER → password</div>
-      <div class="note-row">Price override: key $ amount → &lt;PRICE&gt; → item # → ENTER → override</div>
-      <div class="note-row">Void transaction (dollar): VOID → TOTAL → override required</div>
-      <div class="note-row">Shop card activation: #155 → key value → scan barcode. $25–$1,000 per card, $10,000 daily limit</div>
-      <div class="note-row">Check limits: 0–1yr = $300 · 1–5yr = $1,000 · 5+yr = $5,000</div>
-      <div class="note-row">Terminal secured after 90s idle. Register auto-locks — sign back on normally</div>
-    </div>
-    <div>
-      <div class="db-label">Register Numbers Reference</div>
-      <div class="note-row">FE: 1–50 · Tobacco: 61–64 · Optical: 71–74 · Pharmacy: 91–94 · Tire: 95–98 · Liquor: 99–104 · Refunds: 121–130 · Membership: 191–199 · SCO: 201–212 · Food Court: 501–508 · Control: 800</div>
-    </div>
-  </div>
-</div>
 
-<!-- MEMBERSHIP -->
-<div class="dept">
-  <div class="dept-hd" onclick="tog(this)">
-    <span class="dept-icon">💳</span>
-    <div class="dept-info">
-      <div class="dept-name">Membership</div>
-      <div class="dept-num">Reg 191–199</div>
+  <div class="dept-card green gray">
+    <span class="dept-icon">🥦</span>
+    <div class="dept-text">
+      <div class="dept-name">Produce</div>
+      <div class="dept-desc">Wet rack · Organics · Sampling</div>
+      <div class="dept-num">DEPT 67</div>
     </div>
-    <div class="dept-chev">▼</div>
+    <span class="cs-badge">SOON</span>
   </div>
-  <div class="dept-body">
-    <div class="pill-row"><span class="pill">Gold Star $65/yr</span><span class="pill amb">Executive $130/yr</span><span class="pill">Business $65/yr</span></div>
-    <div>
-      <div class="db-label">Key AS400</div>
-      <div class="cmd-row"><span class="cmd-code">MBA</span><span class="cmd-desc">Full edit — create, cancel, refund, upgrade memberships</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">MBA9</span><span class="cmd-desc">Read-only lookup. Toggle F11: #, name, sounds-like, ID, phone, address</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">WBS9</span><span class="cmd-desc">Business membership inquiry (same as MBA9 for business)</span></div>
-      <div class="cmd-row"><span class="cmd-code">MRC</span><span class="cmd-desc">Membership Report Card — income, renewals, signups, upgrade rate</span></div>
-      <div class="cmd-row"><span class="cmd-code">IMIN</span><span class="cmd-desc">International membership — requires member # + country of issuance</span></div>
-      <div class="cmd-row"><span class="cmd-code">TAXI</span><span class="cmd-desc">Member's prior-year total sales tax (for federal deduction requests)</span></div>
-    </div>
-    <div>
-      <div class="db-label">Renewal Item Numbers</div>
-      <div class="note-row">#31 — Gold Star Renewal · #67 — Business/Executive Renewal · #231590 — Executive Upgrade</div>
-    </div>
-    <div>
-      <div class="db-label">Blocking Codes Quick Reference</div>
-      <div class="note-row">Block 6: possible NSF — immediate</div>
-      <div class="note-row">Must Sign Up / Inactive: void transaction only</div>
-      <div class="note-row">Renewal Due: pay renewal or override</div>
-      <div class="note-row">2% Reward Owed: override, direct to membership desk</div>
-      <div class="note-row">Pull and Hold / Recall: item under evaluation — cannot sell</div>
-      <div class="note-row">Code A/B/C: check approval limits ($10K / $5K / $2K)</div>
-    </div>
-  </div>
-</div>
 
-<!-- FOOD COURT -->
-<div class="dept">
-  <div class="dept-hd" onclick="tog(this)">
-    <span class="dept-icon">🍕</span>
-    <div class="dept-info">
-      <div class="dept-name">Food Court</div>
-      <div class="dept-num">Dept 88 · Reg 501–508</div>
+  <div class="dept-card amber gray">
+    <span class="dept-icon">🍱</span>
+    <div class="dept-text">
+      <div class="dept-name">Deli / Fresh Foods</div>
+      <div class="dept-desc">Service deli · Hot foods · Prep</div>
+      <div class="dept-num">DEPT 68–69</div>
     </div>
-    <div class="dept-chev">▼</div>
+    <span class="cs-badge">SOON</span>
   </div>
-  <div class="dept-body">
-    <div class="pill-row"><span class="pill red">No IRCs</span><span class="pill red">No EBT</span><span class="pill">135°F+ hot-hold</span><span class="pill grn">$1.50 hot dog (fixed)</span></div>
-    <div>
-      <div class="db-label">Key AS400</div>
-      <div class="cmd-row"><span class="cmd-code">FCP</span><span class="cmd-desc">Food Court Printer Config — program item #s to kitchen pizza printer. F22 to delete unused</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">STK</span><span class="cmd-desc">4-week D&D for Dept 88 — track velocity by item</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">ITMW</span><span class="cmd-desc">Real-time on-hand. Check before peak hours (lunch, 4–6pm)</span></div>
-      <div class="cmd-row"><span class="cmd-code">DSL</span><span class="cmd-desc">Dept 88 sales vs. LY — food court is a traffic driver and loyalty anchor</span></div>
-      <div class="cmd-row"><span class="cmd-code">RF 72</span><span class="cmd-desc">Scan out expired or out-of-temp items — TSH password required</span></div>
-      <div class="cmd-row"><span class="cmd-code">MACR</span><span class="cmd-desc">Full Dept 88 on-hand for period-end count (13×/yr)</span></div>
-    </div>
-    <div>
-      <div class="db-label">Notes</div>
-      <div class="note-row">$1.50 hot dog + soda combo unchanged since 1985 — loss leader, member loyalty cornerstone</div>
-      <div class="note-row">Kitchen printer: FCP routes whole pizza orders to kitchen. Update immediately on any menu change</div>
-      <div class="note-row">Food safety: hot-hold 135°F+, cold-hold 41°F or below. Any violation = RF 72 immediately</div>
-      <div class="note-row">No IRC coupons, member discounts, or EBT accepted at food court registers</div>
-    </div>
-  </div>
-</div>
 
-<!-- OPTICAL -->
-<div class="dept">
-  <div class="dept-hd" onclick="tog(this)">
-    <span class="dept-icon">👓</span>
-    <div class="dept-info">
-      <div class="dept-name">Optical</div>
-      <div class="dept-num">Dept 94 · Reg 71–74</div>
+  <div class="dept-card gold gray">
+    <span class="dept-icon">🥐</span>
+    <div class="dept-text">
+      <div class="dept-name">Bakery</div>
+      <div class="dept-desc">Production · Samples · Seasonal items</div>
+      <div class="dept-num">DEPT 70</div>
     </div>
-    <div class="dept-chev">▼</div>
+    <span class="cs-badge">SOON</span>
   </div>
-  <div class="dept-body">
-    <div class="pill-row"><span class="pill">Reg 71–74</span><span class="pill amb">Profile via EPRFM</span></div>
-    <div>
-      <div class="db-label">Key AS400</div>
-      <div class="cmd-row"><span class="cmd-code">OPS</span><span class="cmd-desc">Optical Order Search — lookup by frame item number</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">WIP</span><span class="cmd-desc">Work-In-Progress — all orders in flight. Print daily at opening</span><span class="cmd-star">★</span></div>
-      <div class="cmd-row"><span class="cmd-code">OWOI</span><span class="cmd-desc">Work Order Inquiry — print daily at opening</span></div>
-      <div class="cmd-row"><span class="cmd-code">RARO</span><span class="cmd-desc">Frame reorder — check depot availability. If empty, use IIL *USALL</span></div>
-      <div class="cmd-row"><span class="cmd-code">EOI</span><span class="cmd-desc">Online optical order pickup</span></div>
-    </div>
-    <div>
-      <div class="db-label">Notes</div>
-      <div class="note-row">Optical profiles assigned via EPRFM (Staff Manager+) — specialty access only</div>
-      <div class="note-row">MOF = Member's Own Frame. Replacement lens work common for warranty claims</div>
-      <div class="note-row">1-year warranty on all Costco optical work</div>
-    </div>
-  </div>
-</div>
 
-<!-- PHARMACY -->
-<div class="dept">
-  <div class="dept-hd" onclick="tog(this)">
+  <div class="dept-card teal gray">
     <span class="dept-icon">💊</span>
-    <div class="dept-info">
+    <div class="dept-text">
       <div class="dept-name">Pharmacy</div>
-      <div class="dept-num">Dept 92 · Reg 91–94</div>
+      <div class="dept-desc">Prescriptions · OTC · Consultations</div>
+      <div class="dept-num">DEPT 92</div>
     </div>
-    <div class="dept-chev">▼</div>
+    <span class="cs-badge">SOON</span>
   </div>
-  <div class="dept-body">
-    <div class="pill-row"><span class="pill">Reg 91–94</span><span class="pill red">Controlled substances</span></div>
-    <div>
-      <div class="db-label">Notes</div>
-      <div class="note-row">Pharmacy operates largely independently under its own licensed management</div>
-      <div class="note-row">Membership required to fill prescriptions at Costco pharmacy</div>
-      <div class="note-row">Register issues: use same Blue Book troubleshooting procedures as FE registers</div>
-      <div class="note-row">EBT accepted for prescription medications</div>
-    </div>
-  </div>
-</div>
 
-<!-- TIRE CENTER -->
-<div class="dept">
-  <div class="dept-hd" onclick="tog(this)">
-    <span class="dept-icon">🚗</span>
-    <div class="dept-info">
-      <div class="dept-name">Tire Center</div>
-      <div class="dept-num">Dept 22/87 · Reg 95–98</div>
+  <div class="dept-card purple gray">
+    <span class="dept-icon">👁</span>
+    <div class="dept-text">
+      <div class="dept-name">Optical</div>
+      <div class="dept-desc">Exams · Frames · Contacts · Lenses</div>
+      <div class="dept-num">DEPT 79</div>
     </div>
-    <div class="dept-chev">▼</div>
+    <span class="cs-badge">SOON</span>
   </div>
-  <div class="dept-body">
-    <div class="pill-row"><span class="pill">Dept 22 &amp; 87</span><span class="pill">Reg 95–98</span><span class="pill red">TCP = WM/AWM/Ops only</span></div>
-    <div>
-      <div class="db-label">Key AS400</div>
-      <div class="cmd-row"><span class="cmd-code">TIRE</span><span class="cmd-desc">Tire Center membership search and service selection</span></div>
-      <div class="cmd-row"><span class="cmd-code">TCP</span><span class="cmd-desc">Torque/release code assignment — WM, AWM, Ops Mgr only</span></div>
-      <div class="cmd-row"><span class="cmd-code">WWPO</span><span class="cmd-desc">Work With POs — track incoming tire orders by PO</span></div>
-      <div class="cmd-row"><span class="cmd-code">ETINQ</span><span class="cmd-desc">Ecommerce tire inquiry (SOTO — special order tires online)</span></div>
-      <div class="cmd-row"><span class="cmd-code">TAR</span><span class="cmd-desc">Tire Activity Report — all tire sales for Depts 22, 87, Ecom</span></div>
-      <div class="cmd-row"><span class="cmd-code">TPR</span><span class="cmd-desc">Tire Productivity Report — average wait times</span></div>
-    </div>
-    <div>
-      <div class="db-label">Notes</div>
-      <div class="note-row">TCP torque code confirms vehicle wheels are torqued to spec and safe to drive — required before release</div>
-      <div class="note-row">SOTO = Special Order Tires Online — tracks Ecommerce tire orders through fulfillment</div>
-    </div>
-  </div>
-</div>
 
-<!-- GAS STATION -->
-<div class="dept">
-  <div class="dept-hd" onclick="tog(this)">
+  <div class="dept-card pink gray">
+    <span class="dept-icon">💳</span>
+    <div class="dept-text">
+      <div class="dept-name">Membership</div>
+      <div class="dept-desc">New · Renewals · Upgrades · Returns</div>
+      <div class="dept-num">DEPT 11</div>
+    </div>
+    <span class="cs-badge">SOON</span>
+  </div>
+
+  <div class="dept-card gray">
     <span class="dept-icon">⛽</span>
-    <div class="dept-info">
+    <div class="dept-text">
       <div class="dept-name">Gas Station</div>
-      <div class="dept-num">Dept 53</div>
+      <div class="dept-desc">Fuel pricing · Attendant procedures</div>
+      <div class="dept-num">DEPT 02</div>
     </div>
-    <div class="dept-chev">▼</div>
+    <span class="cs-badge">SOON</span>
   </div>
-  <div class="dept-body">
-    <div class="pill-row"><span class="pill grn">Dept 53</span><span class="pill">Members only</span><span class="pill">WAM for attendant cards</span></div>
-    <div>
-      <div class="db-label">Key AS400</div>
-      <div class="cmd-row"><span class="cmd-code">WAM</span><span class="cmd-desc">Create Gas Station attendant membership cards (key 1 in Gas/Car Wash field first)</span></div>
-      <div class="cmd-row"><span class="cmd-code">GDR</span><span class="cmd-desc">Gas Station Duplicate Receipt — reprint for member</span></div>
-      <div class="cmd-row"><span class="cmd-code">DSI</span><span class="cmd-desc">View Dept 53 fuel sales</span></div>
-    </div>
-    <div>
-      <div class="db-label">Notes</div>
-      <div class="note-row">Members only. Scan membership barcode or key # to activate pump</div>
-      <div class="note-row">Gas attendant cards created via WAM — attendants don't need a standard membership</div>
-    </div>
-  </div>
+
 </div>
-
-<!-- HEARING AID / SPECIAL -->
-<div class="dept">
-  <div class="dept-hd" onclick="tog(this)">
-    <span class="dept-icon">🎧</span>
-    <div class="dept-info">
-      <div class="dept-name">Hearing Aid</div>
-      <div class="dept-num">Dept 96 · Reg 79</div>
-    </div>
-    <div class="dept-chev">▼</div>
-  </div>
-  <div class="dept-body">
-    <div class="pill-row"><span class="pill">Reg 79</span></div>
-    <div>
-      <div class="db-label">Notes</div>
-      <div class="note-row">Specialist-staffed — operates independently under licensed hearing professional</div>
-      <div class="note-row">Standard AS400 item lookup and sign procedures apply</div>
-    </div>
-  </div>
-</div>
-
-</div><!-- /scroll -->
-
-<script>
-function tog(hd) { hd.closest('.dept').classList.toggle('op'); }
-window.addEventListener('beforeinstallprompt', e => e.preventDefault());
-</script>
 </body>
 </html>
