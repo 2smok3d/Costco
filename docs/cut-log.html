@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Cut Log — Dept 61</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0a0a;--sf:#141414;--s2:#1e1e1e;--s3:#252525;
+      --bd:#2a2a2a;--bd-lite:#222;
+      --tx:#fff;--dm:#ccc;--mt:#999;--ft:#666;--xt:#444;
+      --brand:#8b0000;
+      --red:#cc0000;--red-dk:#8b1010;--amber:#e07b00;--amber-dk:#8a6020;
+      --green:#00c87a;--green-dk:#2e7d42;--blue:#1a6bb5;--blue-lt:#4a90d9;
+      --teal:#007a6e;--purple:#8850c8;--purple-dk:#5a3a8a;--pink:#c05878;
+      --gold:#c8a000;--gold-lt:#e8c97a;--brown:#8a5a35;
+      --prime:#c8960c;--choice:#4a7fbf;--wagyu:#9b4dca;
+      --beef-cryo:#7a1c1c;--pork-clr:#c05878;--poultry:#c9a000;--turkey:#8a6800;
+      --seafood:#1a6bb5;--grinds:#6a5a4a;--lamb-clr:#8a5a35;
+      --st-dw:#e07b00;--st-lt:#c8a000;--st-oos:#cc0000;--st-na:#555;
+      --sp-xs:4px;--sp-sm:8px;--sp-md:12px;--sp-lg:16px;--sp-xl:24px;
+      --r-sm:6px;--r:8px;--r-lg:12px;--r-pill:999px;
+      --sh-sm:0 1px 4px rgba(0,0,0,.4);--sh:0 2px 10px rgba(0,0,0,.5);
+      --header-h:58px;
+      --font-body:'Montserrat',sans-serif;--font-mono:'JetBrains Mono',monospace;
+      --accent:#cc0000;--accent-bg:rgba(204,0,0,.10);--accent-bd:rgba(204,0,0,.25);
+    }
+    :root{--accent:var(--purple);--accent-bg:rgba(136,80,200,.10);--accent-bd:rgba(136,80,200,.25)}
+
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--tx);font-family:var(--font-body);display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+
+    /* ─── UNIFIED HEADER ─── */
+    header{position:relative;display:flex;align-items:center;height:var(--header-h);padding:0 14px;background:var(--bg);border-bottom:1px solid var(--bd);gap:10px;flex-shrink:0}
+    .bk{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--ft);font-size:18px;line-height:1;text-decoration:none;flex-shrink:0;transition:background .15s}
+    .bk:active{background:var(--sf)}
+    .hc{flex:1;text-align:center;pointer-events:none}
+    .ht{font-family:var(--font-body);font-weight:700;font-size:15px;font-style:italic;color:var(--tx);letter-spacing:.02em;line-height:1.1}
+    .hs{font-family:var(--font-body);font-weight:500;font-size:10px;color:var(--xt);letter-spacing:.08em;margin-top:2px}
+    .clogo{background:var(--brand);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:5px 9px;text-align:center;flex-shrink:0;line-height:1.2;box-shadow:0 0 14px rgba(139,0,0,.55),0 0 4px rgba(139,0,0,.9)}
+    .cl1{font-family:var(--font-body);font-weight:800;font-size:15px;color:#fff;letter-spacing:.05em;text-shadow:0 0 10px rgba(255,150,150,.45)}
+    .cl2{font-family:var(--font-body);font-weight:600;font-size:7px;color:rgba(255,255,255,.5);letter-spacing:.22em;text-transform:uppercase;margin-top:2px}
+
+    /* ─── CTRL BAR ─── */
+    .ctrl-bar{background:var(--sf);border-bottom:1px solid var(--bd);padding:0 12px;height:46px;flex-shrink:0;display:flex;align-items:center;gap:8px}
+    .ctrl-bar input[type=date],
+    .ctrl-bar select{height:32px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--tx);font-family:var(--font-mono);font-size:12px;padding:0 8px;outline:none;-webkit-appearance:none;appearance:none;cursor:pointer}
+    .ctrl-bar input[type=date]{min-width:130px}
+    .ctrl-bar select{min-width:90px}
+    .ctrl-bar input[type=date]:focus,
+    .ctrl-bar select:focus{border-color:var(--accent)}
+    .spacer{flex:1}
+    .btn-add{height:32px;padding:0 16px;background:var(--accent);border:none;border-radius:var(--r-sm);color:#fff;font-family:var(--font-body);font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:opacity .15s}
+    .btn-add:active{opacity:.75}
+
+    /* ─── SCROLL ─── */
+    #scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 12px 60px}
+
+    /* ─── SECTION LABEL ─── */
+    .section-label{font-family:var(--font-body);font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);padding:10px 4px 4px;border-left:3px solid var(--accent);padding-left:10px;margin-top:4px;margin-bottom:8px}
+
+    /* ─── ENTRY ROWS ─── */
+    .entry-row{background:var(--sf);border:1px solid var(--bd);border-left:4px solid var(--bd);border-radius:var(--r);padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px}
+    .entry-row.prime  {border-left-color:var(--prime)}
+    .entry-row.choice {border-left-color:var(--choice)}
+    .entry-row.wagyu  {border-left-color:var(--wagyu)}
+    .entry-row.other  {border-left-color:var(--teal)}
+    .entry-text{flex:1;min-width:0}
+    .entry-item{font-family:var(--font-body);font-size:14px;font-weight:700;font-style:italic;letter-spacing:.03em;text-transform:uppercase}
+    .entry-meta{font-family:var(--font-mono);font-size:11px;color:var(--mt);margin-top:3px;letter-spacing:.3px}
+    .entry-del{width:28px;height:28px;background:none;border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--ft);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .12s}
+    .entry-del:active{background:rgba(204,0,0,.2);color:var(--red);border-color:var(--red)}
+
+    /* ─── EMPTY STATE ─── */
+    .empty{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:11px;color:var(--ft);letter-spacing:.5px;line-height:2}
+
+    /* ─── ADD MODAL ─── */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:flex-end}
+    .modal-bg.op{display:flex}
+    .modal{background:var(--sf);border-radius:14px 14px 0 0;padding:16px 14px 40px;width:100%;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:12px}
+    .modal-title{font-family:var(--font-body);font-size:16px;font-weight:800;font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}
+    .field-group{display:flex;flex-direction:column;gap:6px}
+    .field-label{font-family:var(--font-mono);font-size:10px;color:var(--mt);letter-spacing:.08em;text-transform:uppercase}
+    .field-in{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--tx);font-family:var(--font-body);font-size:14px;padding:9px 12px;outline:none;width:100%;-webkit-appearance:none}
+    .field-in:focus{border-color:var(--accent)}
+    .field-in::placeholder{color:var(--ft)}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .grade-btns{display:flex;gap:6px;flex-wrap:wrap}
+    .grade-btn{padding:7px 14px;border-radius:var(--r-pill);border:1px solid var(--bd);background:none;color:var(--mt);font-family:var(--font-body);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+    .grade-btn.sel.prime  {background:var(--prime);color:#000;border-color:var(--prime)}
+    .grade-btn.sel.choice {background:var(--choice);color:#fff;border-color:var(--choice)}
+    .grade-btn.sel.wagyu  {background:var(--wagyu);color:#fff;border-color:var(--wagyu)}
+    .grade-btn.sel.other  {background:var(--teal);color:#fff;border-color:var(--teal)}
+    .modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+    .m-btn{border:none;border-radius:var(--r);font-family:var(--font-body);font-size:14px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:12px;cursor:pointer}
+    .m-btn.save {background:var(--accent);color:#fff}
+    .m-btn.close{background:var(--s2);color:var(--mt)}
+  </style>
+</head>
+<body>
+<header>
+  <a class="bk" href="meat.html">←</a>
+  <div class="hc"><div class="ht">Cut Log</div><div class="hs">DEPT 61 · #436</div></div>
+  <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
+</header>
+
+<div class="ctrl-bar">
+  <input type="date" id="log-date">
+  <select id="log-shift">
+    <option value="Open">Open</option>
+    <option value="Close">Close</option>
+    <option value="Middy">Middy</option>
+  </select>
+  <div class="spacer"></div>
+  <button class="btn-add" onclick="openAdd()">+ Add Cut</button>
+</div>
+
+<div id="scroll">
+  <div class="section-label" id="list-label">— No Entries —</div>
+  <div id="entries-list"></div>
+</div>
+
+<!-- ─── ADD MODAL ─── -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-title">Log a Cut</div>
+
+    <div class="field-group">
+      <div class="field-label">Item / Cut Name</div>
+      <input class="field-in" id="cut-item" type="text" placeholder="e.g. Ribeye, NY Strip, Chuck Roll…" autocorrect="off">
+    </div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <div class="field-label">Weight (lbs)</div>
+        <input class="field-in" id="cut-weight" type="number" step="0.1" min="0" placeholder="0.0">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Cases / Units</div>
+        <input class="field-in" id="cut-cases" type="number" min="0" placeholder="0">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label">Grade</div>
+      <div class="grade-btns">
+        <button class="grade-btn prime sel" id="gb-prime" onclick="selGrade('prime')">Prime</button>
+        <button class="grade-btn choice" id="gb-choice" onclick="selGrade('choice')">Choice</button>
+        <button class="grade-btn wagyu" id="gb-wagyu" onclick="selGrade('wagyu')">Wagyu</button>
+        <button class="grade-btn other" id="gb-other" onclick="selGrade('other')">Other</button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label">Notes (optional)</div>
+      <input class="field-in" id="cut-notes" type="text" placeholder="Trim level, vendor, special handling…" autocorrect="off">
+    </div>
+
+    <div class="modal-btns">
+      <button class="m-btn save" onclick="saveEntry()">Save</button>
+      <button class="m-btn close" onclick="closeAdd()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LOG_KEY = 'cutlog_v1';
+var selectedGrade = 'prime';
+var entries = [];
+
+// ─── Init date ───
+var today = new Date();
+var dd = today.getFullYear()+'-'+(String(today.getMonth()+1).padStart(2,'0'))+'-'+(String(today.getDate()).padStart(2,'0'));
+document.getElementById('log-date').value = dd;
+
+// ─── Storage ───
+function storeKey() {
+  return LOG_KEY + '_' + document.getElementById('log-date').value + '_' + document.getElementById('log-shift').value;
+}
+
+function load() {
+  try {
+    var raw = localStorage.getItem(storeKey());
+    entries = raw ? JSON.parse(raw) : [];
+  } catch(e) { entries = []; }
+  render();
+}
+
+function save() {
+  try { localStorage.setItem(storeKey(), JSON.stringify(entries)); } catch(e) {}
+}
+
+// ─── Grade selection ───
+function selGrade(g) {
+  selectedGrade = g;
+  ['prime','choice','wagyu','other'].forEach(function(k) {
+    var btn = document.getElementById('gb-'+k);
+    btn.className = 'grade-btn ' + k + (k === g ? ' sel' : '');
+  });
+}
+
+// ─── Render ───
+function render() {
+  var list = document.getElementById('entries-list');
+  var label = document.getElementById('list-label');
+  list.innerHTML = '';
+  if (!entries.length) {
+    label.textContent = '— No Entries —';
+    return;
+  }
+  label.textContent = '— ' + entries.length + ' Cut' + (entries.length !== 1 ? 's' : '') + ' Logged —';
+  entries.forEach(function(e, i) {
+    var row = document.createElement('div');
+    row.className = 'entry-row ' + (e.grade || 'other');
+    var meta = [];
+    if (e.weight) meta.push(e.weight + ' lbs');
+    if (e.cases) meta.push(e.cases + ' cases');
+    meta.push(e.grade ? e.grade.charAt(0).toUpperCase()+e.grade.slice(1) : 'Other');
+    if (e.notes) meta.push(e.notes);
+    row.innerHTML = '<div class="entry-text"><div class="entry-item">'+htmlEsc(e.item)+'</div><div class="entry-meta">'+meta.join(' · ')+'</div></div><button class="entry-del" onclick="del('+i+')">×</button>';
+    list.appendChild(row);
+  });
+}
+
+function htmlEsc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─── Add entry ───
+function openAdd() {
+  document.getElementById('cut-item').value = '';
+  document.getElementById('cut-weight').value = '';
+  document.getElementById('cut-cases').value = '';
+  document.getElementById('cut-notes').value = '';
+  selGrade('prime');
+  document.getElementById('modal-bg').classList.add('op');
+  setTimeout(function(){ document.getElementById('cut-item').focus(); }, 120);
+}
+
+function closeAdd() {
+  document.getElementById('modal-bg').classList.remove('op');
+}
+
+function saveEntry() {
+  var item = document.getElementById('cut-item').value.trim();
+  if (!item) { document.getElementById('cut-item').focus(); return; }
+  entries.push({
+    item: item,
+    weight: document.getElementById('cut-weight').value || '',
+    cases: document.getElementById('cut-cases').value || '',
+    grade: selectedGrade,
+    notes: document.getElementById('cut-notes').value.trim(),
+    ts: Date.now()
+  });
+  save();
+  render();
+  closeAdd();
+}
+
+// ─── Delete entry ───
+function del(i) {
+  entries.splice(i, 1);
+  save();
+  render();
+}
+
+// ─── Date/shift change ───
+document.getElementById('log-date').addEventListener('change', load);
+document.getElementById('log-shift').addEventListener('change', load);
+
+// ─── Backdrop close ───
+document.getElementById('modal-bg').addEventListener('click', function(e) {
+  if (e.target === document.getElementById('modal-bg')) closeAdd();
+});
+
+// ─── Init ───
+load();
+window.addEventListener('beforeinstallprompt', function(e) { e.preventDefault(); });
+</script>
+</body>
+</html>

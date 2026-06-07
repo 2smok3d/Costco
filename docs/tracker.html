@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Production Counter — Dept 61</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0a0a;--sf:#141414;--s2:#1e1e1e;--s3:#252525;
+      --bd:#2a2a2a;--bd-lite:#222;
+      --tx:#fff;--dm:#ccc;--mt:#999;--ft:#666;--xt:#444;
+      --brand:#8b0000;
+      --red:#cc0000;--red-dk:#8b1010;--amber:#e07b00;--amber-dk:#8a6020;
+      --green:#00c87a;--green-dk:#2e7d42;--blue:#1a6bb5;--blue-lt:#4a90d9;
+      --teal:#007a6e;--purple:#8850c8;--purple-dk:#5a3a8a;--pink:#c05878;
+      --gold:#c8a000;--gold-lt:#e8c97a;--brown:#8a5a35;
+      --prime:#c8960c;--choice:#4a7fbf;--wagyu:#9b4dca;
+      --beef-cryo:#7a1c1c;--pork-clr:#c05878;--poultry:#c9a000;--turkey:#8a6800;
+      --seafood:#1a6bb5;--grinds:#6a5a4a;--lamb-clr:#8a5a35;
+      --st-dw:#e07b00;--st-lt:#c8a000;--st-oos:#cc0000;--st-na:#555;
+      --sp-xs:4px;--sp-sm:8px;--sp-md:12px;--sp-lg:16px;--sp-xl:24px;
+      --r-sm:6px;--r:8px;--r-lg:12px;--r-pill:999px;
+      --sh-sm:0 1px 4px rgba(0,0,0,.4);--sh:0 2px 10px rgba(0,0,0,.5);
+      --header-h:58px;
+      --font-body:'Montserrat',sans-serif;--font-mono:'JetBrains Mono',monospace;
+      --accent:#cc0000;--accent-bg:rgba(204,0,0,.10);--accent-bd:rgba(204,0,0,.25);
+    }
+    :root{--accent:var(--gold);--accent-bg:rgba(200,160,0,.10);--accent-bd:rgba(200,160,0,.25)}
+
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--tx);font-family:var(--font-body);display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+
+    /* ─── UNIFIED HEADER ─── */
+    header{position:relative;display:flex;align-items:center;height:var(--header-h);padding:0 14px;background:var(--bg);border-bottom:1px solid var(--bd);gap:10px;flex-shrink:0}
+    .bk{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--ft);font-size:18px;line-height:1;text-decoration:none;flex-shrink:0;transition:background .15s}
+    .bk:active{background:var(--sf)}
+    .hc{flex:1;text-align:center;pointer-events:none}
+    .ht{font-family:var(--font-body);font-weight:700;font-size:15px;font-style:italic;color:var(--tx);letter-spacing:.02em;line-height:1.1}
+    .hs{font-family:var(--font-body);font-weight:500;font-size:10px;color:var(--xt);letter-spacing:.08em;margin-top:2px}
+    .clogo{background:var(--brand);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:5px 9px;text-align:center;flex-shrink:0;line-height:1.2;box-shadow:0 0 14px rgba(139,0,0,.55),0 0 4px rgba(139,0,0,.9)}
+    .cl1{font-family:var(--font-body);font-weight:800;font-size:15px;color:#fff;letter-spacing:.05em;text-shadow:0 0 10px rgba(255,150,150,.45)}
+    .cl2{font-family:var(--font-body);font-weight:600;font-size:7px;color:rgba(255,255,255,.5);letter-spacing:.22em;text-transform:uppercase;margin-top:2px}
+
+    /* ─── CTRL BAR ─── */
+    .ctrl-bar{background:var(--sf);border-bottom:1px solid var(--bd);padding:0 12px;height:46px;flex-shrink:0;display:flex;align-items:center;gap:8px}
+    .ctrl-bar input[type=date],
+    .ctrl-bar select{height:32px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--tx);font-family:var(--font-mono);font-size:12px;padding:0 8px;outline:none;-webkit-appearance:none;appearance:none;cursor:pointer}
+    .ctrl-bar input[type=date]{min-width:130px}
+    .ctrl-bar select{min-width:90px}
+    .ctrl-bar input[type=date]:focus,
+    .ctrl-bar select:focus{border-color:var(--accent)}
+    .spacer{flex:1}
+    .btn-report{height:32px;padding:0 14px;background:var(--accent);border:none;border-radius:var(--r-sm);color:#000;font-family:var(--font-body);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:opacity .15s}
+    .btn-report:active{opacity:.75}
+
+    /* ─── SCROLL ─── */
+    #scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 12px 60px}
+
+    /* ─── SECTION LABEL ─── */
+    .section-label{font-family:var(--font-body);font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);padding:10px 4px 4px;border-left:3px solid var(--accent);padding-left:10px;margin-top:4px}
+
+    /* ─── STEPPER ROW ─── */
+    .stepper{background:var(--sf);border:1px solid var(--bd);border-left:4px solid var(--bd);border-radius:var(--r);padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px}
+    .stepper.poultry  {border-left-color:var(--poultry)}
+    .stepper.turkey   {border-left-color:var(--turkey)}
+    .stepper.pork-cryo{border-left-color:var(--pork-clr)}
+    .stepper.beef-cryo{border-left-color:var(--beef-cryo)}
+    .stepper.beef     {border-left-color:var(--red)}
+    .stepper.prepack  {border-left-color:var(--red-dk)}
+    .stepper.lamb     {border-left-color:var(--lamb-clr)}
+    .stepper.grinds   {border-left-color:var(--grinds)}
+
+    .step-name{font-family:var(--font-body);font-size:13px;font-weight:700;font-style:italic;letter-spacing:.03em;text-transform:uppercase;flex:1;min-width:0}
+    .step-controls{display:flex;align-items:center;gap:0;flex-shrink:0}
+    .step-btn{width:36px;height:36px;background:var(--s2);border:1px solid var(--bd);color:var(--dm);font-size:20px;font-weight:400;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-user-select:none;transition:background .1s;flex-shrink:0}
+    .step-btn:active{background:var(--s3)}
+    .step-btn.minus{border-radius:var(--r-sm) 0 0 var(--r-sm)}
+    .step-btn.plus {border-radius:0 var(--r-sm) var(--r-sm) 0}
+    .step-val{width:52px;height:36px;background:var(--s2);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);border-left:none;border-right:none;color:var(--tx);font-family:var(--font-mono);font-size:18px;font-weight:600;text-align:center;outline:none;-webkit-appearance:none;padding:0}
+    .step-val:focus{background:var(--s3)}
+
+    /* ─── TOTALS STRIP ─── */
+    .totals-strip{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:10px 14px;margin-top:8px;display:flex;align-items:center;gap:12px}
+    .totals-label{font-family:var(--font-body);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);flex:1}
+    .totals-val{font-family:var(--font-mono);font-size:22px;font-weight:600;color:var(--accent);letter-spacing:-.5px}
+
+    /* ─── MODAL ─── */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:flex-end}
+    .modal-bg.op{display:flex}
+    .modal{background:var(--sf);border-radius:14px 14px 0 0;padding:16px 14px 40px;width:100%;max-height:88dvh;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--bd)}
+    .modal-title{font-family:var(--font-body);font-size:16px;font-weight:800;font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}
+    .report-box{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);font-family:var(--font-mono);font-size:12px;line-height:1.9;padding:12px;white-space:pre-wrap;color:var(--tx);overflow-y:auto;flex:1;min-height:160px}
+    .modal-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+    .m-btn{border:none;border-radius:var(--r);font-family:var(--font-body);font-size:14px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:12px;cursor:pointer;transition:opacity .15s}
+    .m-btn:active{opacity:.75}
+    .m-btn.copy {background:var(--accent);color:#000}
+    .m-btn.adam {background:var(--blue);color:#fff}
+    .m-btn.abe  {background:var(--green-dk);color:#fff}
+    .m-btn.close{background:var(--s2);color:var(--mt)}
+    .m-btn.copied{background:var(--green-dk)!important;color:#fff!important}
+  </style>
+</head>
+<body>
+<header>
+  <a class="bk" href="meat.html">←</a>
+  <div class="hc"><div class="ht">Production Counter</div><div class="hs">DEPT 61 · #436</div></div>
+  <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
+</header>
+
+<div class="ctrl-bar">
+  <input type="date" id="shift-date">
+  <select id="shift-type">
+    <option value="Open">Open</option>
+    <option value="Close">Close</option>
+    <option value="Middy">Middy</option>
+  </select>
+  <div class="spacer"></div>
+  <button class="btn-report" onclick="openReport()">Report</button>
+</div>
+
+<div id="scroll">
+
+  <div class="section-label">— Poultry —</div>
+  <div class="stepper poultry" data-id="chicken_tray"><span class="step-name">Chicken Tray</span><div class="step-controls"><button class="step-btn minus" onclick="adj('chicken_tray',-1)">−</button><input class="step-val" id="v_chicken_tray" type="number" min="0" value="0" oninput="set('chicken_tray',this.value)"><button class="step-btn plus" onclick="adj('chicken_tray',1)">+</button></div></div>
+  <div class="stepper poultry" data-id="chicken_piece"><span class="step-name">Chicken Piece</span><div class="step-controls"><button class="step-btn minus" onclick="adj('chicken_piece',-1)">−</button><input class="step-val" id="v_chicken_piece" type="number" min="0" value="0" oninput="set('chicken_piece',this.value)"><button class="step-btn plus" onclick="adj('chicken_piece',1)">+</button></div></div>
+  <div class="stepper poultry" data-id="chicken_ground"><span class="step-name">Ground Chicken</span><div class="step-controls"><button class="step-btn minus" onclick="adj('chicken_ground',-1)">−</button><input class="step-val" id="v_chicken_ground" type="number" min="0" value="0" oninput="set('chicken_ground',this.value)"><button class="step-btn plus" onclick="adj('chicken_ground',1)">+</button></div></div>
+
+  <div class="section-label">— Turkey —</div>
+  <div class="stepper turkey" data-id="turkey_ground"><span class="step-name">Ground Turkey</span><div class="step-controls"><button class="step-btn minus" onclick="adj('turkey_ground',-1)">−</button><input class="step-val" id="v_turkey_ground" type="number" min="0" value="0" oninput="set('turkey_ground',this.value)"><button class="step-btn plus" onclick="adj('turkey_ground',1)">+</button></div></div>
+  <div class="stepper turkey" data-id="turkey_breast"><span class="step-name">Turkey Breast</span><div class="step-controls"><button class="step-btn minus" onclick="adj('turkey_breast',-1)">−</button><input class="step-val" id="v_turkey_breast" type="number" min="0" value="0" oninput="set('turkey_breast',this.value)"><button class="step-btn plus" onclick="adj('turkey_breast',1)">+</button></div></div>
+
+  <div class="section-label">— Pork Cryo —</div>
+  <div class="stepper pork-cryo" data-id="pork_ribs"><span class="step-name">Ribs</span><div class="step-controls"><button class="step-btn minus" onclick="adj('pork_ribs',-1)">−</button><input class="step-val" id="v_pork_ribs" type="number" min="0" value="0" oninput="set('pork_ribs',this.value)"><button class="step-btn plus" onclick="adj('pork_ribs',1)">+</button></div></div>
+  <div class="stepper pork-cryo" data-id="pork_loin"><span class="step-name">Pork Loin</span><div class="step-controls"><button class="step-btn minus" onclick="adj('pork_loin',-1)">−</button><input class="step-val" id="v_pork_loin" type="number" min="0" value="0" oninput="set('pork_loin',this.value)"><button class="step-btn plus" onclick="adj('pork_loin',1)">+</button></div></div>
+  <div class="stepper pork-cryo" data-id="pork_tenderloin"><span class="step-name">Tenderloin</span><div class="step-controls"><button class="step-btn minus" onclick="adj('pork_tenderloin',-1)">−</button><input class="step-val" id="v_pork_tenderloin" type="number" min="0" value="0" oninput="set('pork_tenderloin',this.value)"><button class="step-btn plus" onclick="adj('pork_tenderloin',1)">+</button></div></div>
+
+  <div class="section-label">— Beef Cryo —</div>
+  <div class="stepper beef-cryo" data-id="beef_chuck"><span class="step-name">Chuck Roll</span><div class="step-controls"><button class="step-btn minus" onclick="adj('beef_chuck',-1)">−</button><input class="step-val" id="v_beef_chuck" type="number" min="0" value="0" oninput="set('beef_chuck',this.value)"><button class="step-btn plus" onclick="adj('beef_chuck',1)">+</button></div></div>
+  <div class="stepper beef-cryo" data-id="beef_brisket"><span class="step-name">Brisket</span><div class="step-controls"><button class="step-btn minus" onclick="adj('beef_brisket',-1)">−</button><input class="step-val" id="v_beef_brisket" type="number" min="0" value="0" oninput="set('beef_brisket',this.value)"><button class="step-btn plus" onclick="adj('beef_brisket',1)">+</button></div></div>
+  <div class="stepper beef-cryo" data-id="beef_ny"><span class="step-name">NY Strip</span><div class="step-controls"><button class="step-btn minus" onclick="adj('beef_ny',-1)">−</button><input class="step-val" id="v_beef_ny" type="number" min="0" value="0" oninput="set('beef_ny',this.value)"><button class="step-btn plus" onclick="adj('beef_ny',1)">+</button></div></div>
+  <div class="stepper beef-cryo" data-id="beef_ribeye"><span class="step-name">Ribeye</span><div class="step-controls"><button class="step-btn minus" onclick="adj('beef_ribeye',-1)">−</button><input class="step-val" id="v_beef_ribeye" type="number" min="0" value="0" oninput="set('beef_ribeye',this.value)"><button class="step-btn plus" onclick="adj('beef_ribeye',1)">+</button></div></div>
+
+  <div class="section-label">— Beef —</div>
+  <div class="stepper beef" data-id="beef_steak"><span class="step-name">Steak (Misc)</span><div class="step-controls"><button class="step-btn minus" onclick="adj('beef_steak',-1)">−</button><input class="step-val" id="v_beef_steak" type="number" min="0" value="0" oninput="set('beef_steak',this.value)"><button class="step-btn plus" onclick="adj('beef_steak',1)">+</button></div></div>
+  <div class="stepper beef" data-id="beef_roast"><span class="step-name">Roast</span><div class="step-controls"><button class="step-btn minus" onclick="adj('beef_roast',-1)">−</button><input class="step-val" id="v_beef_roast" type="number" min="0" value="0" oninput="set('beef_roast',this.value)"><button class="step-btn plus" onclick="adj('beef_roast',1)">+</button></div></div>
+
+  <div class="section-label">— Beef Prepack —</div>
+  <div class="stepper prepack" data-id="prepack_ground"><span class="step-name">Ground Beef</span><div class="step-controls"><button class="step-btn minus" onclick="adj('prepack_ground',-1)">−</button><input class="step-val" id="v_prepack_ground" type="number" min="0" value="0" oninput="set('prepack_ground',this.value)"><button class="step-btn plus" onclick="adj('prepack_ground',1)">+</button></div></div>
+  <div class="stepper prepack" data-id="prepack_burger"><span class="step-name">Burger Patties</span><div class="step-controls"><button class="step-btn minus" onclick="adj('prepack_burger',-1)">−</button><input class="step-val" id="v_prepack_burger" type="number" min="0" value="0" oninput="set('prepack_burger',this.value)"><button class="step-btn plus" onclick="adj('prepack_burger',1)">+</button></div></div>
+
+  <div class="section-label">— Lamb —</div>
+  <div class="stepper lamb" data-id="lamb_rack"><span class="step-name">Rack of Lamb</span><div class="step-controls"><button class="step-btn minus" onclick="adj('lamb_rack',-1)">−</button><input class="step-val" id="v_lamb_rack" type="number" min="0" value="0" oninput="set('lamb_rack',this.value)"><button class="step-btn plus" onclick="adj('lamb_rack',1)">+</button></div></div>
+  <div class="stepper lamb" data-id="lamb_leg"><span class="step-name">Leg of Lamb</span><div class="step-controls"><button class="step-btn minus" onclick="adj('lamb_leg',-1)">−</button><input class="step-val" id="v_lamb_leg" type="number" min="0" value="0" oninput="set('lamb_leg',this.value)"><button class="step-btn plus" onclick="adj('lamb_leg',1)">+</button></div></div>
+
+  <div class="section-label">— Grinds —</div>
+  <div class="stepper grinds" data-id="grind_beef_80"><span class="step-name">80/20 Ground Beef</span><div class="step-controls"><button class="step-btn minus" onclick="adj('grind_beef_80',-1)">−</button><input class="step-val" id="v_grind_beef_80" type="number" min="0" value="0" oninput="set('grind_beef_80',this.value)"><button class="step-btn plus" onclick="adj('grind_beef_80',1)">+</button></div></div>
+  <div class="stepper grinds" data-id="grind_beef_85"><span class="step-name">85/15 Ground Beef</span><div class="step-controls"><button class="step-btn minus" onclick="adj('grind_beef_85',-1)">−</button><input class="step-val" id="v_grind_beef_85" type="number" min="0" value="0" oninput="set('grind_beef_85',this.value)"><button class="step-btn plus" onclick="adj('grind_beef_85',1)">+</button></div></div>
+  <div class="stepper grinds" data-id="grind_beef_93"><span class="step-name">93/7 Ground Beef</span><div class="step-controls"><button class="step-btn minus" onclick="adj('grind_beef_93',-1)">−</button><input class="step-val" id="v_grind_beef_93" type="number" min="0" value="0" oninput="set('grind_beef_93',this.value)"><button class="step-btn plus" onclick="adj('grind_beef_93',1)">+</button></div></div>
+
+  <div class="totals-strip">
+    <div class="totals-label">Total Cases</div>
+    <div class="totals-val" id="grand-total">0</div>
+  </div>
+
+</div>
+
+<!-- ─── REPORT MODAL ─── -->
+<div class="modal-bg" id="modal-bg" onclick="e=>{if(e.target===this)closeReport()}">
+  <div class="modal">
+    <div class="modal-title">Production Report</div>
+    <div class="report-box" id="report-box"></div>
+    <div class="modal-btns">
+      <button class="m-btn copy" id="copy-btn" onclick="copyReport()">Copy</button>
+      <button class="m-btn adam" onclick="smsTo('4805460784')">→ Adam</button>
+      <button class="m-btn abe" onclick="smsTo('3233089971')">→ Abe</button>
+    </div>
+    <button class="m-btn close" onclick="closeReport()">Close</button>
+  </div>
+</div>
+
+<script>
+const STORE_KEY = 'tracker_v2';
+var counts = {};
+
+// ─── Item definitions ───
+const ITEMS = [
+  {id:'chicken_tray',  label:'Chicken Tray',     cat:'Poultry'},
+  {id:'chicken_piece', label:'Chicken Piece',     cat:'Poultry'},
+  {id:'chicken_ground',label:'Ground Chicken',    cat:'Poultry'},
+  {id:'turkey_ground', label:'Ground Turkey',     cat:'Turkey'},
+  {id:'turkey_breast', label:'Turkey Breast',     cat:'Turkey'},
+  {id:'pork_ribs',     label:'Ribs',              cat:'Pork Cryo'},
+  {id:'pork_loin',     label:'Pork Loin',         cat:'Pork Cryo'},
+  {id:'pork_tenderloin',label:'Tenderloin',        cat:'Pork Cryo'},
+  {id:'beef_chuck',    label:'Chuck Roll',        cat:'Beef Cryo'},
+  {id:'beef_brisket',  label:'Brisket',           cat:'Beef Cryo'},
+  {id:'beef_ny',       label:'NY Strip',          cat:'Beef Cryo'},
+  {id:'beef_ribeye',   label:'Ribeye',            cat:'Beef Cryo'},
+  {id:'beef_steak',    label:'Steak (Misc)',      cat:'Beef'},
+  {id:'beef_roast',    label:'Roast',             cat:'Beef'},
+  {id:'prepack_ground',label:'Ground Beef',       cat:'Beef Prepack'},
+  {id:'prepack_burger',label:'Burger Patties',    cat:'Beef Prepack'},
+  {id:'lamb_rack',     label:'Rack of Lamb',      cat:'Lamb'},
+  {id:'lamb_leg',      label:'Leg of Lamb',       cat:'Lamb'},
+  {id:'grind_beef_80', label:'80/20 Ground Beef', cat:'Grinds'},
+  {id:'grind_beef_85', label:'85/15 Ground Beef', cat:'Grinds'},
+  {id:'grind_beef_93', label:'93/7 Ground Beef',  cat:'Grinds'},
+];
+
+// ─── Init date ───
+var today = new Date();
+var dd = today.getFullYear()+'-'+(String(today.getMonth()+1).padStart(2,'0'))+'-'+(String(today.getDate()).padStart(2,'0'));
+document.getElementById('shift-date').value = dd;
+
+// ─── Storage key ───
+function storeKey() {
+  return STORE_KEY + '_' + document.getElementById('shift-date').value + '_' + document.getElementById('shift-type').value;
+}
+
+// ─── Load from storage ───
+function load() {
+  try {
+    var raw = localStorage.getItem(storeKey());
+    counts = raw ? JSON.parse(raw) : {};
+  } catch(e) { counts = {}; }
+  ITEMS.forEach(function(it) {
+    var v = counts[it.id] || 0;
+    var el = document.getElementById('v_'+it.id);
+    if (el) el.value = v;
+  });
+  updateTotal();
+}
+
+// ─── Save ───
+function save() {
+  try { localStorage.setItem(storeKey(), JSON.stringify(counts)); } catch(e) {}
+}
+
+// ─── Adjust ───
+function adj(id, delta) {
+  var current = counts[id] || 0;
+  var next = Math.max(0, current + delta);
+  counts[id] = next;
+  var el = document.getElementById('v_'+id);
+  if (el) el.value = next;
+  save();
+  updateTotal();
+}
+
+function set(id, val) {
+  var n = parseInt(val, 10);
+  counts[id] = isNaN(n) || n < 0 ? 0 : n;
+  save();
+  updateTotal();
+}
+
+function updateTotal() {
+  var total = ITEMS.reduce(function(s, it) { return s + (counts[it.id] || 0); }, 0);
+  document.getElementById('grand-total').textContent = total;
+}
+
+// ─── Report ───
+function formatReport() {
+  var date = document.getElementById('shift-date').value;
+  var shift = document.getElementById('shift-type').value;
+  var lines = ['DEPT 61 PRODUCTION — ' + date + ' (' + shift + ')', ''];
+  var lastCat = '';
+  ITEMS.forEach(function(it) {
+    if (it.cat !== lastCat) {
+      if (lastCat !== '') lines.push('');
+      lines.push('[ ' + it.cat.toUpperCase() + ' ]');
+      lastCat = it.cat;
+    }
+    var v = counts[it.id] || 0;
+    if (v > 0) lines.push('  ' + it.label.padEnd(22) + v + ' cases');
+  });
+  var total = ITEMS.reduce(function(s,it){return s+(counts[it.id]||0);},0);
+  lines.push('');
+  lines.push('TOTAL: ' + total + ' cases');
+  return lines.join('\n');
+}
+
+function openReport() {
+  document.getElementById('report-box').textContent = formatReport();
+  document.getElementById('modal-bg').classList.add('op');
+}
+
+function closeReport() {
+  document.getElementById('modal-bg').classList.remove('op');
+}
+
+function copyReport() {
+  var btn = document.getElementById('copy-btn');
+  navigator.clipboard.writeText(document.getElementById('report-box').textContent).then(function() {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function(){btn.textContent='Copy';btn.classList.remove('copied');}, 1800);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = document.getElementById('report-box').textContent;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function(){btn.textContent='Copy';btn.classList.remove('copied');}, 1800);
+  });
+}
+
+function smsTo(num) {
+  var body = encodeURIComponent(formatReport());
+  window.location.href = 'sms:' + num + '?body=' + body;
+}
+
+// ─── Date/shift change ───
+document.getElementById('shift-date').addEventListener('change', load);
+document.getElementById('shift-type').addEventListener('change', load);
+
+// ─── Close modal on backdrop click ───
+document.getElementById('modal-bg').addEventListener('click', function(e) {
+  if (e.target === document.getElementById('modal-bg')) closeReport();
+});
+
+// ─── Init ───
+load();
+window.addEventListener('beforeinstallprompt', function(e) { e.preventDefault(); });
+</script>
+</body>
+</html>

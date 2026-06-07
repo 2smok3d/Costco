@@ -6,28 +6,27 @@
 <title>Advancement — Costco #436</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#0a0a0a;
-    --sf:#141414;
-    --s2:#1e1e1e;
-    --bd:#2a2a2a;
-    --tx:#fff;
-    --dm:#ccc;
-    --mt:#999;
-    --ft:#666;
-    --xt:#444;
+  :root{
+    --bg:#0a0a0a;--sf:#141414;--s2:#1e1e1e;--s3:#252525;
+    --bd:#2a2a2a;--bd-lite:#222;
+    --tx:#fff;--dm:#ccc;--mt:#999;--ft:#666;--xt:#444;
     --brand:#8b0000;
-    --purple:#8850c8;
-    --red:#cc0000;
-    --amber:#e07b00;
-    --green:#00c87a;
-    --r-sm:6px;
-    --r:8px;
+    --red:#cc0000;--red-dk:#8b1010;--amber:#e07b00;--amber-dk:#8a6020;
+    --green:#00c87a;--green-dk:#2e7d42;--blue:#1a6bb5;--blue-lt:#4a90d9;
+    --teal:#007a6e;--purple:#8850c8;--purple-dk:#5a3a8a;--pink:#c05878;
+    --gold:#c8a000;--gold-lt:#e8c97a;--brown:#8a5a35;
+    --prime:#c8960c;--choice:#4a7fbf;--wagyu:#9b4dca;
+    --beef-cryo:#7a1c1c;--pork-clr:#c05878;--poultry:#c9a000;--turkey:#8a6800;
+    --seafood:#1a6bb5;--grinds:#6a5a4a;--lamb-clr:#8a5a35;
+    --st-dw:#e07b00;--st-lt:#c8a000;--st-oos:#cc0000;--st-na:#555;
+    --sp-xs:4px;--sp-sm:8px;--sp-md:12px;--sp-lg:16px;--sp-xl:24px;
+    --r-sm:6px;--r:8px;--r-lg:12px;--r-pill:999px;
+    --sh-sm:0 1px 4px rgba(0,0,0,.4);--sh:0 2px 10px rgba(0,0,0,.5);
     --header-h:58px;
-    --font-body:'Montserrat',sans-serif;
-    --font-mono:'JetBrains Mono',monospace;
-    --accent:#8850c8;
+    --font-body:'Montserrat',sans-serif;--font-mono:'JetBrains Mono',monospace;
+    --accent:#cc0000;--accent-bg:rgba(204,0,0,.10);--accent-bd:rgba(204,0,0,.25);
   }
+  :root{--accent:var(--purple);--accent-bg:rgba(136,80,200,.10);--accent-bd:rgba(136,80,200,.25)}
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -46,81 +45,15 @@
   }
 
   /* ─── UNIFIED HEADER ─── */
-  header {
-    display: flex;
-    align-items: center;
-    height: 58px;
-    padding: 0 14px;
-    background: #0a0a0a;
-    border-bottom: 1px solid #2a2a2a;
-    gap: 10px;
-    flex-shrink: 0;
-  }
-  .bk {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: 1px solid #2a2a2a;
-    border-radius: 6px;
-    color: #666;
-    font-size: 18px;
-    line-height: 1;
-    text-decoration: none;
-    flex-shrink: 0;
-    transition: background .15s;
-  }
-  .bk:active { background: #141414; }
-  .hc {
-    flex: 1;
-    text-align: center;
-    pointer-events: none;
-  }
-  .ht {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 15px;
-    font-style: italic;
-    color: #fff;
-    letter-spacing: .02em;
-    line-height: 1.1;
-  }
-  .hs {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 500;
-    font-size: 10px;
-    color: #444;
-    letter-spacing: .08em;
-    margin-top: 2px;
-  }
-  .clogo {
-    background: #8b0000;
-    border: 1px solid rgba(255,255,255,.15);
-    border-radius: 6px;
-    padding: 5px 9px;
-    text-align: center;
-    flex-shrink: 0;
-    line-height: 1.2;
-    box-shadow: 0 0 14px rgba(139,0,0,.55), 0 0 4px rgba(139,0,0,.9);
-  }
-  .cl1 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    font-size: 15px;
-    color: #fff;
-    letter-spacing: .05em;
-    text-shadow: 0 0 10px rgba(255,150,150,.45);
-  }
-  .cl2 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 7px;
-    color: rgba(255,255,255,.5);
-    letter-spacing: .22em;
-    text-transform: uppercase;
-    margin-top: 2px;
-  }
+  header{display:flex;align-items:center;height:var(--header-h);padding:0 14px;background:var(--bg);border-bottom:1px solid var(--bd);gap:10px;flex-shrink:0}
+  .bk{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--ft);font-size:18px;line-height:1;text-decoration:none;flex-shrink:0;transition:background .15s}
+  .bk:active{background:var(--sf)}
+  .hc{flex:1;text-align:center;pointer-events:none}
+  .ht{font-family:var(--font-body);font-weight:700;font-size:15px;font-style:italic;color:var(--tx);letter-spacing:.02em;line-height:1.1}
+  .hs{font-family:var(--font-body);font-weight:500;font-size:10px;color:var(--xt);letter-spacing:.08em;margin-top:2px}
+  .clogo{background:var(--brand);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:5px 9px;text-align:center;flex-shrink:0;line-height:1.2;box-shadow:0 0 14px rgba(139,0,0,.55),0 0 4px rgba(139,0,0,.9)}
+  .cl1{font-family:var(--font-body);font-weight:800;font-size:15px;color:#fff;letter-spacing:.05em;text-shadow:0 0 10px rgba(255,150,150,.45)}
+  .cl2{font-family:var(--font-body);font-weight:600;font-size:7px;color:rgba(255,255,255,.5);letter-spacing:.22em;text-transform:uppercase;margin-top:2px}
 
   /* ─── SCROLL CONTAINER ─── */
   #scroll {
