@@ -6,123 +6,272 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0a0a0a">
   <title>Meat — Dept 61</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#0a0a0a;--sf:#111;--bd:#1e1e1e;--tx:#fff;--dm:#ccc;--mt:#888;--r:10px;
-      --red:#cc0000;--amber:#e07b00;--teal:#007a6e}
+    :root{
+      --bg:#0a0a0a;--sf:#141414;--s2:#1e1e1e;--s3:#252525;
+      --bd:#2a2a2a;--bd-lite:#222;
+      --tx:#fff;--dm:#ccc;--mt:#999;--ft:#666;--xt:#444;
+      --brand:#8b0000;
+      --red:#cc0000;--red-dk:#8b1010;--amber:#e07b00;--amber-dk:#8a6020;
+      --green:#00c87a;--green-dk:#2e7d42;--blue:#1a6bb5;--blue-lt:#4a90d9;
+      --teal:#007a6e;--purple:#8850c8;--purple-dk:#5a3a8a;--pink:#c05878;
+      --gold:#c8a000;--gold-lt:#e8c97a;--brown:#8a5a35;
+      --prime:#c8960c;--choice:#4a7fbf;--wagyu:#9b4dca;
+      --beef-cryo:#7a1c1c;--pork-clr:#c05878;--poultry:#c9a000;--turkey:#8a6800;
+      --seafood:#1a6bb5;--grinds:#6a5a4a;--lamb-clr:#8a5a35;
+      --st-dw:#e07b00;--st-lt:#c8a000;--st-oos:#cc0000;--st-na:#555;
+      --sp-xs:4px;--sp-sm:8px;--sp-md:12px;--sp-lg:16px;--sp-xl:24px;
+      --r-sm:6px;--r:8px;--r-lg:12px;--r-pill:999px;
+      --sh-sm:0 1px 4px rgba(0,0,0,.4);--sh:0 2px 10px rgba(0,0,0,.5);
+      --header-h:58px;
+      --font-body:'Montserrat',sans-serif;--font-mono:'JetBrains Mono',monospace;
+      --accent:#cc0000;--accent-bg:rgba(204,0,0,.10);--accent-bd:rgba(204,0,0,.25);
+    }
+
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    body{background:var(--bg);color:var(--tx);font-family:'Montserrat',sans-serif;display:flex;flex-direction:column;height:100dvh}
-    #main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-    .container{max-width:480px;margin:0 auto;padding:16px 12px;display:flex;flex-direction:column;gap:10px}
+    body{background:var(--bg);color:var(--tx);font-family:var(--font-body);min-height:100dvh;padding-bottom:40px}
 
-    .section-label {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: #333;
-      text-align: center;
-      padding: 4px 0;
-    }
-
-    .tool-card{background:var(--sf);border:1px solid var(--bd);
-      border-left: 4px solid var(--bd);
-      border-radius: 8px;
-      padding: 20px 18px;
-      text-decoration: none;
-      color: var(--tx);
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      min-height: 90px;
-      transition: transform 0.12s;
-      position: relative;
-    }
-    .tool-card:active { transform: scale(0.97); }
-    .tool-card.amber { border-left-color: var(--amber); }
-    .tool-card.teal  { border-left-color: var(--teal); }
-    .tool-card.red   { border-left-color: var(--red); }
-    .tool-card.dim   { opacity: 0.5; }
-
-    .card-icon { font-size: 32px; flex-shrink: 0; }
-    .card-text { display: flex; flex-direction: column; gap: 4px; }
-    .card-name {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-    .card-desc{font-size:13px;color:var(--dm);line-height:1.4}
-    .card-tag {
-      position: absolute;
-      top: 10px; right: 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 9px;
-      color: #444;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-      
-    
-    
     /* ─── UNIFIED HEADER ─── */
-    header{display:flex;align-items:center;height:58px;padding:0 14px;background:#0a0a0a;border-bottom:1px solid #2a2a2a;gap:10px;flex-shrink:0}
-    .bk{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid #2a2a2a;border-radius:6px;color:#666;font-size:18px;line-height:1;text-decoration:none;flex-shrink:0;transition:background .15s}
-    .bk:active{background:#141414}
+    header{position:relative;display:flex;align-items:center;height:var(--header-h);padding:0 14px;background:var(--bg);border-bottom:1px solid var(--bd);gap:10px;flex-shrink:0}
+    .bk{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--ft);font-size:18px;line-height:1;text-decoration:none;flex-shrink:0;transition:background .15s}
+    .bk:active{background:var(--sf)}
     .hc{flex:1;text-align:center;pointer-events:none}
-    .ht{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;font-style:italic;color:#fff;letter-spacing:.02em;line-height:1.1}
-    .hs{font-family:'Montserrat',sans-serif;font-weight:500;font-size:10px;color:#444;letter-spacing:.08em;margin-top:2px}
-    .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:5px 9px;text-align:center;flex-shrink:0;line-height:1.2;box-shadow:0 0 14px rgba(139,0,0,.55),0 0 4px rgba(139,0,0,.9)}
-    .cl1{font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#fff;letter-spacing:.05em;text-shadow:0 0 10px rgba(255,150,150,.45)}
-    .cl2{font-family:'Montserrat',sans-serif;font-weight:600;font-size:7px;color:rgba(255,255,255,.5);letter-spacing:.22em;text-transform:uppercase;margin-top:2px}
+    .ht{font-family:var(--font-body);font-weight:700;font-size:15px;font-style:italic;color:var(--tx);letter-spacing:.02em;line-height:1.1}
+    .hs{font-family:var(--font-body);font-weight:500;font-size:10px;color:var(--xt);letter-spacing:.08em;margin-top:2px}
+    .clogo{background:var(--brand);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:5px 9px;text-align:center;flex-shrink:0;line-height:1.2;box-shadow:0 0 14px rgba(139,0,0,.55),0 0 4px rgba(139,0,0,.9)}
+    .cl1{font-family:var(--font-body);font-weight:800;font-size:15px;color:#fff;letter-spacing:.05em;text-shadow:0 0 10px rgba(255,150,150,.45)}
+    .cl2{font-family:var(--font-body);font-weight:600;font-size:7px;color:rgba(255,255,255,.5);letter-spacing:.22em;text-transform:uppercase;margin-top:2px}
+
+    /* ─── LAYOUT ─── */
+    .container{max-width:480px;margin:0 auto;padding:12px 12px}
+
+    /* ─── SECTION LABEL ─── */
+    .section-label{font-family:var(--font-body);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);text-align:left;padding:12px 4px 5px;border-left:3px solid var(--amber);padding-left:10px;margin-top:2px}
+    .section-label.red{color:var(--red);border-left-color:var(--red)}
+    .section-label.green{color:var(--green);border-left-color:var(--green)}
+
+    /* ─── TOOL CARDS ─── */
+    .doc-card{background:var(--sf);border:1px solid var(--bd);border-left:4px solid var(--bd);border-radius:var(--r);padding:14px 16px;text-decoration:none;color:var(--tx);display:flex;align-items:center;gap:14px;margin-bottom:8px;transition:transform .12s;position:relative}
+    .doc-card:active{transform:scale(.97)}
+    .doc-card.red    {border-left-color:var(--red)}
+    .doc-card.amber  {border-left-color:var(--amber)}
+    .doc-card.gold   {border-left-color:var(--gold)}
+    .doc-card.purple {border-left-color:var(--purple)}
+    .doc-card.teal   {border-left-color:var(--teal)}
+    .doc-card.green  {border-left-color:var(--green-dk)}
+    .doc-icon{font-size:26px;flex-shrink:0}
+    .doc-text{flex:1;min-width:0}
+    .doc-name{font-family:var(--font-body);font-size:15px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+    .doc-desc{font-size:12px;color:var(--dm);margin-top:2px;line-height:1.4}
+    .doc-tag{font-family:var(--font-mono);font-size:9px;color:var(--mt);letter-spacing:.5px;margin-top:3px}
+    .arrow{color:var(--mt);font-size:16px;flex-shrink:0}
+
+    /* ─── AS400 COMMANDS ─── */
+    .cmd-block{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:0 12px;margin-bottom:10px}
+    .cmd-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd-lite)}
+    .cmd-row:last-child{border-bottom:none}
+    .cmd-code{font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--green);min-width:56px;flex-shrink:0;padding-top:1px}
+    .cmd-desc{font-size:12px;color:var(--dm);line-height:1.4;flex:1}
+    .cmd-star{color:var(--amber);font-size:10px;flex-shrink:0;margin-top:2px}
+
+    /* ─── NOTES ─── */
+    .note-block{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px;margin-bottom:10px;display:flex;flex-direction:column;gap:0}
+    .note-row{font-size:12px;color:var(--mt);line-height:1.5;padding:4px 0 4px 14px;position:relative;border-bottom:1px solid var(--bd-lite)}
+    .note-row:last-child{border-bottom:none}
+    .note-row::before{content:'•';color:var(--ft);position:absolute;left:2px}
+
+    /* ─── CONTACTS ─── */
+    .contact-card{background:var(--sf);border:1px solid var(--bd);border-left:4px solid var(--red);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+    .contact-role{font-family:var(--font-body);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mt);width:80px;flex-shrink:0;line-height:1.3}
+    .contact-name{font-family:var(--font-body);font-size:15px;font-weight:700;flex:1}
+    .contact-num{font-family:var(--font-mono);font-size:12px;color:var(--red);flex-shrink:0}
+    .sms-btn{background:var(--red);color:#fff;border:none;border-radius:var(--r-sm);font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.5px;padding:6px 10px;cursor:pointer;flex-shrink:0;text-decoration:none;display:inline-block}
+
+    /* ─── KEY FACTS ─── */
+    .pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+    .pill{font-family:var(--font-mono);font-size:10px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-pill);padding:4px 10px;color:var(--dm);white-space:nowrap}
+    .pill.red{border-color:var(--red);color:var(--red)}
+    .pill.green{border-color:var(--green);color:var(--green)}
+    .pill.amber{border-color:var(--amber);color:var(--amber)}
   </style>
 </head>
 <body>
-
 <header>
   <a class="bk" href="depts.html">←</a>
-  <div class="hc"><div class="ht">Meat</div><div class="hs">Dept 61 · #436</div></div>
+  <div class="hc"><div class="ht">Meat</div><div class="hs">DEPT 61 · #436</div></div>
   <div class="clogo"><div class="cl1">COSTCO</div><div class="cl2">WHOLESALE</div></div>
 </header>
 
-<div id="main"><div class="container">
+<div class="container">
+
+  <!-- ─── TOOLS ─── -->
   <div class="section-label">— Tools —</div>
 
-  <a class="tool-card amber" href="closing-template.html">
-    <span class="card-icon">📋</span>
-    <div class="card-text">
-      <span class="card-name">Closing Template</span>
-      <span class="card-desc">Fill & text — nightly close report</span>
+  <a class="doc-card amber" href="closing-template.html">
+    <span class="doc-icon">📋</span>
+    <div class="doc-text">
+      <div class="doc-name">Closing Update</div>
+      <div class="doc-desc">Fill &amp; text — nightly close report</div>
+      <div class="doc-tag">TEMPLATE</div>
     </div>
+    <span class="arrow">›</span>
   </a>
 
-  <a class="tool-card red" href="meat-plu.html">
-    <span class="card-icon">🔢</span>
-    <div class="card-text">
-      <span class="card-name">PLU Lookup</span>
-      <span class="card-desc">Beef, pork, poultry, seafood — tap to copy</span>
+  <a class="doc-card amber" href="retail-cases.html">
+    <span class="doc-icon">📦</span>
+    <div class="doc-text">
+      <div class="doc-name">Production Log</div>
+      <div class="doc-desc">Log retail cases by item — daily production record</div>
+      <div class="doc-tag">RETAIL CASES</div>
     </div>
+    <span class="arrow">›</span>
   </a>
 
-  <a class="tool-card" style="border-left-color:#6a5a8a" href="tracker.html">
-    <span class="card-icon">📊</span>
-    <div class="card-text">
-      <span class="card-name">Production Tracker</span>
-      <span class="card-desc">Poultry · Beef · Pork · Lamb · Grinds</span>
+  <a class="doc-card gold" href="tracker.html">
+    <span class="doc-icon">📊</span>
+    <div class="doc-text">
+      <div class="doc-name">Production Counter</div>
+      <div class="doc-desc">Daily case count — Poultry · Beef · Pork · Grinds</div>
+      <div class="doc-tag">STEPPER</div>
     </div>
+    <span class="arrow">›</span>
   </a>
 
-  <a class="tool-card teal" href="cut-specs.html">
-    <span class="card-icon">🔪</span>
-    <div class="card-text">
-      <span class="card-name">Cut Specs</span>
-      <span class="card-desc">Beef & seafood — by grade, full steps</span>
+  <a class="doc-card purple" href="cut-log.html">
+    <span class="doc-icon">🗒</span>
+    <div class="doc-text">
+      <div class="doc-name">Cut Log</div>
+      <div class="doc-desc">Record cuts by item, weight, and grade</div>
+      <div class="doc-tag">CUT LOG</div>
     </div>
+    <span class="arrow">›</span>
   </a>
 
-</div></div>
+  <a class="doc-card teal" href="cut-specs.html">
+    <span class="doc-icon">🔪</span>
+    <div class="doc-text">
+      <div class="doc-name">Cut Specs</div>
+      <div class="doc-desc">Beef &amp; seafood — by grade, full trim steps</div>
+      <div class="doc-tag">REFERENCE</div>
+    </div>
+    <span class="arrow">›</span>
+  </a>
 
+  <a class="doc-card red" href="meat-plu.html">
+    <span class="doc-icon">🔢</span>
+    <div class="doc-text">
+      <div class="doc-name">PLU Lookup</div>
+      <div class="doc-desc">Beef · Pork · Poultry · Seafood — tap to copy</div>
+      <div class="doc-tag">PLU</div>
+    </div>
+    <span class="arrow">›</span>
+  </a>
+
+  <!-- ─── CONTACTS ─── -->
+  <div class="section-label green">— Contacts —</div>
+
+  <div class="contact-card">
+    <div class="contact-role">Dept Mgr</div>
+    <div class="contact-name">Adam</div>
+    <div class="contact-num">480-546-0784</div>
+    <a class="sms-btn" href="sms:4805460784">SMS</a>
+  </div>
+
+  <div class="contact-card">
+    <div class="contact-role">Supervisor</div>
+    <div class="contact-name">Abe</div>
+    <div class="contact-num">323-308-9971</div>
+    <a class="sms-btn" href="sms:3233089971">SMS</a>
+  </div>
+
+  <!-- ─── AS400 DAILY COMMANDS ─── -->
+  <div class="section-label">— AS400 Daily Commands —</div>
+
+  <div class="cmd-block">
+    <div class="cmd-row">
+      <span class="cmd-code">IAI</span>
+      <span class="cmd-desc">Look up any item by keyword or PLU — start every item question here</span>
+      <span class="cmd-star">★</span>
+    </div>
+    <div class="cmd-row">
+      <span class="cmd-code">ITMW</span>
+      <span class="cmd-desc">Real-time on-hand, today's sales, next delivery ETA for any item</span>
+      <span class="cmd-star">★</span>
+    </div>
+    <div class="cmd-row">
+      <span class="cmd-code">STK</span>
+      <span class="cmd-desc">4-week sales &amp; D&amp;D — core cut-list planning. High DOS = over-production</span>
+      <span class="cmd-star">★</span>
+    </div>
+    <div class="cmd-row">
+      <span class="cmd-code">DSL</span>
+      <span class="cmd-desc">Dept 61 sales vs. last year and plan — know this every shift</span>
+      <span class="cmd-star">★</span>
+    </div>
+    <div class="cmd-row">
+      <span class="cmd-code">RHI</span>
+      <span class="cmd-desc">Receiving history — verify every meat truck delivery posted correctly</span>
+      <span class="cmd-star">★</span>
+    </div>
+    <div class="cmd-row">
+      <span class="cmd-code">RF 11</span>
+      <span class="cmd-desc">Scan any item on the floor — instant on-hand check</span>
+      <span class="cmd-star">★</span>
+    </div>
+    <div class="cmd-row">
+      <span class="cmd-code">RF 72</span>
+      <span class="cmd-desc">Scan out expired, damaged, trim/fat/bone shrink (TSH password)</span>
+      <span class="cmd-star">★</span>
+    </div>
+    <div class="cmd-row">
+      <span class="cmd-code">IRCI</span>
+      <span class="cmd-desc">Check active IRCs on meat items — know before members ask</span>
+    </div>
+    <div class="cmd-row">
+      <span class="cmd-code">EDSR</span>
+      <span class="cmd-desc">Print/reprint price signs — walk the case with a printout</span>
+    </div>
+    <div class="cmd-row">
+      <span class="cmd-code">IATOP</span>
+      <span class="cmd-desc">Top-selling items in Dept 61 — run before buyer walk-throughs</span>
+    </div>
+    <div class="cmd-row">
+      <span class="cmd-code">MACR</span>
+      <span class="cmd-desc">Full Dept 61 on-hand list for period-end inventory (13×/yr)</span>
+    </div>
+    <div class="cmd-row">
+      <span class="cmd-code">DASH</span>
+      <span class="cmd-desc">Incoming meat truck schedule — PO, vendor, ETA, door</span>
+    </div>
+  </div>
+
+  <!-- ─── OPERATIONAL NOTES ─── -->
+  <div class="section-label">— Operational Notes —</div>
+
+  <div class="note-block">
+    <div class="note-row">Variable-weight items: UPCs start with "2". Scale-printer applies label. First 6 digits = item ID.</div>
+    <div class="note-row">Production yield target: 70–85% on beef sub-primals depending on grade and trim spec.</div>
+    <div class="note-row">Shrink reason codes: Out-of-date · Spoilage · Trim/Fat/Bone · Damage/Leakers · Contamination · Markdown · Internal Use · Donation · Recall/Hold.</div>
+    <div class="note-row">Receiving: each catch-weight case weighed or scanned individually. Total should equal invoice ±0.5%.</div>
+    <div class="note-row">COOL compliance: Country-of-Origin required on imported chicken, lamb, goat muscle cuts. Prints on scale label automatically.</div>
+    <div class="note-row">Days of Supply = on-hand ÷ avg daily sales. DOS > pull-date window = mark down immediately.</div>
+    <div class="note-row">13 physical inventories per year (one per 4-week fiscal period). Pre-count: print IAI opt 1 for every active SKU.</div>
+    <div class="note-row">Costco shrink target: 0.11–0.12% of sales company-wide. Track weekly with STK/DSL.</div>
+    <div class="note-row">Blade-tenderized items require "BLADE TENDERIZED" on label (USDA FSIS). Check before packaging.</div>
+    <div class="note-row">HACCP CCP: check and log cooler temps. Red zone = escalate immediately to supervisor.</div>
+  </div>
+
+  <!-- ─── KEY FACTS ─── -->
+  <div class="pill-row">
+    <span class="pill green">Dept 61</span>
+    <span class="pill">Tempe Warehouse</span>
+    <span class="pill amber">SW Region</span>
+    <span class="pill">Cooler: 28–34°F</span>
+    <span class="pill red">OOS = call manager</span>
+    <span class="pill">DOS target: ≤3 days</span>
+  </div>
+
+</div>
 </body>
 </html>
