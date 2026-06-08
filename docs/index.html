@@ -44,7 +44,7 @@
     }
     .hlogo{height:62px;width:auto;display:block}
     .wr{flex-shrink:0;text-align:right}
-    .wn{font-family:var(--font-body);font-size:14px;font-weight:800;color:#cc0000;letter-spacing:.08em;text-transform:uppercase;line-height:1}
+    .wn{font-family:var(--font-body);font-size:20px;font-weight:800;color:#fff;letter-spacing:.08em;text-transform:uppercase;line-height:1}
     .wsub{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:#005DAA;letter-spacing:1px;display:block;margin-top:4px}
 
     /* ─── MAIN ─── */
@@ -56,8 +56,6 @@
 
     /* FIELD GUIDE */
     .fg{display:flex;align-items:center;gap:14px;background:var(--sf);border:1.5px solid #6b1015;border-radius:var(--r);padding:13px 15px;text-decoration:none;color:var(--tx);flex-shrink:0;transition:transform .12s;margin:15px 0;position:relative;overflow:hidden;animation:fg-glow 3s ease-in-out infinite}
-    .fg::after{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);animation:fg-shimmer 3s ease-in-out infinite;pointer-events:none}
-    @keyframes fg-shimmer{0%{left:-80%}55%,100%{left:150%}}
     @keyframes fg-glow{0%,100%{box-shadow:0 0 18px rgba(107,16,21,.4),0 0 38px rgba(107,16,21,.18)}50%{box-shadow:0 0 30px rgba(140,16,21,.7),0 0 60px rgba(107,16,21,.3),inset 0 0 12px rgba(204,16,32,.06)}}
     .fg:active{transform:scale(.98)}
     .fg.hd{display:none}
@@ -74,14 +72,14 @@
     .sw{flex-shrink:0;padding:9px 0}
     .si{position:relative;display:flex;align-items:center}
     .si-ico{position:absolute;left:12px;color:var(--mt);font-size:14px;pointer-events:none}
-    #hs{width:100%;background:var(--sf);border:1px solid rgba(255,255,255,.42);border-radius:22px;color:var(--tx);font-family:var(--font-body);font-size:15px;padding:10px 14px 10px 36px;outline:none;-webkit-appearance:none;transition:border-color .15s}
+    #hs{width:100%;background:var(--sf);border:1px solid rgba(255,255,255,.65);border-radius:22px;color:var(--tx);font-family:var(--font-body);font-size:15px;padding:10px 14px 10px 36px;outline:none;-webkit-appearance:none;transition:border-color .15s,box-shadow .15s}
     #hs::placeholder{color:var(--mt)}
-    #hs:focus{border-color:rgba(255,255,255,.82)}
+    #hs:focus{border-color:rgba(255,255,255,.95);box-shadow:0 0 0 3px rgba(255,255,255,.07),0 0 16px rgba(255,255,255,.14)}
     .sh{display:none;font-family:var(--font-mono);font-size:10px;color:var(--mt);padding:5px 4px 0;text-align:center}
     .sh a{color:#cc1020;text-decoration:none}
 
     /* TILE GRID */
-    .gg{height:3px;flex-shrink:0}
+    .gg{height:6px;flex-shrink:0}
     .grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:68px 68px 68px;gap:10px 25px;flex-shrink:0}
 
     .tile{
@@ -141,20 +139,20 @@
       <span class="tn">Depts</span>
       <span class="td">Departments</span>
     </a>
-    <a class="tile" style="border-color:#e07b00;box-shadow:0 0 10px rgba(224,123,0,.12)" href="tools.html" data-n="tools closing production template retail cases plu cut specs">
-      <span class="ti">🔧</span>
-      <span class="tn">Tools</span>
-      <span class="td">Closing · Production</span>
-    </a>
     <a class="tile" style="border-color:#b8860b;box-shadow:0 0 10px rgba(184,134,11,.12)" href="docs-page.html" data-n="docs files manuals reference blue book supervisor operations">
       <span class="ti">📁</span>
       <span class="tn">Docs</span>
       <span class="td">Reference · Blue Book</span>
     </a>
-    <a class="tile tile-wide" style="border-color:#8850c8;box-shadow:0 0 10px rgba(136,80,200,.12)" href="career.html" data-n="career goals schedule advancement sit supervisor ukg shifts">
+    <a class="tile" style="border-color:#8850c8;box-shadow:0 0 10px rgba(136,80,200,.12)" href="career.html" data-n="career goals schedule advancement sit supervisor ukg shifts">
       <span class="ti">🎯</span>
       <span class="tn">Career</span>
       <span class="td">Goals · Schedule · Advancement</span>
+    </a>
+    <a class="tile tile-wide" style="border-color:#e07b00;box-shadow:0 0 10px rgba(224,123,0,.12)" href="tools.html" data-n="tools closing production template retail cases plu cut specs">
+      <span class="ti">🔧</span>
+      <span class="tn">Tools</span>
+      <span class="td">Closing · Production</span>
     </a>
   </div>
 </div>
