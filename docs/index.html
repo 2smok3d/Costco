@@ -48,10 +48,17 @@
     .wsub{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:#005DAA;letter-spacing:1px;display:block;margin-top:4px}
 
     /* ─── MAIN ─── */
-    #main{flex:1;display:flex;flex-direction:column;padding:10px 100px 8px;min-height:0;overflow:hidden}
+    #main{flex:1;display:flex;flex-direction:column;padding:10px 50px 8px;min-height:0;overflow:hidden}
+    @media(min-width:480px){
+      #main{padding:10px 100px 8px}
+      .grid{gap:10px 50px !important}
+    }
 
     /* FIELD GUIDE */
-    .fg{display:flex;align-items:center;gap:14px;background:var(--sf);border:1.5px solid #6b1015;border-radius:var(--r);padding:13px 15px;text-decoration:none;color:var(--tx);flex-shrink:0;transition:transform .12s;box-shadow:0 0 18px rgba(107,16,21,.25);margin:15px 0}
+    .fg{display:flex;align-items:center;gap:14px;background:var(--sf);border:1.5px solid #6b1015;border-radius:var(--r);padding:13px 15px;text-decoration:none;color:var(--tx);flex-shrink:0;transition:transform .12s;margin:15px 0;position:relative;overflow:hidden;animation:fg-glow 3s ease-in-out infinite}
+    .fg::after{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);animation:fg-shimmer 3s ease-in-out infinite;pointer-events:none}
+    @keyframes fg-shimmer{0%{left:-80%}55%,100%{left:150%}}
+    @keyframes fg-glow{0%,100%{box-shadow:0 0 18px rgba(107,16,21,.4),0 0 38px rgba(107,16,21,.18)}50%{box-shadow:0 0 30px rgba(140,16,21,.7),0 0 60px rgba(107,16,21,.3),inset 0 0 12px rgba(204,16,32,.06)}}
     .fg:active{transform:scale(.98)}
     .fg.hd{display:none}
     .fg-ico{font-size:26px;flex-shrink:0}
@@ -75,7 +82,7 @@
 
     /* TILE GRID */
     .gg{height:3px;flex-shrink:0}
-    .grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:68px 68px 68px;gap:10px 50px;flex-shrink:0}
+    .grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:68px 68px 68px;gap:10px 25px;flex-shrink:0}
 
     .tile{
       background:var(--sf);border:1.5px solid var(--bd);border-radius:var(--r);
