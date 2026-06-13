@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#cc1020">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Costco%20Field%20Guide%22,%22short_name%22:%22Field%20Guide%22,%22description%22:%22Costco%20meat%20dept%20PLU%2C%20AS400%20commands%2C%20and%20blue%20book%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230d0f14%22,%22theme_color%22:%22%23cc1020%22,%22orientation%22:%22portrait%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%3E%3Crect%20width%3D'512'%20height%3D'512'%20rx%3D'80'%20fill%3D'%23cc1020'%2F%3E%3Ctext%20x%3D'256'%20y%3D'340'%20text-anchor%3D'middle'%20font-family%3D'serif'%20font-style%3D'italic'%20font-weight%3D'700'%20font-size%3D'260'%20fill%3D'%23ffd700'%3EFG%3C%2Ftext%3E%3C%2Fsvg%3E%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%20maskable%22}]}">
+<title>Costco Field Guide v1.3</title>
+<style>
+:root{
+  --red:#cc1020;--red2:#e8192c;--blue:#005dab;
+  --bg:#0a0a0a;--surface:#111111;--surface2:#1e2330;
+  --border:#2a3044;--text:#eaecf2;--muted:#7a8499;
+  --accent:#3b82f6;--good:#22c55e;--warn:#f59e0b;
+  --gold:#d4af37;--gold2:#f5d76e;
+  --radius:10px;--nav-h:58px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);overscroll-behavior:none}
+body{font-family:'Barlow',sans-serif;color:var(--text);font-size:15px;line-height:1.5}
+
+/* APP SHELL */
+#app{display:flex;flex-direction:column;height:100dvh;width:100%;max-width:640px;margin:0 auto;overflow:hidden;will-change:height}
+
+/* HEADER */
+#header{flex-shrink:0;background:#0a0a0a;border-bottom:2px solid #222;padding:0;position:relative;z-index:200;-webkit-transform:translateZ(0)}
+
+/* BRAND BAR */
+#header-brand{display:flex;align-items:center;gap:12px;padding:10px 14px 9px}
+#back-hub{display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid #333;border-radius:4px;color:#888;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;padding:5px 9px;text-decoration:none;white-space:nowrap;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+#back-hub:active{background:rgba(255,255,255,.05)}
+.brand-badge{background:rgba(68,4,4,.9);border:1px solid rgba(255,255,255,.18);border-radius:7px;padding:4px 9px;text-align:center;flex-shrink:0;line-height:1.2}
+.badge-line1{font-size:14px;font-weight:900;color:#fff;letter-spacing:.08em}
+.badge-line2{font-size:8px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.18em;text-transform:uppercase;margin-top:1px}
+.brand-wordmark{flex:1;overflow:hidden;min-width:0}
+.brand-version{align-self:flex-start;padding-top:4px;font-size:10px;font-weight:700;color:rgba(255,255,255,.38);letter-spacing:.06em;flex-shrink:0}
+
+/* SEARCH */
+#search-wrap{position:relative;margin:0 12px 8px;z-index:10}
+#search-input{width:100%;background:rgba(0,0,0,.4);border:1.5px solid rgba(255,255,255,.25);border-radius:10px;color:#fff;font-size:16px;padding:10px 38px 10px 40px;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .15s,background .15s;touch-action:manipulation;position:relative;z-index:10;cursor:text}
+#search-input:focus{border-color:rgba(255,255,255,.7);background:rgba(0,0,0,.55)}
+#search-input::placeholder{color:rgba(255,255,255,.45)}
+#search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:rgba(255,255,255,.5);pointer-events:none}
+#clear-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.2);border:none;color:#fff;width:22px;height:22px;border-radius:50%;font-size:12px;cursor:pointer;display:none;align-items:center;justify-content:center}
+
+/* SUBBAR */
+#subbar{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;border-top:1px solid rgba(255,255,255,.15)}
+#subbar::-webkit-scrollbar{display:none}
+.sb-btn{flex-shrink:0;padding:9px 14px;background:none;border:none;border-bottom:2.5px solid transparent;color:rgba(255,255,255,.65);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;touch-action:manipulation;transition:all .12s}
+.sb-btn.active{color:#fff;border-bottom-color:#fff}
+.sb-btn:active{background:rgba(255,255,255,.1)}
+
+/* CONTENT */
+#content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;isolation:isolate}
+
+/* BOTTOM NAV */
+#tab-bar{flex-shrink:0;display:flex;background:var(--surface);border-top:1px solid var(--border);z-index:200;-webkit-transform:translateZ(0)}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:7px 4px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;min-height:var(--nav-h);touch-action:manipulation;transition:color .12s}
+.tab-btn svg{width:22px;height:22px;stroke-width:1.8;opacity:.6;transition:opacity .12s}
+.tab-btn.active{color:var(--red2)}
+.tab-btn.active svg{opacity:1}
+.tab-btn:active{background:rgba(255,255,255,.04)}
+
+/* TAB PAGES */
+.tab-page{display:none}
+.tab-page.active{display:block;animation:fadein .1s ease}
+@keyframes fadein{from{opacity:.4}to{opacity:1}}
+
+/* SEARCH RESULTS */
+#search-results{padding:8px 12px 80px}
+.rg-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 7px}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-bottom:7px;cursor:pointer;touch-action:manipulation}
+.result-card:active{background:var(--surface2)}
+.r-plu{font-size:28px;font-weight:800;color:var(--red2);letter-spacing:.02em;line-height:1.1}
+.r-name{font-size:15px;font-weight:600;color:var(--text);margin-top:2px}
+.r-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.r-cmd{display:inline-block;background:var(--red);color:#fff;border-radius:5px;font-size:12px;font-weight:700;padding:2px 8px;margin-right:6px;letter-spacing:.04em;font-family:monospace}
+.r-desc{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.4}
+mark{background:rgba(255,210,0,.4);color:#fff;border-radius:2px;padding:0 1px}
+.no-results{text-align:center;padding:52px 20px;color:var(--muted)}
+
+/* PLU */
+#plu-page{padding:0}
+.plu-section{display:none;padding-bottom:80px}
+.plu-section.active{display:block}
+.ov-choice{background:rgba(204,16,32,.07)}
+.ov-prime{background:rgba(212,175,55,.07)}
+.ov-wagyu{background:rgba(217,119,6,.07)}
+.ov-pork{background:rgba(255,100,120,.07)}
+.ov-poultry{background:rgba(234,179,8,.07)}
+.ov-grinds{background:rgba(180,80,20,.07)}
+.ov-seafood{background:rgba(59,130,246,.08)}
+.plu-group{margin-bottom:20px;padding:0 12px}
+.plu-group:first-child{padding-top:10px}
+.plu-group-title{font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text);margin-bottom:8px;padding:8px 0 7px;border-bottom:2px solid var(--red);position:sticky;top:0;background:var(--bg);z-index:10}
+.plu-protein-hdr{font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text);margin:18px 12px 8px;padding:8px 0 7px;border-bottom:2px solid var(--red);position:sticky;top:0;background:var(--bg);z-index:10}
+.plu-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 13px;gap:10px;margin-bottom:5px;cursor:pointer;touch-action:manipulation;min-height:48px}
+.plu-row:active{background:var(--surface2)}
+.plu-name{font-size:14px;color:var(--text);flex:1;line-height:1.3}
+.plu-num{font-size:26px;font-weight:800;color:var(--red2);letter-spacing:.02em;flex-shrink:0;min-width:56px;text-align:right;font-variant-numeric:tabular-nums}
+/* Shelf life card */
+.shelf-toggle{margin:10px 12px 8px}
+.shelf-sum{list-style:none;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 13px;display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;touch-action:manipulation}
+.shelf-sum::-webkit-details-marker{display:none}
+details.shelf-toggle[open] .shelf-sum{border-radius:var(--radius) var(--radius) 0 0;border-bottom-color:transparent}
+.shelf-chev{width:16px;height:16px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+details.shelf-toggle[open] .shelf-chev{transform:rotate(180deg)}
+.shelf-body{background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:8px 13px 12px}
+.shelf-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.shelf-row:last-child{border:none}
+.shelf-item{color:var(--text);flex:1}
+.shelf-days{font-size:16px;font-weight:800;color:var(--red2);flex-shrink:0;min-width:36px;text-align:right}
+
+/* AS400 */
+#as400-page{padding:8px 12px 80px}
+.as400-group{display:none}
+.as400-group.visible{display:block}
+.cat-label{font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text);margin:14px 0 8px;padding:8px 0 7px;border-bottom:2px solid var(--red);position:sticky;top:0;background:var(--bg);z-index:10}
+.cat-label:first-child{margin-top:0}
+details.cmd-detail{background:#111;border:1px solid #1e1e1e;border-left:4px solid #1a6bb5;border-radius:8px;margin-bottom:7px;overflow:hidden}
+details.cmd-detail summary{padding:12px 14px;cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#fff}
+details.cmd-detail summary::-webkit-details-marker{display:none}
+.cmd-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;display:flex;flex-direction:column;gap:4px}
+details.cmd-detail[open] .cmd-summary{border-radius:var(--radius) var(--radius) 0 0;border-bottom-color:transparent}
+.cmd-summary:active{background:var(--surface2)}
+.cmd-top{display:flex;align-items:flex-start;gap:8px}
+.cmd-badge{background:var(--red);color:#fff;border-radius:5px;font-size:12px;font-weight:800;padding:2px 7px;flex-shrink:0;letter-spacing:.04em;font-family:monospace;white-space:nowrap;margin-top:1px}
+.cmd-name{font-size:14px;font-weight:600;color:var(--text);line-height:1.3;flex:1}
+.cmd-chevron{flex-shrink:0;width:16px;height:16px;color:var(--muted);transition:transform .2s;margin-top:2px}
+details.cmd-detail[open] .cmd-chevron{transform:rotate(180deg)}
+.cmd-desc{font-size:12.5px;color:var(--muted);line-height:1.45}
+.cmd-body{background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:10px 13px 12px;font-size:12.5px;color:#9ba8bf;line-height:1.55}
+.cmd-body b{color:var(--text)}
+.cmd-body code{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:11.5px;font-family:monospace;color:#7dd3fc}
+.cmd-tip{margin-top:7px;padding:6px 10px;background:rgba(245,158,11,.08);border-left:2.5px solid var(--warn);border-radius:0 5px 5px 0;font-size:12px;color:#d4a843}
+.rf-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:4px}
+.rf-table th{text-align:left;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;border-bottom:1px solid var(--border)}
+.rf-table td{padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+.rf-table tr:last-child td{border:none}
+.rf-table td:first-child{font-family:monospace;font-weight:800;color:var(--red2);width:42px;font-size:14px}
+.rf-table td:nth-child(2){color:var(--text);font-weight:600;width:38%}
+.rf-table td:last-child{color:var(--muted)}
+
+/* BLUE BOOK */
+#bluebook-page{padding:0 12px 80px}
+.bb-section{display:none;padding-top:10px}
+.bb-section.visible{display:block}
+.bb-section-title{font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text);margin:14px 0 8px;padding:8px 0 7px;border-bottom:2px solid var(--red);position:sticky;top:0;background:var(--bg);z-index:10}
+.bb-section-title:first-child{margin-top:0}
+details.bb-detail{margin-bottom:7px}
+details.bb-detail summary{list-style:none;cursor:pointer;touch-action:manipulation}
+details.bb-detail summary::-webkit-details-marker{display:none}
+.bb-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600;color:var(--text)}
+details.bb-detail[open] .bb-summary{border-radius:var(--radius) var(--radius) 0 0;border-bottom-color:transparent}
+.bb-summary:active{background:var(--surface2)}
+.bb-chevron{width:16px;height:16px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+details.bb-detail[open] .bb-chevron{transform:rotate(180deg)}
+.bb-body{background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:10px 14px 13px;font-size:13px;color:#9ba8bf;line-height:1.6}
+.bb-body b{color:var(--text)}
+.kc{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:12px;color:var(--text);white-space:nowrap}
+.info-table{width:100%;border-collapse:collapse;margin-top:4px;font-size:12.5px}
+.info-table td{padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+.info-table td:first-child{color:var(--muted);font-weight:600;white-space:nowrap;width:45%}
+.info-table td:last-child{color:var(--text)}
+.info-table tr:last-child td{border:none}
+.phone-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.phone-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 11px}
+.phone-label{font-size:10px;color:var(--muted);margin-bottom:2px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.phone-num{font-size:14px;font-weight:700;color:var(--accent)}
+.phone-num a{color:inherit;text-decoration:none}
+.reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.reg-row{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:7px 10px;display:flex;justify-content:space-between;align-items:center}
+.reg-name{font-size:12px;color:var(--muted)}
+.reg-range{font-size:14px;font-weight:700;color:var(--text)}
+.dept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.dept-card{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:7px 9px}
+.dept-num{font-size:18px;font-weight:800;color:var(--red2)}
+.dept-name{font-size:11px;color:var(--muted);line-height:1.3;margin-top:1px}
+
+/* TOAST */
+#toast{position:fixed;bottom:calc(var(--nav-h) + 10px);left:50%;transform:translateX(-50%) translateY(6px);background:#22c55e;color:#fff;border-radius:20px;padding:8px 18px;font-size:13px;font-weight:600;opacity:0;transition:opacity .18s,transform .18s;pointer-events:none;z-index:999;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* PWA INSTALL BANNER */
+#install-banner{position:fixed;bottom:calc(var(--nav-h) + 10px);left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;z-index:1000;box-shadow:0 4px 24px rgba(0,0,0,.5);max-width:340px;width:calc(100% - 24px);animation:slideup .25s ease}
+@keyframes slideup{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+#install-banner{display:none!important}
+.ib-icon{width:40px;height:40px;background:var(--red);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px}
+.ib-text{flex:1;min-width:0}
+.ib-title{font-size:13px;font-weight:700;color:var(--text)}
+.ib-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.ib-actions{display:flex;gap:6px;flex-shrink:0}
+.ib-btn{border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer}
+.ib-install{background:var(--red);color:#fff}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+    .clogo{background:#8b0000;border:1px solid rgba(255,255,255,.18);border-radius:5px;padding:4px 8px;text-align:center;flex-shrink:0;line-height:1.2}
+    .cl1{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff;letter-spacing:.08em}
+    .cl2{font-size:7px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
+  
+    /* PLU species colors */
+    .plu-row.c-beef{border-left:3px solid #8b2020}
+    .plu-row.c-pork{border-left:3px solid #c05878}
+    .plu-row.c-poultry{border-left:3px solid #c9a000}
+    .plu-row.c-turkey{border-left:3px solid #8a6800}
+    .plu-row.c-lamb{border-left:3px solid #8a5a35}
+    .plu-row.c-seafood{border-left:3px solid #1a6bb5}
+    .plu-row.c-grinds{border-left:3px solid #5a5a5a}
+    .plu-group-beef .plu-group-title{color:#c04040}
+    .plu-group-pork .plu-group-title{color:#c05878}
+    .plu-group-poultry .plu-group-title{color:#c9a000}
+    .plu-group-turkey .plu-group-title{color:#8a6800}
+    .plu-group-lamb .plu-group-title{color:#a0784a}
+    .plu-group-seafood .plu-group-title{color:#4a90d9}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header id="header">
+  <div id="header-brand">
+    <a id="back-hub" href="index.html">← Hub</a>
+    <div class="brand-badge">
+      <div class="badge-line1">COSTCO</div>
+      <div class="badge-line2">WHOLESALE</div>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:#fff;line-height:1">Field Guide</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.55);letter-spacing:1.5px;margin-top:2px">PLUs · COMMANDS · PROCEDURES</div>
+    </div>
+  </div>
+  <div id="search-wrap">
+    <svg id="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="search-input" type="search" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search PLU, command, policy…">
+    <button id="clear-btn" aria-label="Clear" onclick="clearSearch()">✕</button>
+  </div>
+  <div id="subbar"></div>
+</header>
+
+<div id="content">
+  <div id="search-results" class="tab-page" style="display:none"><div id="result-inner"></div></div>
+  <div id="plu-page" class="tab-page active"><div id="plu-sections"></div></div>
+  <div id="as400-page" class="tab-page"><div id="as400-inner"></div></div>
+  <div id="bluebook-page" class="tab-page"><div id="bluebook-inner"></div></div>
+</div>
+
+<nav id="tab-bar">
+  <button class="tab-btn active" data-tab="plu-page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>PLU
+  </button>
+  <button class="tab-btn" data-tab="as400-page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>AS400
+  </button>
+  <button class="tab-btn" data-tab="bluebook-page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Blue Book
+  </button>
+</nav>
+<div id="toast"></div>
+<div id="install-banner" class="hidden">
+  <div class="ib-icon">🥩</div>
+  <div class="ib-text">
+    <div class="ib-title">Hide the address bar</div>
+    <div class="ib-sub" id="ib-sub-text">Tap Install to run full-screen</div>
+  </div>
+  <div class="ib-actions">
+    <button class="ib-btn ib-install" id="ib-install-btn">Install</button>
+    <button class="ib-btn ib-dismiss" id="ib-dismiss-btn">✕</button>
+  </div>
+</div>
+</div>
+
+<script>
+'use strict';
+
+// ── PLU DATA ──────────────────────────────────────────────────────────────────
+const PLU = {
+  'beef-choice':{label:'Choice',groups:[
+    {title:'Top Sirloin',items:[['Beef Top Sirloin Cap Off',542],['Beef Top Sirloin Cap Off Cryo',1509],['Beef Top Sirloin Cap Steak (Coulotte)',1514],['Beef Top Sirloin Cap Cryo',1519],['Beef Top Sirloin 2pc Case',1540]]},
+    {title:'New York',items:[['Beef New York Steak',2],['Beef New York Cryo',71],['Beef New York Case',410],['Beef Center Cut NY',1025],['Beef Center Cut NY Cryo',1026],['Beef Center Cut NY Case',1027]]},
+    {title:'Porterhouse / T-Bone',items:[['Beef Porterhouse Steak',1036],['Beef Porterhouse Case',1037],['Beef T-Bone Steak',7]]},
+    {title:'Tenderloin',items:[['Beef Tenderloin Steak',1],['Beef PSMO Cryo',8],['Beef Peeled Butt Cryo',79],['Beef PSMO Case',435],['Beef Peeled Butt Case',58],['Beef Tenderloin Tail Steak',1375],['Beef Tenderloin Tail Cryo',1376],['Beef Tenderloin Tail Case',1377],['Beef Tenderloin Extreme SMO',299],['Beef Tenderloin Extreme SMO Case',448]]},
+    {title:'Ribeye / Bone-In Rib',items:[['Beef Ribeye Steak',5],['Beef Ribeye Roast',53],['Beef Ribeye Cryo',73],['Beef Ribeye Shabu Shabu',145],['Beef Ribeye Thin Cut',1454],['Beef Ribeye Case',406],['Beef Bone-In Rib Roast',52],['Beef Bone-In Rib Steak (GL Rib)',385],['Beef 5x6 Bone-In Rib',358],['Beef Frenched Bone-In Rib',54],['Beef Bone-In Rib Cryo',431],['Beef Bone-In Rib Case',10]]},
+    {title:'Tri Tip',items:[['Beef Tri-Tip Steak',11],['Beef Tri-Tip Roast',60],['Beef Tri-Tip Cryo',75],['Beef Tri-Tip Case',413],['Beef Untrimmed Tri-Tip',289],['Beef Untrimmed Tri-Tip Cryo',290]]},
+    {title:'Flap / Flank / Skirt',items:[['Beef Flap Meat (Loin Tip)',433],['Beef Flap Meat Cryo',432],['Beef Flap Meat Case',13],['Beef Flank Steak',1470],['Beef Flank Cryo',415],['Beef Flank Case',50],['Beef Inside Skirt Steak',4572],['Beef Inside Skirt Cryo',4],['Beef Marinated Skirt Steak',170]]},
+    {title:'Brisket',items:[['Beef Brisket Trimmed',78],['Beef Brisket Cryo',423],['Beef Brisket Flat Case',1425],['Beef Commodity Brisket',458],['Beef Commodity Brisket Cryo',457],['Beef Commodity Brisket Case',47]]},
+    {title:'Short Ribs',items:[['Beef Boneless Short Rib',1004],['Beef BSR Cryo',4000],['Beef BSR Thin Cut',1601],['Beef BSR Korean Style',426],['Beef BSR Case',17],['Beef Bone-In Short Rib',1365],['Beef Bone-In SR Cryo',20],['Beef Pre-Sliced BI SR Cryo',171],['Beef Pre-Sliced BI SR Case',172],['Beef Plate Short Ribs',866],['Beef Plate SR Cryo',867],['Beef Plate SR Case',681],['Beef Back Rib',683],['Beef Back Rib Cryo',514]]},
+    {title:'Round / Sirloin Tip / Stew',items:[['Beef London Broil',61],['Beef Top Round Roast',85],['Beef Inside Round Cryo',407],['Beef Top Round Case',57],['Beef Sirloin Tip Roast',15],['Beef Sirloin Tip Case',77],['Beef Eye of Round Roast',284],['Beef Eye of Round Cryo',436],['Beef Eye of Round Case',340],['Beef Bottom Round Roast',705],['Beef Bottom Round Thin Cut',452],['Beef Stew Meat',1420],['Beef Stew Meat Cryo',881]]},
+    {title:'Chuck',items:[['Beef Chuck Steak',51],['Beef Chuck Roast',338],['Beef Chuck Roast Cryo',417],['Beef Chuck Roast Case',59],['Beef Chuck Shoulder Clod',86],['Beef Shoulder Clod Cryo',1238]]},
+    {title:'Specialty',items:[['Beef NY Shabu Shabu',451],['Beef Picanha (Top Sirloin Cap)',4940],['Beef Flat Iron Cryo',4295],['Beef Flat Iron Tray',4287],['Beef Cube Steak',520]]},
+  ]},
+  'beef-prime':{label:'Prime',groups:[
+    {title:'Prime Tenderloin',items:[['Beef Prime Tenderloin Steak',336],['Beef Prime PSMO Cryo',343],['Beef Prime Tenderloin Case',337]]},
+    {title:'Prime New York',items:[['Beef Prime NY Steak',278],['Beef Prime NY Cryo',325],['Beef Prime NY Case',329]]},
+    {title:'Prime Ribeye',items:[['Beef Prime Ribeye Steak',333],['Beef Prime Ribeye Roast',341],['Beef Prime Ribeye Cryo',349],['Beef Prime Eye of Ribeye (2pc)',1775],['Beef Prime Ribeye Cap Steak',1779],['Beef Prime Ribeye Case',347],['Beef Prime Bone-In Rib Steak',378],['Beef Prime Bone-In Rib Roast',717],['Beef Prime Bone-In Rib Cryo',718],['Beef Prime Frenched BI Rib Steak',1660],['Beef Prime Frenched BI Rib Roast',1665],['Beef Prime Frenched BI Rib Cryo',1680]]},
+    {title:'Prime Top Sirloin',items:[['Beef Prime Top Sirloin Steak',957],['Beef Prime Top Sirloin Cryo',975],['Beef Prime Top Sirloin Case',985],['Beef Prime Top Sirloin Cap Off',1670],['Beef Prime Top Sirloin Cap Off Cryo',1675],['Beef Prime Top Sirloin Cap Off Case',1681],['Beef Prime Top Sirloin Cap Steak',1773]]},
+    {title:'Prime Tri Tip',items:[['Beef Prime Tri-Tip Steak',1270],['Beef Prime Tri-Tip Roast',1271],['Beef Prime Tri-Tip Cryo',1272],['Beef Prime Tri-Tip Case',1273]]},
+    {title:'Prime T-Bone',items:[['Beef Prime T-Bone Steak',970],['Beef Prime T-Bone Cryo',980]]},
+    {title:'Prime Brisket',items:[['Beef Prime Commodity Brisket',1535],['Beef Prime Commodity Brisket Cryo',1482],['Beef Prime Commodity Brisket Case',1487]]},
+    {title:'Prime Round / Stew',items:[['Beef Prime London Broil',219],['Beef Prime Top Round Roast',223],['Beef Prime Inside Round Cryo',224],['Beef Prime Inside Round Case',229],['Beef Prime Eye of Round Roast',243],['Beef Prime Eye of Round Cryo',244],['Beef Prime Eye of Round Case',245],['Beef Prime Stew Meat',1194]]},
+    {title:'Prime Chuck / Short Ribs',items:[['Beef Prime Chuck Roast',1637],['Beef Prime Chuck Steaks',1642],['Beef Prime Chuck Cryo',1647],['Beef Prime Chuck Roll Steak',1190],['Beef Prime Chuck Roll Roast',2765],['Beef Prime Chuck Roll Cryo',2755],['Beef Prime Chuck Roll Case',1193],['Beef Prime Boneless Short Rib',1336],['Beef Prime BSR Cryo',1337],['Beef Prime Bone-In Chuck Short Rib',193],['Beef Prime Bone-In Chuck SR Cryo',202]]},
+    {title:'Prime Specialty',items:[['Beef Prime Extreme Tender SMO',311],['Beef Prime Extreme Tender SMO Case',728],['Beef Prime Ox Tail',82],['Beef Prime Tongue',1274]]},
+  ]},
+  'beef-wagyu':{label:'Wagyu',groups:[
+    {title:'Classic Wagyu — Steaks',items:[['Ribeye Steak',1099],['Ribeye Cap Steak',1102],['Ribeye Cryo',1100],['Ribeye Case',1101],['NY Striploin Steak',1089],['NY Striploin Cryo',1090],['NY Striploin Case',1091],['Tenderloin Steak',1164],['Tenderloin Cryo',1165],['Tenderloin Case',1167],['Top Sirloin Steak',1092],['Top Sirloin Cap',1107],['Top Sirloin Cryo',1093],['Top Sirloin Case',4565]]},
+    {title:'Classic Wagyu — Ribs / Roasts',items:[['Tri Tip Steak',1094],['Tri Tip Roast',1095],['Tri Tip Cryo',9144],['Tri Tip Case',1096],['Brisket Steak',836],['Brisket Cryo',1097],['Brisket Case',1098],['Bone In SR Steak',846],['Bone In SR Cryo',883],['Bone In SR Case',887],['Boneless Short Rib',848],['BSR Cryo',885],['BSR Case',889],['Back Rib Steak',871],['Back Rib Cryo',872],['Back Rib Case',873],['Plate Short Ribs',976],['Plate SR Cryo',977],['Plate SR Case',978]]},
+    {title:'Classic Wagyu — Chuck / Specialty',items:[['Chuck Flap Steak',847],['Chuck Flap Cryo',884],['Chuck Flap Case',888],['Chuck Roll Steak',849],['Chuck Roll Roast',855],['Chuck Roll Cryo',886],['Chuck Roll Case',890],['Clod Heart Steak',982],['Clod Heart Roast',979],['Clod Heart Cryo',980],['Clod Heart Case',981],['Teres Major Steak',868],['Teres Major Cryo',869],['Peeled Eye Steak',948],['Peeled Eye Cryo',949],['Peeled Eye Case',950],['Flank Steak',841],['Flank Cryo',842],['Flank Case',843],['Inside Skirt Steak',1234],['Flat Iron Cryo',424],['Flat Iron Case',444],['Outside Skirt Cryo',420],['Outside Skirt Case',440]]},
+    {title:'A5 Wagyu (Japan)',items:[['A5 Ribeye Steak',9620],['A5 Ribeye Cryo',9643],['A5 NY Strip Steak',9673],['A5 NY Strip Cryo',9679]]},
+  ]},
+  pork:{label:'Pork',groups:[
+    {title:'Chops / Loin',items:[['Boneless Pork Chop',217],['Boneless Pork Chop Thin',1362],['Boneless Pork Loin Cryo',810],['Boneless Pork Loin Case',401],['Boneless Sirloin Chop',44],['Boneless Sirloin Cryo',616],['Boneless Sirloin Case',65],['Pork Loin Rib & Loin Chops',102],['Pork Loin Chops Thin',292],['Pork Loin Chops Thick',2884],['Pork Loin Bone In Case',416],['Marinated Pork Loin Boneless',2615],['Marinated Pork Loin Case',2616]]},
+    {title:'Roasts / Butt',items:[['Boneless Pork Roast',216],['Boneless Pork Butt Cryo',809],['Boneless Shoulder Butt Case',404],['Bone In Pork Butt Cryo',1810],['Bone In Pork Butt Case',951],['Pork Tenderloins',203],['Pork Tenderloins Case',419],['Sirloin Tip Roast',3010],['Sirloin Tip Roast Case',174],['Rack of Pork',3169],['Rack of Pork Case',599],['Cushion Meat Cryo',454],['Cushion Meat Case',400]]},
+    {title:'Ribs',items:[['Pork Back Ribs',680],['Pork Back Ribs Cryo',208],['Pork Back Ribs Case',403],['Pork St. Louis Spare Ribs',682],['Pork St. Louis Ribs Cryo',1034],['Pork St. Louis Ribs Portions',693],['Pork St. Louis Ribs Sliced',238],['Pork St. Louis Ribs Case',405]]},
+    {title:'Specialty',items:[['Pork Stew Meat',150],['Pork Shoulder Blade Steak',212],['Shoulder Country Style Ribs',211],['Boneless Loin Country Style Ribs',204],['Pork Belly',1615],['Pork Belly Cryo',1613],['Pork Belly Case',1614],['Skin On Belly Cut',1354],['Skin On Belly Shabu Shabu',16242],['Skin On Belly Cryo',1355],['Skin On Belly Case',1356]]},
+  ]},
+  poultry:{label:'Poultry',groups:[
+    {title:'Foster Farms',items:[['Foster Farms B/S Breast',861],['Foster Farms Thighs',864],['Foster Farms Drumsticks',863],['Foster Farms B/S Thighs',862],['Foster Farms Party Wings',7233],['Foster Farms Whole Fryers',7234],['Foster Farms Tenderloins',7237],['Foster Farms Turkey Toms',113],['Foster Farms Turkey Hens',114]]},
+    {title:'Lincoln Premium Poultry (LPP)',items:[['LPP Air Chilled Party Wings',4725],['LPP Tenderloins',4729],['LPP B/S Thighs',4731],['LPP Whole Fryers',4734],['LPP B/S Breasts',4735],['LPP Thighs',4737],['LPP Drumsticks',4739]]},
+    {title:'Pilgrims (KS)',items:[['Pilgrims B/S Breasts',519],['Pilgrims Thighs',1522],['Pilgrims Drumsticks',529],['Pilgrims Party Wings',32],['Pilgrims Tenderloins',147],['Pilgrims Whole Fryers',1555],['Pilgrims B/S Thighs',564]]},
+    {title:'Organic — Pilgrims',items:[['Org Pilgrims Whole Fryers',5971],['Org Pilgrims B/S Breasts',233],['Org Pilgrims Drumsticks',100],['Org Pilgrims Wings',103],['Org Pilgrims Tenderloins',106],['Org Pilgrims B/S Thighs',105]]},
+    {title:'Organic — Pitman Farms',items:[['Org Pitman Whole Fryers',386],['Org Pitman B/S Breasts',280],['Org Pitman Drumsticks',187],['Org Pitman Wings',188],['Org Pitman Turkey Toms',190],['Org Pitman Turkey Hens',189],['Org Pitman Grnd Turkey',192]]},
+    {title:'Kosher — Empire',items:[['Empire Kosher Whole Fryers',777],['Empire Kosher B/S Breasts',781],['Empire Kosher Drumsticks',877],['Empire Kosher Leg Quarters',1177],['Empire Kosher Thighs',558],['Empire Kosher Turkey Tenders',876],['Empire Kosher Ground Turkey',531]]},
+  ]},
+  grinds:{label:'Grinds',groups:[
+    {title:'Ground Beef',items:[['Ground Beef 88/12',90],['Ground Beef — Patties',93],['Ground Beef — 10 lb Chubs',157],['Bull Meat',7653]]},
+    {title:'Ground Pork',items:[['Ground Pork',300]]},
+  ]},
+  seafood:{label:'Seafood',groups:[
+    {title:'Salmon — Farmed Fresh',items:[['Salmon Fillet (Norway, ABF)',2100],['Salmon Fillet (Chile, ABF)',382],['Salmon Fillet (Faroe Islands)',1391],['Salmon Fillet (Scotland)',708],['Salmon Portion (Norway, ABF)',747]]},
+    {title:'Salmon — Wild',items:[['Wild Sockeye Fillet',186],['Wild Copper River Sockeye',913],['Wild King Salmon Fillet',129],['Wild Coho Fillet',390],['Wild Keta Salmon',946]]},
+    {title:'Fresh Fish',items:[['Pacific Halibut',256],['Atlantic Halibut',257],['Mahi Mahi',1002],['Ahi Tuna',64],['Opah',838],['Rockfish',645],['Black Cod',393],['Tilapia',175],['Barramundi',508],['Catfish',502],['Snapper',591],['Corvina',749],['Haddock',710],['Pacific Cod',562],['Sea Bass / Branzino',563],['Salmon Steak (Farmed)',84],['Salmon Steak (Wild Coho)',265],['Salmon Steak (Sockeye)',355]]},
+    {title:'Whole Fish',items:[['Whole Atlantic Salmon (Farmed)',551],['Whole Sockeye (Wild)',168],['Whole Coho (Farmed)',163],['Whole Tilapia',354],['Whole Snapper',23],['Whole Branzino',560],['Whole Trout',122]]},
+    {title:'Shellfish — Fresh',items:[['Dungeness Crab (Cooked)',728],['Dungeness Crab Meat',254],['Dungeness Crab Clusters',704],['Live Mussels',582],['Live Clams (Manila)',285],['Live Littleneck Clams',266],['Live Oysters',987],['Kumamoto Oysters',450],['Scallops U-20',561],['Spot Prawns',904]]},
+    {title:'Shellfish — Frozen',items:[['Red King Crab (4-7ct)',456],['Red King Crab (6-9ct)',459],['Red King Crab (9-12ct)',475],['Snow Crab Legs',227],['Snow Crab Cocktail Claws',477],['Golden King Crab',218],['Argentinian King Crab',627],['Cold Water Lobster Tails 5lb',293],['Cold Water Lobster Tails 10lb',684],['Whole Cooked Lobster',1156],['Black Tiger Shrimp U-8',373],['White Shrimp U-15',688],['Sea Scallops U-10',481],['Sea Scallops U-16',634]]},
+    {title:'Frozen Fish',items:[['Chilean Sea Bass',765],['Swordfish',914],['Wild Sockeye Fillet (frozen)',770],['Wild Pacific Cod Loins',1693]]},
+  ]},
+  logs:{label:'Logs',groups:[
+    {title:'Admin / Tracking PLUs',items:[['Beef Trim',903],['COOL Log',999]]},
+  ]},
+};
+
+// ── AS400 COMMANDS ────────────────────────────────────────────────────────────
+const CMDS = [
+  {cmd:'IAI',name:'Item Alpha Inquiry',cat:'item',desc:'Search any item by keyword. #1 starting point for all item questions.',steps:'Enter keyword in Description → <code>Field Enter</code><br>Drill: <b>8=ITMW</b> (detail) · <b>6=Print Sign</b> · <b>4=RHI</b> (recv history) · <b>3=IIL</b> (region sales)<br>Location Group: *NW · *CN · *STUT'},
+  {cmd:'ITMW',name:'Item Inquiry for Warehouse',cat:'item',desc:'Full detail — on-hand, price, on order, arrival date, today\'s real-time sales.',steps:'Enter item# → view all detail<br><b>F9</b>=rebates · <b>F14</b>=taxes · <b>F21</b>=print sign · <b>F22</b>=EBT/fees'},
+  {cmd:'IXI',name:'Item/UPC Cross Reference',cat:'item',desc:'Match item# to all UPCs. Use when item won\'t scan at register.',steps:'Enter item# → list of all UPCs<br>UPC found → run Item Download via EPC to push fix',tip:'UPC not listed = not set up. Contact EDP.'},
+  {cmd:'IRCI',name:'Instant Rebate Coupon Inquiry',cat:'item',desc:'View active/expired/future IRC coupons. Find coupon# for adjustments.',steps:'Set X next to Active / Expired / Future<br>Expired: enter start date · Future: enter both dates<br>Shows: coupon#, amount, qty limit, start/end dates',tip:'At register: drop last digit OR precede coupon# with </>'},
+  {cmd:'IGM',name:'Item Group Maintenance',cat:'item',desc:'Create/manage item groups for batch reporting in ISI and COMP.',steps:'Enter whse# + group name → add item#s → F23 to delete group'},
+  {cmd:'ISI',name:'Item Sales Inquiry',cat:'item',desc:'Sales for individual items or IGM groups.',steps:'Enter item#s directly or enter a group name from IGM'},
+  {cmd:'IOH',name:'Inventory On Hand',cat:'item',desc:'Current on-hand, future arrivals, daily sales snapshot.',steps:'Enter item# → view snapshot'},
+  {cmd:'RHI',name:'Receiving History Inquiry',cat:'item',desc:'See when a specific item was last received.',steps:'Enter whse# + item# → receiving dates list'},
+  {cmd:'WII',name:'Warehouse Item Sales Inquiry',cat:'trans',desc:'Member purchase history including refunds and dept rings.',steps:'Enter <b>Member#</b> + Dept# or Item# (both required) + date range<br>Refunds = <b>negative</b> in Ext Sell Price<br><b>F11=Fold</b> adds descriptions · <b>F21</b>=print<br>White items = had IRC at purchase → Enter for coupon detail',tip:'Same-day transactions → use the EDP controller'},
+  {cmd:'SAST',name:'Sales Audit',cat:'trans',desc:'Find register transactions by date range, type, or tender.',steps:'Set filters → Enter → TAB to transaction → Field Enter to drill in<br>Items grouped by dept/item# (NOT scan order)',tip:'For exact scan sequence → EDP controller'},
+  {cmd:'RLG',name:'Member Refund Log',cat:'trans',desc:'View refund transactions. Defaults to home whse, yesterday.',steps:'Set whse + date → Enter · Key X next to operator# for full detail<br>Y=dept ring · *=dept ring converted to inline item'},
+  {cmd:'EOI',name:'Ecommerce Order Inquiry',cat:'trans',desc:'Research Costco.com orders / check in online pickups.',steps:'Search by Order# (9-10 digits) or Membership#<br>Key <b>5 or X</b> next to item for price, S&H, tax, coupon detail',tip:'On Ecom, coupons = tender (shown in item detail, not separate line)'},
+  {cmd:'CNI',name:'Canada Ecommerce Inquiry',cat:'trans',desc:'Same as EOI for Costco.ca orders.',steps:'Same workflow as EOI'},
+  {cmd:'BDOI',name:'Business Delivery Order Inquiry',cat:'trans',desc:'Research business delivery orders.',steps:'Search by order# or membership# · 5 or X to drill<br><b>F14</b>=payment method · <b>F19</b>=refunds'},
+  {cmd:'KOM',name:'Kiosk Order Maintenance',cat:'trans',desc:'Dept 44 (Special Events) — mainly for refunds when vendor picks up merch.',steps:'Search by order#, membership#, phone#, item#, or whse#'},
+  {cmd:'TAXI',name:'Sales Tax Inquiry',cat:'trans',desc:'Member\'s total sales tax paid last calendar year.',steps:'Enter member# + year → annual tax total displayed'},
+  {cmd:'EDMP',name:'Print Daily Maintenance',cat:'merch',desc:'Print ALL price-change signs for the day. Run EVERY morning AFTER 3am.',steps:'After 3am · filter by on-hand or price changes · Print=Y, size M · F21<br>Auto-sends to sign printer 1',tip:'Signs MUST be printed and hung before opening every day'},
+  {cmd:'EDSR',name:'Electronic Data Sign Request',cat:'merch',desc:'Quick sign print when item# known, no manual changes needed.',steps:'Select size (M or L) → enter up to 45 item#s or UPCs → F21<br>Printer 1=main sign · Printer 2=mobile sign printer'},
+  {cmd:'EDSM',name:'Custom Sign Maintenance',cat:'merch',desc:'Manually customize a sign — Last One Display, price correction, same-day change.',steps:'Enter item#, size, qty → edit fields → <b>F3 to exit</b> (prints on exit)<br>Blank item# = blank free-form sign',tip:'Changed sell price? Per-oz/bottle unit price does NOT auto-update — recalculate manually'},
+  {cmd:'EPC',name:'Emergency Price Change',cat:'merch',desc:'Mark down or correct item price for the day. Also: item downloads and blocks.',steps:'Enter EPC → ID + password → <b>F6</b> to add EPC → item#, new price, reason → Enter<br><b>Copy from prev day:</b> change date → key 3 next to EPC<br><b>Item Download:</b> F15 → fill fields → F8<br><b>Block item:</b> F18 → K=key flick / P=prohibited → F6 to add · D to delete',tip:'To RESTORE original price after EPC → MUST run Item Download (F15). Another EPC won\'t reset it.'},
+  {cmd:'EPCI',name:'Price Change Inquiry',cat:'merch',desc:'View-only: EPCs, item downloads, and blocked items.',steps:'Enter item# → view all current EPCs, downloads, blocks'},
+  {cmd:'IATOP',name:'Top Items Report',cat:'merch',desc:'Top items by sales, refunds, D&D, and markdowns.',steps:'Blank Dept=all · Adjust top-N count · Add Category+Dept to narrow<br>F19/F20=compare between warehouses and regions'},
+  {cmd:'SNM',name:'Serial Number Maintenance',cat:'merch',desc:'Log all high-end watch movement — receiving, sales, refunds, RTD. Replaced Watch Log.',steps:'Enter transaction code → item#, serial#, or membership#<br>ALL watch movement must be recorded here'},
+  {cmd:'SNI',name:'Serial Number Inquiry',cat:'merch',desc:'Audit watch movement. Find discrepancies vs. on-hand inventory.',steps:'Discrepancy View = most common use'},
+  {cmd:'DASH',name:'Receiving Dashboard',cat:'merch',desc:'View and manage receiving appointments.',steps:'Any dept can use to check incoming inventory. See Receiving Manual.'},
+  {cmd:'DGM',name:'Dept Group Maintenance',cat:'merch',desc:'Configure which depts appear on hot sheet and print order.',steps:'Sequence 1=prints first · 0=removes from hot sheet'},
+  {cmd:'STK',name:'Sales Tracking Inquiry',cat:'sales',desc:'4-week unit sales + D&D by dept. PRIMARY production planning tool for Meat.',steps:'Enter fiscal year, period, week + location + dept#<br><b>F19/F20</b>=scroll weeks · <b>F21</b>=print · <b>F22</b>=export Excel',tip:'Use weekly to calibrate daily cut quantities. Compare same day across last 4 weeks.'},
+  {cmd:'IAWD',name:'Warehouse Dashboard',cat:'sales',desc:'All major warehouse metrics in one place. NOT same-day data.',steps:'00=Main · 01=Inventory · 02=Sales · 03=Front End productivity'},
+  {cmd:'DSI',name:'Daily Sales/Inventory Inquiry',cat:'sales',desc:'Dept sales and inventory by warehouse/region/company. Previous day only.',steps:'By Warehouse=all depts at one location<br>By Dept=all locations (great for benchmarking neighbors)'},
+  {cmd:'DFI',name:'Daily Flash Sales Inquiry',cat:'sales',desc:'Flash sales by warehouse. Daily/weekly/period/YTD. Previous day only.',steps:'Enter warehouse → view flash totals'},
+  {cmd:'ISO',name:'Item Sales by Operator',cat:'sales',desc:'Units sold for an item broken down by each cashier/clerk.',steps:'Enter whse# + item# + date range → per-operator breakdown'},
+  {cmd:'IAIMI',name:'Inventory Movement Summary',cat:'sales',desc:'Stock status by company/region/warehouse/dept.',steps:'F15=Sales/UPC: see hand-keyed count vs. per-UPC scan counts'},
+  {cmd:'IAIMV',name:'Dept Salvage Summary',cat:'sales',desc:'Full D&D summary for an entire department.',steps:'Enter whse#, dept#, time frame'},
+  {cmd:'IAD',name:'Item Activity by Department',cat:'sales',desc:'Daily D&D in dollars by item for a department.',steps:'Enter dept + date range → per-item D&D breakdown'},
+  {cmd:'IWS',name:'Weekly Item Unit Sales',cat:'sales',desc:'Hourly sales breakdown for specific items.',steps:'Enter whse#, item#, time frame · Page Down for multiple items'},
+  {cmd:'WIUS',name:'Half-Hour Item Unit Sales',cat:'sales',desc:'30-minute interval version of IWS — granular production planning.',steps:'Enter whse#, item#, time frame'},
+  {cmd:'SHC',name:'Sales History by Category',cat:'sales',desc:'Historical sales by category code within a dept.',steps:'Enter dept#, whse#, time frame · F5=Category Inquiry · F4=weekly breakdown'},
+  {cmd:'SLH',name:'Sales History by Item',cat:'sales',desc:'Sales history for a specific item over time.',steps:'Enter whse#, time frame, item# · F4=weekly breakdown'},
+  {cmd:'LSDT',name:'Labor Schedule Today',cat:'labor',desc:'Near real-time: lanes open vs. scheduled vs. needed.',steps:'Actl Lane=open registers · Sched Lane=scheduled cashiers<br>Hrly Plan=from LSWM · Sls Diff=actual minus plan<br>Intervals: 15 / 30 / 60 min'},
+  {cmd:'LSWM',name:'Enter Projected Sales',cat:'labor',desc:'Enter planned sales dollars to drive suggested scheduled hours.',steps:'Red# in Imp Flg = large prior year impact<br>Holiday closures: key <b>6</b> → change Plan to <b>3</b> → update to prior year date',tip:'GMs, AGMs, FRNs, ADMs only'},
+  {cmd:'LSCM',name:'Labor Schedule Control File',cat:'labor',desc:'Set $/hr, # registers, open/close hours. Staff mgrs and above.',steps:'Update for holiday hours BEFORE the holiday week'},
+  {cmd:'LSDC',name:'Door Count Entry',cat:'labor',desc:'Log door count throughout the day.',steps:'Enter throughout the day to reflect real traffic load'},
+  {cmd:'LSIM',name:'Sales Impact Entry',cat:'labor',desc:'Log unusual sales events for next year\'s planning.',steps:'F6=add → reason + dollar amount<br>Auto-logged: resale, refunds, kiosk, gas, jewelry, coupons'},
+  {cmd:'LSRM',name:'Labor Schedule Rule Maintenance',cat:'labor',desc:'Set dollar caps per dept — large single orders excluded from lane forecasting.',steps:'Set cap per dept to prevent outliers from skewing recommendations'},
+  {cmd:'LSSI',name:'Lane and Shift Coverage',cat:'labor',desc:'Forecasted vs. scheduled lanes for any day and time.',tip:'System counts ALL Service Clerks as cashiers when forecasting'},
+  {cmd:'MBA9',name:'Membership Inquiry',cat:'member',desc:'View-only membership lookup. F11 to toggle search mode.',steps:'F11 toggles: member# · name · sounds-like · ID type · phone · address<br>F4 after finding member = action code prompt'},
+  {cmd:'WBS9',name:'Business Membership Inquiry',cat:'member',desc:'Same as MBA9 for Business Memberships.',steps:'F11: business name · phone · address → F4 for action codes'},
+  {cmd:'IMIN',name:'International Membership Inquiry',cat:'member',desc:'View non-US/CA memberships. View-only.',steps:'Requires membership# AND country of issuance → limited display'},
+  {cmd:'MRC',name:'Membership Report Card',cat:'member',desc:'Membership income dashboard by company/region/warehouse.',steps:'F11=toggle to Captured Renewal Rate and Renewal Trend'},
+  {cmd:'WAM',name:'Warehouse Ancillary Membership',cat:'member',desc:'Create Gas Station or Car Wash membership cards.',steps:'Enter 1 in Gas/Car Wash Attendant field BEFORE entering WAM → F4'},
+  {cmd:'WPM',name:'Warehouse Password Maintenance',cat:'passwords',desc:'Assign/manage passwords for protected programs. AWM and WM only.',steps:'F6=add user → User ID (max 10 chars) + name → employee sets password (5-10 chars)<br><b>APR</b>=Refund Audit · <b>EPC</b>=Price Change+downloads+blocks<br><b>TCP</b>=Tire passwords (WM/AWM/Ops only) · <b>TSH</b>=Trash Scan',tip:'PWMI = view who currently has which passwords'},
+  {cmd:'EPRFM',name:'Profile Maintenance',cat:'passwords',desc:'Assign/disable role-based profiles. Staff mgrs and above.',steps:'F4=position list → employee# → F6=assign → F4 for template → F8 finalize<br>Disable: position + employee# → F23 → F23 confirm',tip:'Verify employee JTS job code — auto-triggers Costco U training'},
+  {cmd:'RPWD',name:'Reset Role Password',cat:'passwords',desc:'Reset a role-based profile password. Staff mgrs and above.',steps:'Enter user profile + reason → temp password issued → employee sets new on first login'},
+  {cmd:'EPRFD',name:'Profile Inquiry',cat:'passwords',desc:'View-only — see what profiles are assigned through EPRFM.',steps:'Look up by employee number'},
+  {cmd:'OUTQ',name:'Print Outqueue',cat:'reports',desc:'Manage all print jobs. Each printer has its own outqueue.',steps:'<b>2</b>=Change · <b>4</b>=Delete (permanent) · <b>5</b>=Display only · <b>6</b>=Release/print<br>F19=view other outqueues · F18=jump to bottom (newest)<br>Main printer: PRINT[loc#] e.g. PRINT110',tip:'To reroute to main office printer: remove suffix letters from outqueue name, then release'},
+  {cmd:'RDPRT',name:'Reroute / Reset Printer',cat:'reports',desc:'Fix printer issues without calling Service Desk.',steps:'<b>Reroute:</b> RDPRT → 1 next to Source → 1 next to Destination → confirm → SPRT restart<br><b>Reset:</b> RDPRT → 6 next to Source → SPRT restart',tip:'Reset only undoes ONE reroute. Multiple reroutes → call Service Desk.'},
+  {cmd:'IAFEP',name:'Front End Productivity',cat:'reports',desc:'Cashier and SCO productivity stats. NOT real-time — current day unavailable.',steps:'Enter whse# → F19/F20 toggle: Main → Data → Time<br>SCO: enter Y in Self-Checkout field · F1=stat definitions'},
+  {cmd:'MACR',name:'Merchandise Audit Count List',cat:'reports',desc:'On-hand inventory by dept and category.',steps:'Enter dept# → optional category code filter<br>Shows: item#, description, on-hand, NSI on-hand'},
+  {cmd:'FFPII',name:'Fresh Foods Period Inventory',cat:'reports',desc:'Complete inventory snapshot for Meat/Fresh at end of fiscal period.',steps:'Enter whse# + dept# → Page Up/Down to review all items'},
+  {cmd:'VA2',name:'Vendor Appointments at Depot',cat:'reports',desc:'Check if awaited product arrived at the depot yet.',steps:'Enter region# + dept# → time in yard, time in receiving',tip:'Great for checking inbound product without calling the depot'},
+  {cmd:'GMD',name:'Gross Margin Dashboard',cat:'reports',desc:'Financial performance for Fresh departments.',steps:'Enter whse# + dept# · Page Down for last year comparison'},
+  {cmd:'07',name:'Print Depot Labels',cat:'rf',desc:'Free-form text on pallet labels. Use to ID pallets at receiving.',steps:'Select printer: 1=RCV / 2=RTV → enter text in any field → enter tag count → print'},
+  {cmd:'11',name:'Item Inquiry',cat:'rf',desc:'MOST USED. Scan barcode or enter item# → dept + all on-hand quantities instantly.',steps:'Scan barcode OR key item# → on-hand qty, dept, and status appear immediately'},
+  {cmd:'13',name:'Item Alpha Inquiry',cat:'rf',desc:'Search by item description and/or dept number.',steps:'Enter description (min 3 chars) + optional dept# → search results<br>Useful when you don\'t have the item#'},
+  {cmd:'16',name:'UPC Inquiry',cat:'rf',desc:'Scan or key a UPC → get item description and item number.',steps:'Scan UPC → item description and item# appear immediately'},
+  {cmd:'18',name:'Item Sales Report',cat:'rf',desc:'Generate item sales report from the handheld.',steps:'Enter whse# + optional date → scan/key all items → F21 to print'},
+  {cmd:'19',name:'Item Group Maintenance',cat:'rf',desc:'Create/edit item groups from the handheld.',steps:'F4 to prompt groups → scan/key items → F10 to review → key 4 to remove an item'},
+  {cmd:'20',name:'Merchandise Audit Entry',cat:'rf',desc:'Scan or key inventory audit counts. Multiple counts per item allowed.',steps:'Scan items to build count list · Multiple counts per item accepted'},
+  {cmd:'21',name:'Clear Audit Count List',cat:'rf',desc:'Clears ALL counts entered in option 20.',steps:'Clears the current audit count list — use before starting a fresh count'},
+  {cmd:'22',name:'Print Merchandise Audit Report',cat:'rf',desc:'Print the counts entered in option 20. Same report as MADR.',steps:'Prints counts from option 20 — can be done on the handheld or AS400'},
+  {cmd:'23',name:'EDP Sign Requests',cat:'rf',desc:'Print merchandise signs from the handheld scanner.',steps:'Enter size letter → scan/key items → F10 to review → F21 to print → select printer'},
+  {cmd:'36',name:'Print Pallet Tag',cat:'rf',desc:'Print pallet ID tags to identify merchandise on the floor.',steps:'Select printer (1=RCV, 2=RTV) → enter item/UPC → qty → optional PO# + initials → Enter'},
+  {cmd:'63',name:'Fresh Foods Inventory Input',cat:'rf',desc:'Input fresh foods inventory counts directly from handheld.',steps:'Used on first day of each fiscal period for ancillary dept inventory'},
+  {cmd:'67',name:'Scan Into Production',cat:'rf',desc:'Scan sub-primal boxes into production before cutting. Required for traceability.',steps:'Every box must be scanned BEFORE cutting begins<br>Box won\'t scan → look for Depot-generated label<br>No depot label → <b>F6 Manual Mode</b>: key Establishment Code, Pack Date, Costco Item#, Case Weight from box end label',tip:'Traceability requirement — never skip this step'},
+  {cmd:'69',name:'Scan Beef Trim into Grinds',cat:'rf',desc:'Scan beef trim to log it into the grind production record.',steps:'Scan trim item → enter weight → confirm<br>Used when converting trim (PLU 903) into ground beef production'},
+  {cmd:'72',name:'Scan Shrink',cat:'rf',desc:'Remove damaged/disposed items from inventory. Requires WPM password.',steps:'Scan/key items to remove from inventory<br><b>Same-day reversal:</b> enter negative amount in Sell Unit field<br><b>Older reversal:</b> use RTV option NSE18<br><b>Research entries:</b> AS400 option TSH'},
+  {cmd:'88',name:'Item/UPC Cross Reference',cat:'rf',desc:'Cross-reference item# to all UPCs (same as IXI). Use when item won\'t scan.',steps:'Enter item# → full list of associated UPCs displayed'},
+  {cmd:'98',name:'Item/UPC Check',cat:'rf',desc:'View item description, item#, UPC, and sell price. Shows per-unit pricing for multipacks.',steps:'Scan UPC or enter item# → full item detail including sell price'},
+  // Item Lookup additions
+  {cmd:'ITMG',name:'Item Group Maintenance (User)',cat:'item',desc:'Create personal item groups for use in COMP sales comparisons.',steps:'F6 to add a new group → enter group name and items<br>Can link to other user groups<br>Useful for CMN donations, focus items, or any custom tracking set'},
+  {cmd:'IIL',name:'Item Sales by Warehouse',cat:'sales',desc:'See how a specific item performs across all warehouses in a state or region.',steps:'Enter item # → enter state abbreviation or region code<br>Common use: rank focus items (stamps, movie tickets) across warehouses'},
+  // Merch additions
+  {cmd:'ESPC',name:'Sign Print Configuration',cat:'merch',desc:'Configure default sign sizes and which depts auto-print during EDMP daily maintenance.',steps:'Enter ESPC → F10 (Change) to adjust default dept sign sizes and auto-print settings'},
+  // Sales additions
+  {cmd:'CSR',name:'Category Sales Report',cat:'sales',desc:'INP 333 report — category-level sales breakdown for a department.',steps:'Enter dept # → view sales broken down by category code'},
+  {cmd:'COMP',name:'Comparison Analysis',cat:'sales',desc:'Compare sales across items, groups, depts, vendors, or locations for the last 3 fiscal years.',steps:'Enter comparison type and parameters → view side-by-side analysis<br>Use with item groups built in ITMG for custom comparisons'},
+  // Passwords additions
+  {cmd:'PWMI',name:'Password Inquiry',cat:'passwords',desc:'View who currently holds which WPM access types (APR, EPC, TCP, TSH). View-only.',steps:'Enter PWMI → view all users and their current WPM access assignments'},
+  // Reports additions
+  {cmd:'WFBRP',name:'Front End Block Report',cat:'reports',desc:'Blocked renewals, voids, FE signups, and member #99 transactions by cashier ID. Print-only — not viewable on screen.',steps:'Run from AS400 → report prints only — no on-screen display available'},
+  {cmd:'FFRII',name:'Reprocessed Items Inquiry',cat:'reports',desc:'Track items that have been reprocessed or reworked within a department.',steps:'Enter FFRII → view reprocessed item history by dept and date'},
+  {cmd:'SPRT',name:'Start Printer',cat:'reports',desc:'Restart a printer. Always used after RDPRT to bring printer back online.',steps:'Enter SPRT → select printer → restart → send a test print to confirm',tip:'Used in conjunction with RDPRT — reroute first, then SPRT to restart'},
+  {cmd:'ROE',name:'Reorder Entry',cat:'reports',desc:'Place a reorder for a product that is NOT on auto-reorder.',steps:'Enter dept → locate item → key reorder quantity'},
+  // Accounting (new category)
+  {cmd:'MCE',name:'Manual Check Entry',cat:'accounting',desc:'Enter any manual check issued from the warehouse, coded to a G/L account.',steps:'Enter check details → F12 = Display G/L Accounts to look up account codes<br>All warehouse manual checks must be entered here'},
+  {cmd:'MCI',name:'Manual Check Inquiry',cat:'accounting',desc:'View-only lookup of manual check records.',steps:'Enter MCI → search by date, amount, or check number'},
+  {cmd:'FSI1',name:'Financial Statement Inquiry',cat:'accounting',desc:'Complete financial statement for a department by fiscal period.',steps:'Enter 1 for company → enter period → press X next to any sub-account to expand detail'},
+  {cmd:'GLI',name:'General Ledger Inquiry',cat:'accounting',desc:'Detailed financial performance report by department number.',steps:'Enter dept # → view full G/L breakdown by account'},
+  {cmd:'ARI',name:'Asset Register Inquiry',cat:'accounting',desc:'View all equipment on a department\'s asset register.',steps:'Enter warehouse # and dept # → view equipment list on record'},
+  {cmd:'PJI',name:'Purchase Journal Query',cat:'accounting',desc:'See which POs have been received for a department within a time frame.',steps:'Enter warehouse #, dept #, and time frame → view list of received POs'},
+  {cmd:'SPI',name:'Supply Purchase Inquiry',cat:'accounting',desc:'View what supplies were purchased for a specific department (chemicals, bags, paper, etc.).',steps:'Enter warehouse # and time frame<br>Key 1 next to account = item-by-item view · Key 1 next to day = daily breakdown'},
+  // Ancillary / Tire (new category)
+  {cmd:'TCP',name:'Tire Center Password Maintenance',cat:'ancillary',desc:'Assign torque/release codes to Tire Center employees. WM, AWM, and Ops Manager only.',steps:'Enter employee # → F6<br>Enter name → employee sets own password → F8<br>F4 = view all active employees · F10 = delete employee',tip:'Must be set up in WPM first before TCP can be assigned'},
+  {cmd:'TPR',name:'Tire Center Productivity Report',cat:'ancillary',desc:'View average tire installation wait times by company, region, or warehouse.',steps:'Enter filter type → view average wait times by location'},
+  {cmd:'TAR',name:'Tire Activity Report',cat:'ancillary',desc:'All tire sales for departments 22 (Tires), 87 (Tire Installation), and Ecommerce.',steps:'Key 1 next to a region to drill to warehouse level<br>Use F-Key prompts at bottom for additional report views'},
+  {cmd:'ETINQ',name:'Ecommerce Tire Inquiry',cat:'ancillary',desc:'Look up a Special Order Tires Online (SOTO) order by Ecommerce order number.',steps:'Enter Ecommerce order # → view SOTO order details<br>F4 if order # is unknown'},
+  {cmd:'STA',name:'Ecommerce Tire Audit',cat:'ancillary',desc:'View status and full history of any Special Order Tires Online (SOTO) order.',steps:'Multiple filter options — cannot combine filters<br>White font on item # = comments exist on that order'},
+  {cmd:'SPOT1',name:'Special Order Tires Tracking',cat:'ancillary',desc:'Track status of Tire Center special orders from order through installation.',steps:'Enter SPOT1 → view all open special orders and their current status'},
+  {cmd:'WWPO',name:'Work With Purchase Orders',cat:'ancillary',desc:'View open POs, standard distributions, auto-distributions, and transfer requests. Tire Center uses this to track incoming tires.',steps:'Select view: 1=Summary · 2=Status · 3=Item · 4=Freight/Budgeting'},
+  {cmd:'FCP',name:'Food Court Printer Config',cat:'ancillary',desc:'Program item numbers that route to the Food Court kitchen printer (pizza sales).',steps:'Enter FCP → configure which items route to kitchen printer<br>F22 to delete items no longer in use'},
+  {cmd:'CDCSI',name:'Cost Dept Category Sales Inquiry',cat:'ancillary',desc:'View initial markup percent (IMU) and margin components by location, dept, and category.',steps:'Enter warehouse # and dept # → view IMU and margin breakdown by category code'},
+];
+
+// Policy data — searchable only, no tab
+const POLICIES = [
+  {title:'Sub Primal Code Dating',tags:'shelf life dating primal code 7 day',body:'All sub primals — 7-day shelf life. Top Sirloin, NY, PSMO, Peeled Butt, Untrimmed Tri Tip, Rib Eye GL, Flap Meat, Brisket 1/4", Inside Round, Peeled Knuckle, Eye of Round, Chuck Roast, Boneless Short Rib (vac). Prime: Prime NY, Prime NY Strip, Prime Rib — also 7-day.'},
+  {title:'Scan Into Production — Traceability',tags:'scan production traceability option 67 F6 manual mode',body:'Every box must be scanned into production (Option 67) before cutting. Box won\'t scan → look for Depot-generated label. No depot label → F6 Manual Mode: key Establishment Code, Pack Date, Costco Item#, Case Weight from box end label.'},
+  {title:'COOL — Country of Origin Labeling',tags:'cool country origin labeling seafood compliance federal law',body:'Federal law requires labeling COUNTRY OF ORIGIN and WILD or FARMED on all seafood. COOL applies to: uncooked/unseasoned seafood, poultry, and lamb. Print COOL reference sheet near every seafood scale. Sell under the CORRECT item number.'},
+  {title:'COOL Label Retention',tags:'cool label retention inspectors records country origin audit',body:'Keep country-of-origin records at the warehouse level for inspector audits. Retain country of origin AND wild vs. farmed designation. Retain original box labels or equivalent documentation.'},
+  {title:'Case Labeling — Beef Cases',tags:'case labeling beef case label scale Toledo PLU 690 category',body:'Member requests case of beef: pull product, scan into production, Toledo scale, Category 690 PLU, enter PLU, enter weight, PRINT INHIBITS to remove sell-by, SELL BY DATE tab until BLANK.'},
+  {title:'Frozen Seafood Deglazing',tags:'frozen seafood deglaze deglazing slack WIP label procedure',body:'Remove bagged product from master case, slack on meat trays. Create WIP label from actual PLU you will sell under. Place WIP label directly on item. Packed On and Sell By dates stay with item.'},
+  {title:'Grinder Return & Receiving Checklist',tags:'grinder checklist depot return receiving clean sanitize SSOP FS06',body:'Disconnect Power. Remove Ring, Plate, Knife, Auger, Paddle. WRS all parts per SSOP. Air dry. WRS grinder. Complete SSOP form FS06. Apply mineral oil. Reassemble.'},
+  {title:'Meat Dept Signs Guidelines',tags:'signs signage guidelines meat department EDSR EDSM',body:'Top 20 Items (Beef, Pork, Chicken, Fish), Holiday Items, Demo, Seasonal, End Caps, Net Weight (Sausage), IRC/Hot Price Items. Use EDSR for quick prints, EDSM for custom signs.'},
+];
+
+// ── SUBBAR CONFIG ─────────────────────────────────────────────────────────────
+const SUBBARS = {
+  'plu-page': [
+    {label:'All',key:'all'},
+    {label:'Grinds',key:'grinds'},
+    {label:'Choice',key:'beef-choice'},{label:'Prime',key:'beef-prime'},
+    {label:'Wagyu',key:'beef-wagyu'},{label:'Pork',key:'pork'},
+    {label:'Poultry',key:'poultry'},{label:'Seafood',key:'seafood'},
+    {label:'Cryo',key:'cryo'},{label:'Case',key:'case'},{label:'Logs',key:'logs'},
+  ],
+  'as400-page': [
+    {label:'All',key:'all'},
+    {label:'RF Scan',key:'rf'},
+    {label:'Item',key:'item'},
+    {label:'Sales',key:'sales'},
+    {label:'Merch',key:'merch'},
+    {label:'Trans',key:'trans'},
+    {label:'Labor',key:'labor'},
+    {label:'Ancillary',key:'ancillary'},
+    {label:'Reports',key:'reports'},
+    {label:'Members',key:'member'},
+    {label:'Passwords',key:'passwords'},
+    {label:'Acctg',key:'accounting'},
+  ],
+  'bluebook-page': [
+    {label:'Reference',key:'reftables'},{label:'Register',key:'register'},
+    {label:'Controller',key:'controller'},{label:'SCO',key:'sco'},
+    {label:'Shop Cards',key:'shopcards'},{label:'Troubleshoot',key:'troubleshoot'},
+    {label:'Contacts',key:'contacts'},
+  ],
+};
+
+const OVERLAYS = {
+  'beef-choice':'ov-choice','beef-prime':'ov-prime','beef-wagyu':'ov-wagyu',
+  pork:'ov-pork',poultry:'ov-poultry',grinds:'ov-grinds',seafood:'ov-seafood',
+};
+
+let _activeTab = 'plu-page';
+let _activePLUCat = 'all';
+let _activeAS400Cat = 'all';
+let _activeBBSec = 'reftables';
+
+// ── PLU RENDER ────────────────────────────────────────────────────────────────
+const SHELF_HTML = `<details class="shelf-toggle">
+  <summary class="shelf-sum">Meat &amp; Seafood Shelf Life <svg class="shelf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></summary>
+  <div class="shelf-body">
+    <div class="shelf-row"><span class="shelf-item">Sub Primals (vacuum packed)</span><span class="shelf-days">7d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Ground Beef / Patties (tray pack)</span><span class="shelf-days">3d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Steak / Roast (tray pack)</span><span class="shelf-days">4d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Pork (tray pack)</span><span class="shelf-days">4d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Chicken (tray pack)</span><span class="shelf-days">3d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Fresh Salmon Fillet (farmed)</span><span class="shelf-days">14d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Fresh Salmon Fillet (steelhead)</span><span class="shelf-days">14d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Fresh Wild Fish (most)</span><span class="shelf-days">10d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Fresh Whole Fish (farmed salmon)</span><span class="shelf-days">14d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Fresh Shellfish (live clams/mussels)</span><span class="shelf-days">10d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Dungeness Crab (cooked)</span><span class="shelf-days">7d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Frozen Seafood (deglazing WIP)</span><span class="shelf-days">7d</span></div>
+  </div>
+</details>`;
+
+function pluRow(name, plu) {
+  return `<div class="plu-row" onclick="tapPLU(${plu})"><div class="plu-name">${name}</div><div class="plu-num">${plu}</div></div>`;
+}
+function renderGroups(groups) {
+  return groups.map(g =>
+    `<div class="plu-group"><div class="plu-group-title">${g.title}</div>${g.items.map(([n,p])=>pluRow(n,p)).join('')}</div>`
+  ).join('');
+}
+
+function renderPLU() {
+  const c = document.getElementById('plu-sections');
+  let html = '';
+
+  // ALL section — shelf life card open + all cuts sorted A→Z
+  const _allItems = [];
+  for (const key of ['beef-choice','beef-prime','beef-wagyu','pork','poultry','grinds','seafood','logs']) {
+    const cat = PLU[key];
+    if (cat) cat.groups.forEach(g => g.items.forEach(item => _allItems.push(item)));
+  }
+  _allItems.sort((a, b) => a[0].localeCompare(b[0]));
+  html += `<div id="plu-all" class="plu-section${_activePLUCat === 'all' ? ' active' : ''}">${SHELF_HTML}<div class="plu-group" style="padding-top:6px">`;
+  for (const [name, plu] of _allItems) html += pluRow(name, plu);
+  html += '</div></div>';
+
+  // Individual protein sections (with overlay)
+  for (const [key, cat] of Object.entries(PLU)) {
+    const ov = OVERLAYS[key] ? ' ' + OVERLAYS[key] : '';
+    const active = key === _activePLUCat ? ' active' : '';
+    html += `<div id="plu-${key}" class="plu-section${active}${ov}">${renderGroups(cat.groups)}</div>`;
+  }
+
+  // CRYO cross-section
+  const xOrder = ['beef-choice','beef-prime','beef-wagyu','pork','seafood'];
+  html += `<div id="plu-cryo" class="plu-section">`;
+  for (const key of xOrder) {
+    const cat = PLU[key];
+    const items = cat.groups.flatMap(g => g.items).filter(([n]) => /cryo/i.test(n));
+    if (!items.length) continue;
+    html += `<div class="plu-group"><div class="plu-group-title">${cat.label}</div>${items.map(([n,p])=>pluRow(n,p)).join('')}</div>`;
+  }
+  html += '</div>';
+
+  // CASE cross-section
+  const CASE_INFO_HTML = `<details class="shelf-toggle">
+  <summary class="shelf-sum">How to Sell a Case <svg class="shelf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></summary>
+  <div class="shelf-body" style="font-size:13px;line-height:1.8;color:var(--text)">
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <div><span style="color:var(--muted);font-weight:700;margin-right:6px">1.</span>Member requests case — pull product from back</div>
+      <div><span style="color:var(--muted);font-weight:700;margin-right:6px">2.</span>Scan into production (RF Option 67)</div>
+      <div><span style="color:var(--muted);font-weight:700;margin-right:6px">3.</span>Bring to Toledo scale</div>
+      <div><span style="color:var(--muted);font-weight:700;margin-right:6px">4.</span>Select <b>Category 690</b> PLU on scale</div>
+      <div><span style="color:var(--muted);font-weight:700;margin-right:6px">5.</span>Enter PLU number → enter weight</div>
+      <div><span style="color:var(--muted);font-weight:700;margin-right:6px">6.</span>Press <b>PRINT INHIBITS</b> to remove sell-by date</div>
+      <div><span style="color:var(--muted);font-weight:700;margin-right:6px">7.</span>Tab <b>SELL BY DATE</b> until field is blank → print label</div>
+    </div>
+  </div>
+</details>`;
+  html += `<div id="plu-case" class="plu-section">${CASE_INFO_HTML}`;
+  for (const key of xOrder) {
+    const cat = PLU[key];
+    const items = cat.groups.flatMap(g => g.items).filter(([n]) => /case/i.test(n));
+    if (!items.length) continue;
+    html += `<div class="plu-group"><div class="plu-group-title">${cat.label}</div>${items.map(([n,p])=>pluRow(n,p)).join('')}</div>`;
+  }
+  html += '</div>';
+
+  c.innerHTML = html;
+}
+
+// ── AS400 RENDER ──────────────────────────────────────────────────────────────
+function cmdCard(cmd) {
+  return `<details class="cmd-detail" id="cmd-${cmd.cmd.replace(/\s/g,'-')}">
+    <summary class="cmd-summary">
+      <div class="cmd-top">
+        <span class="cmd-badge">${cmd.cmd}</span>
+        <span class="cmd-name">${cmd.name}</span>
+        <svg class="cmd-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="cmd-desc">${cmd.desc}</div>
+    </summary>
+    <div class="cmd-body">
+      ${cmd.steps ? `<div>${cmd.steps}</div>` : ''}
+      ${cmd.tip ? `<div class="cmd-tip">⚡ ${cmd.tip}</div>` : ''}
+    </div>
+  </details>`;
+}
+
+function renderAS400() {
+  const c = document.getElementById('as400-inner');
+  const catLabels = {
+    rf:'RF Scanner (Options)',item:'Item Lookup',trans:'Transactions',
+    merch:'Merchandising',sales:'Warehouse Sales',labor:'Labor Scheduling',
+    member:'Membership',passwords:'Passwords',reports:'Reports / Receiving',
+    accounting:'Accounting & Finance',ancillary:'Ancillary / Tire Center',
+  };
+  let html = '';
+  for (const [catKey, label] of Object.entries(catLabels)) {
+    const cmds = CMDS.filter(c => c.cat === catKey);
+    if (!cmds.length) continue;
+    const vis = (_activeAS400Cat === 'all' || _activeAS400Cat === catKey) ? ' visible' : '';
+    html += `<div class="as400-group${vis}" data-cat="${catKey}">`;
+    html += `<div class="cat-label">${label}</div>`;
+    if (catKey === 'rf') {
+      html += `<details class="cmd-detail" style="margin-bottom:10px">
+        <summary class="cmd-summary">
+          <div class="cmd-top">
+            <span class="cmd-name" style="font-weight:700;font-size:13px">RF Scanner Quick Reference</span>
+            <svg class="cmd-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </summary>
+        <div class="cmd-body" style="padding:0;overflow:hidden">
+          <table class="rf-table"><tr><th>Opt</th><th>Function</th><th>Quick Use</th></tr>`;
+      for (const cmd of cmds) {
+        html += `<tr><td>${cmd.cmd}</td><td>${cmd.name}</td><td>${cmd.desc.split('.')[0]}</td></tr>`;
+      }
+      html += `</table></div></details>`;
+    }
+    for (const cmd of cmds) html += cmdCard(cmd);
+    html += '</div>';
+  }
+  c.innerHTML = html;
+}
+
+// ── BLUE BOOK RENDER ──────────────────────────────────────────────────────────
+function bbCard(title, body) {
+  return `<details class="bb-detail">
+    <summary class="bb-summary">${title}<svg class="bb-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></summary>
+    <div class="bb-body">${body}</div>
+  </details>`;
+}
+
+function renderBluebook() {
+  document.getElementById('bluebook-inner').innerHTML = `
+
+  <!-- REFERENCE (reftables) — default visible -->
+  <div class="bb-section visible" data-sec="reftables">
+    <div class="bb-section-title">Department Numbers</div>
+    <div class="dept-grid">
+      <div class="dept-card"><div class="dept-num">13</div><div class="dept-name">Candy</div></div>
+      <div class="dept-card"><div class="dept-num">14</div><div class="dept-name">Water / Beverages</div></div>
+      <div class="dept-card"><div class="dept-num">17</div><div class="dept-name">Coffee</div></div>
+      <div class="dept-card"><div class="dept-num">18</div><div class="dept-name">Bread/Breakfast</div></div>
+      <div class="dept-card"><div class="dept-num">19</div><div class="dept-name">Dry Grocery</div></div>
+      <div class="dept-card"><div class="dept-num">20</div><div class="dept-name">Alcohol</div></div>
+      <div class="dept-card"><div class="dept-num">21</div><div class="dept-name">Vitamins</div></div>
+      <div class="dept-card"><div class="dept-num">22</div><div class="dept-name">Tires</div></div>
+      <div class="dept-card"><div class="dept-num">24</div><div class="dept-name">Electronics/TV</div></div>
+      <div class="dept-card"><div class="dept-num">27</div><div class="dept-name">Computers</div></div>
+      <div class="dept-card"><div class="dept-num">31</div><div class="dept-name">Clothing</div></div>
+      <div class="dept-card"><div class="dept-num">38</div><div class="dept-name">Hardware/Tools</div></div>
+      <div class="dept-card"><div class="dept-num">43</div><div class="dept-name">Garden</div></div>
+      <div class="dept-card"><div class="dept-num">44</div><div class="dept-name">Special Events/Kiosk</div></div>
+      <div class="dept-card"><div class="dept-num">46</div><div class="dept-name">Sporting Goods</div></div>
+      <div class="dept-card"><div class="dept-num">53</div><div class="dept-name">Paper/Cleaning</div></div>
+      <div class="dept-card"><div class="dept-num">54</div><div class="dept-name">Pet Supplies</div></div>
+      <div class="dept-card"><div class="dept-num">61</div><div class="dept-name">Meat</div></div>
+      <div class="dept-card"><div class="dept-num">62</div><div class="dept-name">Bakery</div></div>
+      <div class="dept-card"><div class="dept-num">63</div><div class="dept-name">Deli</div></div>
+      <div class="dept-card"><div class="dept-num">64</div><div class="dept-name">Produce</div></div>
+      <div class="dept-card"><div class="dept-num">68</div><div class="dept-name">Rotisserie</div></div>
+      <div class="dept-card"><div class="dept-num">69</div><div class="dept-name">Food Court</div></div>
+      <div class="dept-card"><div class="dept-num">70</div><div class="dept-name">Optical</div></div>
+      <div class="dept-card"><div class="dept-num">72</div><div class="dept-name">Pharmacy</div></div>
+      <div class="dept-card"><div class="dept-num">76</div><div class="dept-name">Hearing Aid</div></div>
+      <div class="dept-card"><div class="dept-num">86</div><div class="dept-name">Auto Accessories</div></div>
+      <div class="dept-card"><div class="dept-num">87</div><div class="dept-name">Tire Installation</div></div>
+      <div class="dept-card"><div class="dept-num">91</div><div class="dept-name">Gas Station</div></div>
+      <div class="dept-card"><div class="dept-num">95</div><div class="dept-name">Membership</div></div>
+    </div>
+    <div class="bb-section-title">Key Item Numbers</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px">
+      <table class="info-table">
+        <tr><td>#31</td><td>Gold Star Membership Renewal</td></tr>
+        <tr><td>#67</td><td>Business / Executive Membership Renewal</td></tr>
+        <tr><td>#231590</td><td>Executive Membership Upgrade</td></tr>
+        <tr><td>#26982</td><td>Price Accuracy Adj (non-taxable) CN</td></tr>
+        <tr><td>#326982</td><td>Price Accuracy Adj (HST) CN</td></tr>
+        <tr><td>#426982</td><td>Price Accuracy Adj (GST) CN</td></tr>
+        <tr><td>#500–505</td><td>Training Mode Operator Codes</td></tr>
+        <tr><td>#99</td><td>Non-member transaction number</td></tr>
+      </table>
+    </div>
+    <div class="bb-section-title">AS400 F-Key Quick Reference</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+      <table class="info-table">
+        <tr><td>F1</td><td>Help — screen-specific definitions and F-key guide</td></tr>
+        <tr><td>F3</td><td>Exit — return to previous/main menu</td></tr>
+        <tr><td>F4</td><td>Search/Prompt — shows available options for current field</td></tr>
+        <tr><td>F6</td><td>Add — add a new entry (EPRFM, EPC, WPM)</td></tr>
+        <tr><td>F8</td><td>Finalize — confirm profile/entry (EPRFM)</td></tr>
+        <tr><td>F11</td><td>Fold / Toggle — add descriptions (WII), switch view (MBA9)</td></tr>
+        <tr><td>F12</td><td>Cancel — go back one screen</td></tr>
+        <tr><td>F15</td><td>Shift+F3 — Custom home screen; Item Download in EPC</td></tr>
+        <tr><td>F18</td><td>Shift+F6 — Toggle custom/default home; Block items in EPC</td></tr>
+        <tr><td>F19</td><td>Shift+F7 — View other outqueues; scroll left in multi-week views</td></tr>
+        <tr><td>F20</td><td>Shift+F8 — Scroll right in multi-week views</td></tr>
+        <tr><td>F21</td><td>Shift+F9 — Print</td></tr>
+        <tr><td>F22</td><td>Shift+F10 — Export to Excel (STK)</td></tr>
+        <tr><td>F23</td><td>Shift+F11 — Disable profile (EPRFM); delete group (IGM)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- REGISTER -->
+  <div class="bb-section" data-sec="register">
+    <div class="bb-section-title">Membership Quick Ref</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;font-size:13px;line-height:1.9;margin-bottom:10px">
+      <b style="color:var(--muted)">Types:</b> 1/=Trial &nbsp; 3/=Supplies &nbsp; 7/=International<br>
+      <b style="color:var(--muted)">Renewals:</b> #31=Gold Star &nbsp; #67=Business/Executive &nbsp; #231590=Exec Upgrade
+    </div>
+    <div class="bb-section-title">Supervisor Procedures</div>
+    ${bbCard('Override',`<b>Override Mode:</b> <span class="kc">&lt;CLEAR&gt;</span> → <span class="kc">&lt;OVERRIDE&gt;</span> → supervisor# → <span class="kc">&lt;ENTER&gt;</span> → password → <span class="kc">&lt;ENTER&gt;</span><br><b>Terminal Secured:</b> <span class="kc">&lt;SIGN ON/OFF&gt;</span> → <span class="kc">&lt;CLEAR&gt;</span> → Override`)}
+    ${bbCard('Verify Price / Linked Item',`<span class="kc">&lt;6&gt;</span> → <span class="kc">&lt;SIGN ON/OFF&gt;</span> → scan/key item(s) → <span class="kc">&lt;TOTAL&gt;</span> → <span class="kc">&lt;SIGN ON/OFF&gt;</span> twice to exit<br><i style="color:var(--muted)">Press &lt;ENTER&gt; twice to print item detail</i>`)}
+    ${bbCard('Void Linked Fee',`Find link item#: sign on → <span class="kc">&lt;6&gt;</span> → <span class="kc">&lt;SIGN ON/OFF&gt;</span> → scan item → <span class="kc">&lt;ENTER&gt;</span> twice → use 4-digit link# on receipt<br>Then: <span class="kc">&lt;VOID&gt;</span> → key linked fee + 8 zeroes`)}
+    ${bbCard('Tender Cashing — Check',`<span class="kc">&lt;1&gt;</span> → <span class="kc">&lt;SIGN ON/OFF&gt;</span> → scan membership# → key $ amount → <span class="kc">&lt;CHECK&gt;</span> → endorse check`)}
+    ${bbCard('Tender — Executive 2% Reward',`<span class="kc">&lt;1&gt;</span> → <span class="kc">&lt;SIGN ON/OFF&gt;</span> → scan membership# → <span class="kc">&lt;6&gt;</span>, <span class="kc">&lt;/&gt;</span>, <span class="kc">&lt;MISC TENDER&gt;</span> → scan or key barcode → <span class="kc">&lt;ENTER&gt;</span>`)}
+    ${bbCard('Tender — Citi Reward (US)',`<span class="kc">&lt;1&gt;</span> → <span class="kc">&lt;SIGN ON/OFF&gt;</span> → scan membership# → scan reward or <span class="kc">&lt;9&gt;</span>, <span class="kc">&lt;/&gt;</span>, <span class="kc">&lt;MISC TENDER&gt;</span> → key barcode → <span class="kc">&lt;ENTER&gt;</span>`)}
+    ${bbCard('Tender Exchange / Correction',`<span class="kc">&lt;2&gt;</span> → <span class="kc">&lt;SIGN ON/OFF&gt;</span> → scan membership# → <span class="kc">&lt;VOID&gt;</span> → key $ → press <i>incorrect</i> tender → key $ → select <i>new</i> tender → deface → attach to DRS`)}
+    ${bbCard('Coupon Adjustment',`Scan membership# → <span class="kc">&lt;SLIP PRINT&gt;</span> → <span class="kc">&lt;ADJUSTMENT&gt;</span> → <span class="kc">&lt;VOID&gt;</span> → scan coupon → <span class="kc">&lt;TOTAL&gt;</span> → tender → <b>override required</b><br>Deface receipt + attach to DRS`)}
+    ${bbCard('Department Ring',`Item# not set up only:<br>$ amount → <span class="kc">&lt;PRICE&gt;</span> → key Dept# → <span class="kc">&lt;DEPARTMENT&gt;</span> → key item# (0 if none) → <span class="kc">&lt;ENTER&gt;</span> → <b>Override required</b>`)}
+    ${bbCard('Void Previous Transaction (Same Reg/Day)',`Hold <span class="kc">&lt;CTRL&gt;</span> + <span class="kc">&lt;ADJUSTMENT&gt;</span> → transaction# → amount → tender key twice → override<br>Deface both receipts + attach to DRS`)}
+    ${bbCard('Adjustment (Same Register, Same Day)',`Hold <span class="kc">&lt;CTRL&gt;</span> + <span class="kc">&lt;ADJUSTMENT&gt;</span> → scan barcode or enter register# → amount → tender key twice → override → deface → attach to DRS`)}
+    ${bbCard('Price Override',`$ amount → <span class="kc">&lt;PRICE&gt;</span> → scan or key item# → <span class="kc">&lt;ENTER&gt;</span> → override`)}
+    ${bbCard('Manual Entry of Credit Card',`<span class="kc">&lt;CREDIT/DEBIT&gt;</span> → <span class="kc">&lt;CLEAR&gt;</span> → <span class="kc">&lt;CLEAR&gt;</span> → enter card# + expiry on PIN pad → override<br><b style="color:var(--warn)">⚠ High chargeback risk — avoid except fax/pull orders</b>`)}
+    ${bbCard('Transfer Between Registers',`Sign on as Sup/Mgr at new register → <span class="kc">&lt;8&gt;</span> → <span class="kc">&lt;SIGN ON/OFF&gt;</span> → key prev register# → re-enter register# → <span class="kc">&lt;ENTER&gt;</span> same operator or <span class="kc">&lt;TOTAL&gt;</span> for current<br><span class="kc">&lt;ENTER&gt;</span>=transfers cashier · <span class="kc">&lt;CLEAR&gt;</span>=keeps current Sup/Mgr`)}
+    ${bbCard('Seasonal Refund Mode (Dec 1 – Jan 10)',`On FE register: sign on as Refund Clerk/Sup/Mgr → <span class="kc">&lt;SEASONAL REFUND&gt;</span> → <span class="kc">&lt;ENTER&gt;</span><br>Exit during day: <span class="kc">&lt;SEASONAL REFUND&gt;</span> → <span class="kc">&lt;ENTER&gt;</span> → sign off`)}
+    ${bbCard('Training Mode',`Training Operator Code 500–505 · Password: 9999<br><span class="kc">&lt;7&gt;</span> → <span class="kc">&lt;SIGN ON/OFF&gt;</span> · Exit: <span class="kc">&lt;SIGN ON/OFF&gt;</span> twice<br>Deface all receipts + attach to DRS<br><i style="color:var(--muted)">Does NOT affect IAFEP numbers</i>`)}
+    <div class="bb-section-title">Membership Blocking Codes</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+      <table class="info-table">
+        <tr><td>Block 6</td><td>Possible NSF — cashier clear</td></tr>
+        <tr><td>No Checks</td><td>Override required to tender as check</td></tr>
+        <tr><td>Frequent Shops</td><td>3 checks/1 day or 6/5 days — override</td></tr>
+        <tr><td>Must Sign Up</td><td>Void transaction only</td></tr>
+        <tr><td>Old Card</td><td>New member card on file</td></tr>
+        <tr><td>Renewal Due</td><td>Pay renewal or override</td></tr>
+        <tr><td>Pull and Hold</td><td>Under evaluation — may not be sold</td></tr>
+        <tr><td>Recall/Defective</td><td>Safety issue — may not be sold</td></tr>
+        <tr><td>Street Date</td><td>Cannot sell until specific date</td></tr>
+        <tr><td>Not For Sale</td><td>EPC block at this location</td></tr>
+        <tr><td>Code A</td><td>Cashier clear — checks up to $10,000</td></tr>
+        <tr><td>Code B</td><td>Cashier clear — checks up to $5,000</td></tr>
+        <tr><td>Code C</td><td>Cashier clear — checks up to $2,000</td></tr>
+        <tr><td>Exec Upgrade</td><td>Cashier clear — "Exec Upgrade?"</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- CONTROLLER -->
+  <div class="bb-section" data-sec="controller">
+    ${bbCard('Reprint Receipts (Current Day)',`TGCS ACE APPLICATION [1] → Manager Procedures [M] → ACE Transaction Search Tool [A] → Manager Journal [M] → search filters<br><br><b>Previous day:</b> AS400 option <b>SAST</b>`)}
+    ${bbCard('Adding an Operator',`TGCS ACE [1] → Data Maintenance [D] → Operator Authorization [O] → cashier# → select model:<br><b>*1</b>=Cashier · <b>*2</b>=Training · <b>*3</b>=Refund · <b>*4</b>=Inv Audit<br><b>*5</b>=Sales Audit · <b>*6</b>=Supervisor · <b>*7</b>=Manager<br>Name: <span class="kc">FIRST*LAST</span> → set password → check Expire Password<br>Sales auditors/supervisors/managers also need Enhanced Password (8 chars, alpha-numeric)`)}
+    ${bbCard('Department Totals Report',`TGCS ACE APPLICATION [1] → Reports [R] → Sales Report → Department Totals Report<br><i style="color:var(--muted)">Shows real-time sales, excludes gas</i>`)}
+    ${bbCard('Outstanding Store and Forward Report',`IBM ACE Applications → Reports [R] → SurePOS ACE EPS Reports → Outstanding SAF/TOR Report<br><i style="color:var(--muted)">Run to verify credit/debit transactions approved offline have been released</i>`)}
+    ${bbCard('Loan Report',`IBM ACE Applications [1] → Reports [R] → Listing and Log Reports [L] → Exception Log → [ENTER]<br><i style="color:var(--muted)">Non-cash recycler: verify against CFIs from vault. Cash recycler: should show no loans.</i>`)}
+    ${bbCard('Enhanced Password Rules',`Expires every 90 days · Alpha-numeric (at least 1 letter + 1 number) · 8 characters · Case sensitive<br>Cannot reuse previous 5 passwords · No spaces or special characters`)}
+    ${bbCard('Changing Food Court Lookup Keys',`TGCS ACE [1] → User Applications [U] → Keyboard Lookup Utility [K] → Whse Food Court → [ENTER]<br>TAB between keys to edit · ALT+S to save<br><i style="color:var(--muted)">Uploads to register after signing off</i>`)}
+  </div>
+
+  <!-- SCO -->
+  <div class="bb-section" data-sec="sco">
+    ${bbCard('Open a Lane',`Sign on at SCO host → select lane → Enter`)}
+    ${bbCard('Membership Block',`Swipe or key valid membership card on the PIN pad`)}
+    ${bbCard('Age Validation',`Enter 1 at SCO host when prompted`)}
+    ${bbCard('Pairing Hand Scanner',`At SCO host: select lane → pair scanner → scan test barcode to confirm`)}
+    ${bbCard('Suspend Transaction',`SCO host → Suspend → note transaction# → resume at any SCO lane`)}
+    ${bbCard('Void Transaction',`SCO host → Void Transaction`)}
+    ${bbCard('Void Single Item',`SCO host → select item in list → Void Item`)}
+    ${bbCard('Manual Item Entry',`SCO host → key item# → Enter weight if prompted`)}
+    ${bbCard('Multiple Quantities',`Scan item → at SCO host key quantity → Enter`)}
+    ${bbCard('Close a Lane',`Sign off at SCO host → Close Lane`)}
+    ${bbCard('Troubleshooting SCO',`<b>Freezes:</b> SCO host → Restart Lane<br><b>Scale issue:</b> verify item is flat on scale · clear and retry<br><b>Scanner not reading:</b> clean glass · manual entry at host<br><b>Member card not reading:</b> key membership# manually at host`)}
+  </div>
+
+  <!-- SHOP CARDS -->
+  <div class="bb-section" data-sec="shopcards">
+    ${bbCard('Sell / Add Value to Shop Card',`Scan shop card item# → scan card at register → tender`)}
+    ${bbCard('Card Redemption at Register',`Scan items → <span class="kc">&lt;TOTAL&gt;</span> → <span class="kc">&lt;CREDIT/DEBIT&gt;</span> → swipe or scan card<br>Digital card: <span class="kc">&lt;CREDIT/DEBIT&gt;</span> → <span class="kc">&lt;CLEAR&gt;</span> → <span class="kc">&lt;CLEAR&gt;</span> → scan digital barcode → <span class="kc">&lt;ENTER&gt;</span>`)}
+    ${bbCard('Cards Used by Non-Members',`Non-members can purchase items using Shop Cards — no membership needed<br>Use member #99 if no membership number available`)}
+    ${bbCard('Balance Inquiry',`Scan card at PIN pad on any register<br>Or call: (888) 668-9668`)}
+    ${bbCard('Void Transaction with Shop Card',`Void as normal — card value is automatically restored`)}
+    ${bbCard('Lost Cards',`Member calls (888) 668-9668 · Balance transferred to new card<br>Old card deactivated immediately`)}
+    ${bbCard('Balance Transfer',`Member calls (888) 668-9668 to transfer balance between cards`)}
+    ${bbCard('Cross-Border Use (US/CA)',`US Shop Cards can be used in Canada warehouses and vice versa<br>Converted at current exchange rate`)}
+    ${bbCard('Cash Out (Exception States Only)',`CA=up to $10 · CO,CT,HI,MA,ME,MT,NJ,NY,OR,PR,WA,RI,VT=up to $5 · TX=up to $2.50<br>Physical: sign on → 1, SIGN ON → scan membership# → CREDIT/DEBIT → swipe card<br>Digital: sign on → 1, SIGN ON → scan membership# → CREDIT/DEBIT, CLEAR, CLEAR → scan barcode`)}
+    ${bbCard('Convert Gift of Membership (GOM)',`GOM cannot be redeemed for value other than $65 or cashed out<br>Funds may be transferred to a Shop Card<br>Wave terminal: scan membership# → activate new $65 Shop Card → swipe GOM as payment`)}
+  </div>
+
+  <!-- TROUBLESHOOT -->
+  <div class="bb-section" data-sec="troubleshoot">
+    ${bbCard('Quick Register Fixes',`<b>U008 Message:</b> press <span class="kc">&lt;CLEAR&gt;</span><br><b>Clear Message Light:</b> press <span class="kc">&lt;CLEAR&gt;</span><br><b>Z001/Z002:</b> press <span class="kc">&lt;CLEAR&gt;</span><br><b>Readdress (full screen):</b> hold Ctrl+R or use touchscreen recalibrate<br><b>System Down:</b> (425) 313-8001 Option 9`)}
+    ${bbCard('PIN Pad Resets',`<b>MX915:</b> Unplug from register → wait 5 sec → replug<br><b>M400:</b> Hold power button 5 sec until light goes out → release → power on<br><b>M400 Serial#:</b> hold 1+5+9 on keypad for 3 sec<br><b>PIN Pad Resync (CN):</b> Manager screen → Terminal → Resync`)}
+    ${bbCard('Card Issues',`<b>Chip not reading:</b> clean chip → try again · offer alternate card<br><b>Mag stripe not swiping:</b> clean stripe · manual entry (high chargeback risk)<br><b>Credit/debit manual entry:</b> <span class="kc">&lt;CREDIT/DEBIT&gt;</span> → <span class="kc">&lt;CLEAR&gt;</span> → <span class="kc">&lt;CLEAR&gt;</span> → enter card# + expiry on PIN pad`)}
+    ${bbCard('Register Quick Reload',`Hold power button → select Reload<br>Or: unplug power → wait 10 sec → replug`)}
+    ${bbCard('Store and Forward (SAF)',`When credit/debit system is down, register approves transactions locally<br>Transactions held in SAF queue until system restores<br>Run Outstanding SAF/TOR Report from Controller to verify all released<br>Contact Service Desk if transactions remain stuck`)}
+    ${bbCard('Conveyor Belt Issue',`Check for jammed items at both ends · Check emergency stop not engaged<br>Unplug power strip under belt → wait 10 sec → replug`)}
+    ${bbCard('Scanner Not Reading',`Clean scanner glass with dry cloth<br>Check if item is damaged/bent barcode<br>Key item# manually or use price override`)}
+  </div>
+
+  <!-- CONTACTS -->
+  <div class="bb-section" data-sec="contacts">
+    <div class="bb-section-title">Emergency Numbers</div>
+    <div class="phone-grid">
+      <div class="phone-card"><div class="phone-label">Service Desk 24/7</div><div class="phone-num"><a href="tel:4253138001">(425) 313-8001</a></div><div style="font-size:10px;color:var(--warn);margin-top:3px">Option 9 = Register Down</div></div>
+      <div class="phone-card"><div class="phone-label">Fiserv</div><div class="phone-num"><a href="tel:8005540034">(800) 554-0034</a></div></div>
+      <div class="phone-card"><div class="phone-label">Citi Auth (US)</div><div class="phone-num"><a href="tel:8662085147">(866) 208-5147</a></div></div>
+      <div class="phone-card"><div class="phone-label">Shop Cards (US)</div><div class="phone-num"><a href="tel:8886689668">(888) 668-9668</a></div></div>
+      <div class="phone-card"><div class="phone-label">Member Services</div><div class="phone-num"><a href="tel:8007742678">(800) 774-2678</a></div></div>
+      <div class="phone-card"><div class="phone-label">Ecom Priority</div><div class="phone-num"><a href="tel:8667653743">(866) 765-3743</a></div></div>
+      <div class="phone-card" style="grid-column:1/-1"><div class="phone-label">FRN / Whs Ops Email</div><div class="phone-num" style="font-size:13px">whsopsFRNsupport@costco.com</div></div>
+    </div>
+    <div class="bb-section-title">Register Numbers</div>
+    <div class="reg-grid">
+      <div class="reg-row"><span class="reg-name">Front End</span><span class="reg-range">1–50</span></div>
+      <div class="reg-row"><span class="reg-name">Tobacco</span><span class="reg-range">61–64</span></div>
+      <div class="reg-row"><span class="reg-name">Optical</span><span class="reg-range">71–74</span></div>
+      <div class="reg-row"><span class="reg-name">Hearing Aid</span><span class="reg-range">79</span></div>
+      <div class="reg-row"><span class="reg-name">Pharmacy</span><span class="reg-range">91–94</span></div>
+      <div class="reg-row"><span class="reg-name">Tire Center</span><span class="reg-range">95–98</span></div>
+      <div class="reg-row"><span class="reg-name">Liquor</span><span class="reg-range">99–104</span></div>
+      <div class="reg-row"><span class="reg-name">Enterprise Refunds</span><span class="reg-range">121–130</span></div>
+      <div class="reg-row"><span class="reg-name">Membership</span><span class="reg-range">191–199</span></div>
+      <div class="reg-row"><span class="reg-name">Self-Checkout</span><span class="reg-range">201–212</span></div>
+      <div class="reg-row"><span class="reg-name">Food Court Kiosk</span><span class="reg-range">231–240</span></div>
+      <div class="reg-row"><span class="reg-name">Food Court</span><span class="reg-range">501–508</span></div>
+      <div class="reg-row"><span class="reg-name">Control</span><span class="reg-range">800</span></div>
+    </div>
+  </div>
+  `;
+}
+
+// ── SEARCH ────────────────────────────────────────────────────────────────────
+const ALIASES = {
+  'rib eye':'ribeye','ny':'new york','bs':'b/s','bi':'bone-in',
+  'bsr':'boneless short rib','sr':'short rib','loin tip':'flap meat',
+  'skirt':'skirt steak','scan in':'scan into production',
+};
+
+function scoreMatch(text, q) {
+  if (!text || !q) return 0;
+  const t = text.toLowerCase(), query = q.toLowerCase();
+  if (t === query) return 100;
+  if (t.startsWith(query)) return 88;
+  if (t.includes(query)) return 72;
+  const words = query.split(/\s+/).filter(Boolean);
+  if (words.length > 1) {
+    if (words.every(w => t.includes(w))) return 65;
+    const hits = words.filter(w => t.includes(w)).length;
+    if (hits) return 35 + hits * 8;
+  }
+  return 0;
+}
+function hl(text, q) {
+  if (!q || !text) return String(text || '');
+  const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return String(text).replace(new RegExp('(' + esc + ')', 'gi'), '<mark>$1</mark>');
+}
+
+function doSearch(raw) {
+  const q = raw.trim();
+  const sp = document.getElementById('search-results');
+  const ri = document.getElementById('result-inner');
+  if (!q) {
+    sp.style.display = 'none';
+    document.getElementById(_activeTab).classList.add('active');
+    return;
+  }
+  document.querySelectorAll('.tab-page').forEach(p => { if (p.id !== 'search-results') p.classList.remove('active'); });
+  sp.style.display = 'block';
+
+  const expanded = ALIASES[q.toLowerCase()] || q;
+  const isNum = /^\d+$/.test(q);
+  const pluRes = [], cmdRes = [], polRes = [];
+
+  for (const [catKey, cat] of Object.entries(PLU)) {
+    for (const grp of cat.groups) {
+      for (const [name, plu] of grp.items) {
+        const ps = String(plu);
+        let s = 0;
+        if (isNum) {
+          if (ps === q) s = 300;
+          else if (ps.startsWith(q)) s = 200;
+          else if (ps.includes(q)) s = 150;
+        }
+        const ts = Math.max(
+          scoreMatch(name, q), scoreMatch(name, expanded),
+          scoreMatch(ps, q), scoreMatch(cat.label, q), scoreMatch(grp.title, q)
+        );
+        s = Math.max(s, ts);
+        if (s > 0) pluRes.push({name, plu, catLabel: cat.label, grp: grp.title, s});
+      }
+    }
+  }
+  pluRes.sort((a, b) => b.s - a.s);
+
+  for (const c of CMDS) {
+    const s = Math.max(
+      scoreMatch(c.cmd, q), scoreMatch(c.name, q), scoreMatch(c.name, expanded),
+      scoreMatch(c.desc || '', q), scoreMatch(c.steps || '', q)
+    );
+    if (s > 0) cmdRes.push({...c, s});
+  }
+  cmdRes.sort((a, b) => b.s - a.s);
+
+  for (const p of POLICIES) {
+    const s = Math.max(scoreMatch(p.title, q), scoreMatch(p.tags || '', q), scoreMatch(p.body || '', q));
+    if (s > 0) polRes.push({...p, s});
+  }
+  polRes.sort((a, b) => b.s - a.s);
+
+  let html = '';
+  if (pluRes.length) {
+    html += `<div class="rg-title">PLU Numbers (${pluRes.length})</div>`;
+    pluRes.slice(0, 20).forEach(r => {
+      html += `<div class="result-card" onclick="tapPLU(${r.plu})">
+        <div class="r-plu">${hl(String(r.plu), q)}</div>
+        <div class="r-name">${hl(r.name, q)}</div>
+        <div class="r-sub">${hl(r.catLabel, q)} · ${hl(r.grp, q)}</div>
+      </div>`;
+    });
+  }
+  if (cmdRes.length) {
+    html += `<div class="rg-title">AS400 Commands (${cmdRes.length})</div>`;
+    cmdRes.slice(0, 10).forEach(r => {
+      html += `<div class="result-card" onclick="jumpToCmd('cmd-${r.cmd.replace(/\s/g, '-')}')">
+        <div><span class="r-cmd">${hl(r.cmd, q)}</span><span style="font-weight:600">${hl(r.name, q)}</span></div>
+        <div class="r-desc">${hl(r.desc, q)}</div>
+      </div>`;
+    });
+  }
+  if (polRes.length) {
+    html += `<div class="rg-title">Policies (${polRes.length})</div>`;
+    polRes.slice(0, 5).forEach(r => {
+      html += `<div class="result-card">
+        <div class="r-name">${hl(r.title, q)}</div>
+        <div class="r-desc" style="margin-top:4px">${hl(r.body.substring(0, 120), q)}…</div>
+      </div>`;
+    });
+  }
+  if (!html) html = `<div class="no-results">No results for "<b>${q}</b>"<br><span style="font-size:13px;color:var(--muted)">Try a cut name, PLU number, or AS400 command</span></div>`;
+  ri.innerHTML = html;
+}
+
+// ── SUBBAR ────────────────────────────────────────────────────────────────────
+function renderSubbar(tabId) {
+  const items = SUBBARS[tabId] || [];
+  const activeKey = tabId === 'plu-page' ? _activePLUCat
+    : tabId === 'as400-page' ? _activeAS400Cat : _activeBBSec;
+  document.getElementById('subbar').innerHTML = items.map(item =>
+    `<button class="sb-btn${item.key === activeKey ? ' active' : ''}" onclick="subbarClick('${tabId}','${item.key}')">${item.label}</button>`
+  ).join('');
+}
+
+function subbarClick(tabId, key) {
+  if (tabId === 'plu-page') {
+    _activePLUCat = key;
+    document.querySelectorAll('.plu-section').forEach(s => s.classList.remove('active'));
+    const sec = document.getElementById('plu-' + key);
+    if (sec) sec.classList.add('active');
+    document.getElementById('content').scrollTop = 0;
+  } else if (tabId === 'as400-page') {
+    _activeAS400Cat = key;
+    document.querySelectorAll('.as400-group').forEach(g => {
+      g.classList.toggle('visible', key === 'all' || g.dataset.cat === key);
+    });
+    document.getElementById('content').scrollTop = 0;
+  } else {
+    _activeBBSec = key;
+    document.querySelectorAll('.bb-section').forEach(s => {
+      s.classList.toggle('visible', s.dataset.sec === key);
+    });
+    document.getElementById('content').scrollTop = 0;
+  }
+  renderSubbar(tabId);
+}
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
+function switchTab(tabId) {
+  clearSearch();
+  _activeTab = tabId;
+  document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  const btn = document.querySelector(`[data-tab="${tabId}"]`);
+  if (btn) btn.classList.add('active');
+  document.getElementById('content').scrollTop = 0;
+  renderSubbar(tabId);
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('clear-btn').style.display = 'none';
+  document.getElementById('search-results').style.display = 'none';
+  document.getElementById(_activeTab).classList.add('active');
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────────────
+function tapPLU(plu) {
+  if (navigator.vibrate) navigator.vibrate(30);
+  if (navigator.clipboard) navigator.clipboard.writeText(String(plu)).catch(() => {});
+  showToast('PLU ' + plu + ' — copied!');
+}
+function jumpToCmd(id) {
+  switchTab('as400-page');
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    if (el) { el.open = true; el.scrollIntoView({behavior: 'smooth', block: 'start'}); }
+  }, 80);
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ── KEYBOARD / VIEWPORT FIX ───────────────────────────────────────────────────
+let _lockedVH = 0;
+function applyVH(force) {
+  const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  // On first call (page load), lock the height so browser chrome show/hide
+  // never causes the layout to jump. Only update if the keyboard is open
+  // (height shrinks significantly = soft keyboard) or forced.
+  if (!_lockedVH || force) {
+    _lockedVH = h;
+    document.getElementById('app').style.height = h + 'px';
+    return;
+  }
+  // Allow resize only when the soft keyboard is clearly involved
+  // (height drops by more than 150px = keyboard opened/closed)
+  const delta = _lockedVH - h;
+  if (delta > 150) {
+    // Keyboard open: shrink app so content isn't hidden behind it
+    document.getElementById('app').style.height = h + 'px';
+  } else {
+    // Browser chrome toggle: restore locked height, don't jump
+    document.getElementById('app').style.height = _lockedVH + 'px';
+  }
+}
+function resetScroll() {
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  renderPLU();
+  renderAS400();
+  renderBluebook();
+  renderSubbar('plu-page');
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  const inp = document.getElementById('search-input');
+  const clr = document.getElementById('clear-btn');
+  let st;
+  inp.addEventListener('input', () => {
+    const v = inp.value;
+    clr.style.display = v ? 'flex' : 'none';
+    clearTimeout(st);
+    st = setTimeout(() => doSearch(v), v.length < 3 ? 0 : 50);
+  });
+  inp.addEventListener('focus', () => {
+    // Don't call resetScroll on focus — it fights the browser's
+    // auto-scroll-to-input behavior and causes the field to lose focus
+  });
+  inp.addEventListener('blur', () => setTimeout(() => {
+    if (_lockedVH) document.getElementById('app').style.height = _lockedVH + 'px';
+  }, 100));
+  document.getElementById('header').addEventListener('touchmove', e => {
+    // Only block touchmove on the subbar scroll, not on the search input area
+    if (!e.target.closest('#subbar') && !e.target.closest('#search-wrap')) e.preventDefault();
+  }, {passive: false});
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+      if (document.activeElement === inp) return; // keyboard open — don't touch layout
+      applyVH();
+      resetScroll();
+    });
+    window.visualViewport.addEventListener('scroll', resetScroll);
+  }
+  applyVH();
+  window.addEventListener('resize', () => {
+    if (document.activeElement === inp) return;
+    applyVH();
+  });
+
+  // ── PWA INSTALL ──────────────────────────────────────────────────────────────
+  let _deferredPrompt = null;
+  const banner = document.getElementById('install-banner');
+  const ibSub  = document.getElementById('ib-sub-text');
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+  const isIOS     = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isAndroid = /android/i.test(navigator.userAgent);
+
+  if (!isStandalone && !sessionStorage.getItem('install-dismissed')) {
+    // Android Chrome: catch native install prompt
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      _deferredPrompt = e;
+      ibSub.textContent = 'Tap Install to run full-screen, no address bar';
+      banner.classList.remove('hidden');
+    });
+
+    // Show banner immediately for all non-standalone users
+    // with platform-appropriate instructions
+    if (isIOS) {
+      ibSub.textContent = 'Tap Share ↑ → "Add to Home Screen"';
+    } else if (isAndroid) {
+      ibSub.textContent = 'Tap ⋮ → "Add to Home Screen" for full-screen';
+    } else {
+      ibSub.textContent = 'Add to Home Screen to hide the address bar';
+    }
+    setTimeout(() => banner.classList.remove('hidden'), 500);
+
+    document.getElementById('ib-install-btn').addEventListener('click', async () => {
+      if (_deferredPrompt) {
+        _deferredPrompt.prompt();
+        const { outcome } = await _deferredPrompt.userChoice;
+        _deferredPrompt = null;
+        banner.classList.add('hidden');
+      } else if (isIOS) {
+        showToast('Tap Share ↑ then "Add to Home Screen"');
+        banner.classList.add('hidden');
+      } else {
+        showToast('Tap ⋮ menu → "Add to Home Screen"');
+        banner.classList.add('hidden');
+      }
+    });
+
+    document.getElementById('ib-dismiss-btn').addEventListener('click', () => {
+      banner.classList.add('hidden');
+      sessionStorage.setItem('install-dismissed', '1');
+    });
+  }
+
+  // Register service worker for offline support (inline worker via blob)
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+const CACHE = 'cfg-v1';
+self.addEventListener('install', e => {
+  self.skipWaiting();
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(clients.claim());
+});
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.open(CACHE).then(cache =>
+      cache.match(e.request).then(hit => {
+        const fresh = fetch(e.request).then(r => { cache.put(e.request, r.clone()); return r; }).catch(() => hit);
+        return hit || fresh;
+      })
+    )
+  );
+});`;
+    const blob = new Blob([swCode], {type: 'application/javascript'});
+    const swURL = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swURL, {scope: './'}).catch(() => {});
+  }
+});
+</script>
+</body>
+</html>
