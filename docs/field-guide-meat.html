@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#8b0000">
+<title>Meat Field Guide — Dept 61</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0a0a; --sf:#111; --sf2:#181818; --bd:#222; --bd2:#1a1a1a;
+  --tx:#eaecf2; --mt:#7a8499;
+  --red:#cc1020; --red2:#e8192c;
+  --r:10px;
+  /* Animal colors — tuned for equal visual weight on dark bg */
+  --beef-bg:#6e1515;   --beef-tx:#c04040;
+  --pork-bg:#8f3060;   --pork-tx:#d06090;
+  --lamb-bg:#6e3a28;   --lamb-tx:#b07060;
+  --poultry-bg:#705800; --poultry-tx:#c8a800;
+  --seafood-bg:#1a5a96; --seafood-tx:#4a9ae0;
+  --grinds-bg:#782030; --grinds-tx:#c05060;
+  --cryo-bg:#384f66;   --cryo-tx:#7aaac8;
+  --cases-bg:#624830;  --cases-tx:#b88850;
+  --logs-bg:#404858;   --logs-tx:#9aaab8;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);overscroll-behavior:none}
+body{font-family:'Barlow',sans-serif;color:var(--tx);font-size:15px;line-height:1.5}
+
+#app{display:flex;flex-direction:column;height:100dvh;width:100%;max-width:640px;margin:0 auto;overflow:hidden}
+
+/* HEADER */
+#hdr{flex-shrink:0;background:#0a0a0a;border-bottom:2px solid #1e1e1e;padding:10px 14px 9px;display:flex;align-items:center;gap:10px;z-index:200;position:relative}
+#back-btn{display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid #333;border-radius:5px;color:#888;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;padding:5px 9px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .1s}
+#back-btn:active{background:rgba(255,255,255,.06)}
+#back-btn.hide{display:none}
+.badge{background:rgba(80,0,0,.9);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:4px 9px;text-align:center;flex-shrink:0;line-height:1.2}
+.badge-l1{font-size:14px;font-weight:900;color:#fff;letter-spacing:.08em}
+.badge-l2{font-size:8px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.18em;text-transform:uppercase;margin-top:1px}
+#hdr-title{flex:1;min-width:0}
+#page-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#fff;line-height:1}
+#page-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.38);letter-spacing:1.5px;margin-top:2px}
+
+/* SEARCH */
+#srch-wrap{flex-shrink:0;position:relative;padding:8px 12px;background:#0a0a0a;border-bottom:1px solid #1a1a1a}
+#srch-input{width:100%;background:rgba(0,0,0,.4);border:1.5px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;font-size:16px;padding:9px 36px 9px 38px;outline:none;-webkit-appearance:none;touch-action:manipulation}
+#srch-input:focus{border-color:rgba(255,255,255,.55)}
+#srch-input::placeholder{color:rgba(255,255,255,.32)}
+.si{position:absolute;left:22px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:rgba(255,255,255,.38);pointer-events:none}
+#srch-clr{position:absolute;right:20px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.14);border:none;color:#fff;width:20px;height:20px;border-radius:50%;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center}
+
+/* CONTENT */
+#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
+
+/* VIEWS */
+.view{display:none}
+.view.active{display:block;animation:fi .12s ease}
+@keyframes fi{from{opacity:.4}to{opacity:1}}
+
+/* ── HUB ── */
+#v-hub{padding:14px 12px 24px}
+.hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hub-tile{background:var(--sf);border:1px solid #282828;border-radius:13px;padding:20px 12px 18px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;touch-action:manipulation;transition:background .12s}
+.hub-tile:active{background:#1a1a1a}
+.hub-icon{font-size:30px;line-height:1}
+.hub-label{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#fff}
+.hub-sub{font-size:11px;color:var(--mt);text-align:center;line-height:1.3}
+.hub-tile-sop{grid-column:1/-1;flex-direction:row;justify-content:center;gap:14px;padding:16px}
+.hub-tile.plu{border-color:#3a1818}
+.hub-tile.as4{border-color:#182030}
+.hub-tile.sop{border-color:#182818}
+
+/* ── PLU HUB ── */
+#v-plu-hub{padding:12px 12px 24px}
+.plu-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.pcat-btn{border:none;border-radius:12px;padding:18px 12px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;touch-action:manipulation;transition:opacity .1s,transform .1s}
+.pcat-btn:active{opacity:.8;transform:scale(.97)}
+.pcat-icon{font-size:24px;line-height:1}
+.pcat-label{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:.05em;text-transform:uppercase}
+.pcat-count{font-size:10px;font-weight:700;letter-spacing:.07em;opacity:.75}
+.pcat-logs{grid-column:1/-1;flex-direction:row;justify-content:center;gap:14px;padding:14px 16px;margin-top:2px}
+
+/* ── PLU LIST ── */
+#v-plu-list{padding-bottom:24px}
+.plu-sec-hdr{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:9px 14px 7px;position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid #1a1a1a}
+.plu-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid #161616;cursor:pointer;touch-action:manipulation;min-height:48px;gap:10px}
+.plu-row:active{background:#141414}
+.plu-name{font-size:14px;font-weight:600;flex:1;line-height:1.3;color:var(--red)}
+.plu-num{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;flex-shrink:0;min-width:52px;text-align:right}
+
+/* Shelf life */
+.shelf-wrap{margin:10px 12px}
+details.shelf{overflow:hidden}
+.shelf-sum{list-style:none;background:var(--sf2);border:1px solid #2a2a2a;border-radius:10px;padding:11px 13px;display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);cursor:pointer;touch-action:manipulation}
+.shelf-sum::-webkit-details-marker{display:none}
+details.shelf[open] .shelf-sum{border-radius:10px 10px 0 0;border-bottom-color:transparent}
+.shev{width:14px;height:14px;color:var(--mt);transition:transform .2s;flex-shrink:0}
+details.shelf[open] .shev{transform:rotate(180deg)}
+.shelf-body{background:var(--sf);border:1px solid #2a2a2a;border-top:none;border-radius:0 0 10px 10px;padding:6px 13px 10px}
+.shelf-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #1a1a1a;font-size:13px}
+.shelf-row:last-child{border:none}
+.shelf-item{color:var(--tx);flex:1}
+.shelf-days{font-size:17px;font-weight:800;color:var(--red2);flex-shrink:0;min-width:34px;text-align:right}
+
+/* Case info */
+.case-card{margin:10px 12px;background:var(--sf);border:1px solid #282828;border-radius:10px;padding:12px 14px}
+.case-title{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin-bottom:10px}
+.case-step{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:13px;line-height:1.4;color:var(--tx)}
+.case-n{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--mt);flex-shrink:0;min-width:18px;margin-top:1px}
+
+/* ── AS400 ── */
+#v-as400{padding-bottom:24px}
+.a4-sec{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:11px 14px 6px;border-bottom:1px solid #1a1a1a;position:sticky;top:0;background:var(--bg);z-index:10}
+details.cmd{border-bottom:1px solid #181818;overflow:hidden}
+.cmd-sum{list-style:none;padding:11px 14px;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;gap:3px}
+.cmd-sum::-webkit-details-marker{display:none}
+.cmd-sum:active{background:#141414}
+.cmd-top{display:flex;align-items:center;gap:8px}
+.cbadge{background:var(--red);color:#fff;border-radius:5px;font-size:11px;font-weight:800;padding:2px 7px;flex-shrink:0;letter-spacing:.04em;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.cbadge.rf{background:#1a5a30}
+.cmd-name{font-size:13px;font-weight:700;color:var(--tx);flex:1;line-height:1.3}
+.cchev{width:14px;height:14px;color:var(--mt);transition:transform .2s;flex-shrink:0}
+details.cmd[open] .cchev{transform:rotate(180deg)}
+.cmd-desc{font-size:12px;color:var(--mt);line-height:1.4}
+.cmd-body{padding:8px 14px 12px;background:#0d0d0d;font-size:12.5px;color:#9ba8bf;line-height:1.6;border-top:1px solid #1a1a1a}
+.cmd-body b{color:var(--tx)}
+.cmd-body code{background:#1a1a2a;border:1px solid #2a2a3a;border-radius:4px;padding:1px 5px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#7dd3fc}
+.cmd-tip{margin-top:7px;padding:6px 10px;background:rgba(245,158,11,.08);border-left:2.5px solid #f59e0b;border-radius:0 5px 5px 0;font-size:12px;color:#d4a843}
+.rf-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}
+.rf-table th{text-align:left;color:var(--mt);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border-bottom:1px solid #222}
+.rf-table td{padding:6px 8px;border-bottom:1px solid #1a1a1a;vertical-align:top}
+.rf-table tr:last-child td{border:none}
+.rf-table td:first-child{font-family:'JetBrains Mono',monospace;font-weight:800;color:#1a8a50;font-size:14px;width:38px}
+.rf-table td:last-child{color:var(--tx);font-weight:600}
+
+/* ── SOP HUB ── */
+#v-sop-hub{padding:12px 12px 24px}
+.sop-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.sop-btn{background:var(--sf);border:1px solid #2a2a2a;border-radius:12px;padding:18px 12px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;touch-action:manipulation;transition:background .12s}
+.sop-btn:active{background:#1a1a1a}
+.sop-icon{font-size:26px;line-height:1}
+.sop-label{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#fff;text-align:center}
+.sop-sub{font-size:10px;color:var(--mt);text-align:center;line-height:1.3}
+
+/* ── SOP DETAIL ── */
+#v-sop-detail{padding-bottom:24px}
+.sop-sec{padding:12px 14px;border-bottom:1px solid #181818}
+.sop-sec-title{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mt);margin-bottom:8px}
+.sop-step{display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:13px;line-height:1.5;border-bottom:1px solid #141414}
+.sop-step:last-child{border:none}
+.sop-n{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--red);flex-shrink:0;min-width:22px;margin-top:1px}
+.sop-body{flex:1;color:var(--tx)}
+.sop-body b{color:#fff}
+.sop-note{background:rgba(245,158,11,.07);border-left:2.5px solid #f59e0b;border-radius:0 6px 6px 0;padding:8px 12px;font-size:12px;color:#d4a843;margin:8px 0;line-height:1.5}
+.sop-warn{background:rgba(204,16,32,.08);border-left:2.5px solid var(--red);border-radius:0 6px 6px 0;padding:8px 12px;font-size:12px;color:#e85060;margin:8px 0;line-height:1.5}
+
+/* ── SEARCH ── */
+#v-search{padding:8px 12px 24px}
+.sr-hdr{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mt);margin:14px 0 6px}
+.sr-card{background:var(--sf);border:1px solid #222;border-radius:9px;padding:11px 13px;margin-bottom:6px;cursor:pointer;touch-action:manipulation}
+.sr-card:active{background:#1a1a1a}
+.sr-plu{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:800;line-height:1.1}
+.sr-name{font-size:14px;font-weight:600;color:var(--red);margin-top:2px}
+.sr-sub{font-size:11px;color:var(--mt);margin-top:2px}
+.sr-cbadge{display:inline-block;background:var(--red);color:#fff;border-radius:4px;font-size:11px;font-weight:700;padding:1px 7px;margin-right:6px;font-family:'JetBrains Mono',monospace}
+.sr-desc{font-size:12px;color:var(--mt);margin-top:3px;line-height:1.4}
+mark{background:rgba(255,210,0,.3);color:#fff;border-radius:2px;padding:0 1px}
+.no-res{text-align:center;padding:44px 20px;color:var(--mt)}
+
+/* TOAST */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(6px);background:#22c55e;color:#fff;border-radius:20px;padding:8px 18px;font-size:13px;font-weight:600;opacity:0;transition:opacity .18s,transform .18s;pointer-events:none;z-index:999;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#282828;border-radius:2px}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header id="hdr">
+  <button id="back-btn" class="hide" onclick="goBack()">← Back</button>
+  <div class="badge"><div class="badge-l1">COSTCO</div><div class="badge-l2">WHOLESALE</div></div>
+  <div id="hdr-title">
+    <div id="page-title">Meat Field Guide</div>
+    <div id="page-sub">DEPT 61 · TEMPE</div>
+  </div>
+</header>
+
+<div id="srch-wrap">
+  <svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+  <input id="srch-input" type="search" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search PLU or command…">
+  <button id="srch-clr" onclick="clearSearch()">✕</button>
+</div>
+
+<div id="content">
+
+<!-- HUB -->
+<div id="v-hub" class="view active">
+  <div class="hub-grid">
+    <div class="hub-tile plu" onclick="nav('plu-hub','PLUs','SELECT CATEGORY')">
+      <div class="hub-icon">🥩</div>
+      <div class="hub-label">PLUs</div>
+      <div class="hub-sub">Codes by animal &amp; type</div>
+    </div>
+    <div class="hub-tile as4" onclick="nav('as400','AS400','COMMANDS · RF SCANNER')">
+      <div class="hub-icon">💻</div>
+      <div class="hub-label">AS400</div>
+      <div class="hub-sub">RF scanner &amp; commands</div>
+    </div>
+    <div class="hub-tile sop hub-tile-sop" onclick="nav('sop-hub','SOP','PROCEDURES')">
+      <div class="hub-icon">📋</div>
+      <div class="hub-label">SOP</div>
+      <div class="hub-sub">Procedures &amp; reference</div>
+    </div>
+  </div>
+</div>
+
+<!-- PLU HUB -->
+<div id="v-plu-hub" class="view">
+  <div class="plu-grid" id="plu-hub-grid"></div>
+</div>
+
+<!-- PLU LIST -->
+<div id="v-plu-list" class="view">
+  <div id="plu-list-inner"></div>
+</div>
+
+<!-- AS400 -->
+<div id="v-as400" class="view">
+  <div id="as400-inner"></div>
+</div>
+
+<!-- SOP HUB -->
+<div id="v-sop-hub" class="view">
+  <div class="sop-grid" id="sop-grid"></div>
+</div>
+
+<!-- SOP DETAIL -->
+<div id="v-sop-detail" class="view">
+  <div id="sop-detail-inner"></div>
+</div>
+
+<!-- SEARCH RESULTS -->
+<div id="v-search" class="view">
+  <div id="search-inner"></div>
+</div>
+
+</div><!-- #content -->
+</div><!-- #app -->
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+// ── COLORS ────────────────────────────────────────────────────────────────────
+const C = {
+  beef:    {bg:'#6e1515',tx:'#c04040'},
+  pork:    {bg:'#8f3060',tx:'#d06090'},
+  lamb:    {bg:'#6e3a28',tx:'#b07060'},
+  poultry: {bg:'#705800',tx:'#c8a800'},
+  seafood: {bg:'#1a5a96',tx:'#4a9ae0'},
+  grinds:  {bg:'#782030',tx:'#c05060'},
+  cryo:    {bg:'#384f66',tx:'#7aaac8'},
+  cases:   {bg:'#624830',tx:'#b88850'},
+  logs:    {bg:'#404858',tx:'#9aaab8'},
+};
+
+// ── PLU DATA ──────────────────────────────────────────────────────────────────
+const CATS = {
+  beef:{label:'Beef',icon:'🐄',color:C.beef,sections:[
+    {title:'Choice — Top Sirloin',items:[['Beef Top Sirloin Cap Off',542],['Beef Top Sirloin Cap Off Cryo',1509],['Beef Top Sirloin Cap Steak (Coulotte)',1514],['Beef Top Sirloin Cap Cryo',1519],['Beef Top Sirloin 2pc Case',1540]]},
+    {title:'Choice — New York',items:[['Beef New York Steak',2],['Beef New York Cryo',71],['Beef New York Case',410],['Beef Center Cut NY',1025],['Beef Center Cut NY Cryo',1026],['Beef Center Cut NY Case',1027]]},
+    {title:'Choice — Porterhouse / T-Bone',items:[['Beef Porterhouse Steak',1036],['Beef Porterhouse Case',1037],['Beef T-Bone Steak',7]]},
+    {title:'Choice — Tenderloin',items:[['Beef Tenderloin Steak',1],['Beef PSMO Cryo',8],['Beef Peeled Butt Cryo',79],['Beef PSMO Case',435],['Beef Peeled Butt Case',58],['Beef Tenderloin Tail Steak',1375],['Beef Tenderloin Extreme SMO',299],['Beef Tenderloin Extreme SMO Case',448]]},
+    {title:'Choice — Ribeye',items:[['Beef Ribeye Steak',5],['Beef Ribeye Roast',53],['Beef Ribeye Cryo',73],['Beef Ribeye Shabu Shabu',145],['Beef Ribeye Thin Cut',1454],['Beef Ribeye Case',406],['Beef Bone-In Rib Roast',52],['Beef Bone-In Rib Steak (GL Rib)',385],['Beef Frenched Bone-In Rib',54],['Beef Bone-In Rib Cryo',431],['Beef Bone-In Rib Case',10]]},
+    {title:'Choice — Tri Tip',items:[['Beef Tri-Tip Steak',11],['Beef Tri-Tip Roast',60],['Beef Tri-Tip Cryo',75],['Beef Tri-Tip Case',413],['Beef Untrimmed Tri-Tip',289],['Beef Untrimmed Tri-Tip Cryo',290]]},
+    {title:'Choice — Flap / Flank / Skirt',items:[['Beef Flap Meat (Loin Tip)',433],['Beef Flap Meat Cryo',432],['Beef Flap Meat Case',13],['Beef Flank Steak',1470],['Beef Flank Cryo',415],['Beef Flank Case',50],['Beef Inside Skirt Steak',4572],['Beef Inside Skirt Cryo',4],['Beef Marinated Skirt Steak',170]]},
+    {title:'Choice — Brisket',items:[['Beef Brisket Trimmed',78],['Beef Brisket Cryo',423],['Beef Brisket Flat Case',1425],['Beef Commodity Brisket',458],['Beef Commodity Brisket Cryo',457],['Beef Commodity Brisket Case',47]]},
+    {title:'Choice — Short Ribs',items:[['Beef Boneless Short Rib',1004],['Beef BSR Cryo',4000],['Beef BSR Korean Style',426],['Beef BSR Case',17],['Beef Bone-In Short Rib',1365],['Beef Bone-In SR Cryo',20],['Beef Plate Short Ribs',866],['Beef Plate SR Cryo',867],['Beef Plate SR Case',681],['Beef Back Rib',683],['Beef Back Rib Cryo',514]]},
+    {title:'Choice — Round / Chuck / Stew',items:[['Beef London Broil',61],['Beef Top Round Roast',85],['Beef Inside Round Cryo',407],['Beef Top Round Case',57],['Beef Sirloin Tip Roast',15],['Beef Eye of Round Roast',284],['Beef Eye of Round Cryo',436],['Beef Eye of Round Case',340],['Beef Bottom Round Roast',705],['Beef Stew Meat',1420],['Beef Chuck Steak',51],['Beef Chuck Roast',338],['Beef Chuck Roast Cryo',417],['Beef Chuck Roast Case',59],['Beef Chuck Shoulder Clod',86]]},
+    {title:'Choice — Specialty',items:[['Beef NY Shabu Shabu',451],['Beef Picanha (Top Sirloin Cap)',4940],['Beef Flat Iron Cryo',4295],['Beef Flat Iron Tray',4287],['Beef Cube Steak',520]]},
+    {title:'Prime — Tenderloin',items:[['Beef Prime Tenderloin Steak',336],['Beef Prime PSMO Cryo',343],['Beef Prime Tenderloin Case',337]]},
+    {title:'Prime — New York',items:[['Beef Prime NY Steak',278],['Beef Prime NY Cryo',325],['Beef Prime NY Case',329]]},
+    {title:'Prime — Ribeye',items:[['Beef Prime Ribeye Steak',333],['Beef Prime Ribeye Roast',341],['Beef Prime Ribeye Cryo',349],['Beef Prime Eye of Ribeye (2pc)',1775],['Beef Prime Ribeye Cap Steak',1779],['Beef Prime Ribeye Case',347],['Beef Prime Bone-In Rib Steak',378],['Beef Prime Bone-In Rib Roast',717],['Beef Prime Bone-In Rib Cryo',718]]},
+    {title:'Prime — Top Sirloin',items:[['Beef Prime Top Sirloin Steak',957],['Beef Prime Top Sirloin Cryo',975],['Beef Prime Top Sirloin Case',985],['Beef Prime Top Sirloin Cap Off',1670],['Beef Prime Top Sirloin Cap Steak',1773]]},
+    {title:'Prime — Tri Tip',items:[['Beef Prime Tri-Tip Steak',1270],['Beef Prime Tri-Tip Roast',1271],['Beef Prime Tri-Tip Cryo',1272],['Beef Prime Tri-Tip Case',1273]]},
+    {title:'Prime — Brisket / Short Ribs',items:[['Beef Prime Commodity Brisket',1535],['Beef Prime Commodity Brisket Cryo',1482],['Beef Prime Chuck Roast',1637],['Beef Prime Boneless Short Rib',1336],['Beef Prime BSR Cryo',1337],['Beef Prime Bone-In Chuck Short Rib',193]]},
+    {title:'Prime — Round / Stew',items:[['Beef Prime London Broil',219],['Beef Prime Top Round Roast',223],['Beef Prime Eye of Round Roast',243],['Beef Prime Stew Meat',1194]]},
+    {title:'Wagyu — Classic',items:[['Ribeye Steak',1099],['Ribeye Cap Steak',1102],['NY Striploin Steak',1089],['Tenderloin Steak',1164],['Top Sirloin Steak',1092],['Tri Tip Steak',1094],['Brisket Steak',836],['Bone In SR Steak',846],['Boneless Short Rib',848],['Teres Major Steak',868],['Flank Steak',841],['Inside Skirt Steak',1234]]},
+    {title:'Wagyu — A5 Japan',items:[['A5 Ribeye Steak',9620],['A5 Ribeye Cryo',9643],['A5 NY Strip Steak',9673],['A5 NY Strip Cryo',9679]]},
+  ]},
+  pork:{label:'Pork',icon:'🐷',color:C.pork,sections:[
+    {title:'Chops & Loin',items:[['Boneless Pork Chop',217],['Boneless Pork Chop Thin',1362],['Boneless Pork Loin Cryo',810],['Boneless Pork Loin Case',401],['Boneless Sirloin Chop',44],['Boneless Sirloin Cryo',616],['Pork Loin Rib & Loin Chops',102],['Pork Loin Chops Thin',292],['Pork Loin Bone In Case',416]]},
+    {title:'Roasts & Butt',items:[['Boneless Pork Roast',216],['Boneless Pork Butt Cryo',809],['Boneless Shoulder Butt Case',404],['Bone In Pork Butt Cryo',1810],['Pork Tenderloins',203],['Pork Tenderloins Case',419],['Sirloin Tip Roast',3010],['Rack of Pork',3169],['Rack of Pork Case',599]]},
+    {title:'Ribs',items:[['Pork Back Ribs',680],['Pork Back Ribs Cryo',208],['Pork Back Ribs Case',403],['Pork St. Louis Spare Ribs',682],['Pork St. Louis Ribs Cryo',1034],['Pork St. Louis Ribs Portions',693],['Pork St. Louis Ribs Sliced',238],['Pork St. Louis Ribs Case',405]]},
+    {title:'Specialty',items:[['Pork Stew Meat',150],['Pork Shoulder Blade Steak',212],['Shoulder Country Style Ribs',211],['Pork Belly',1615],['Pork Belly Cryo',1613],['Pork Belly Case',1614]]},
+  ]},
+  lamb:{label:'Lamb',icon:'🐑',color:C.lamb,sections:[
+    {title:'Lamb — Verify PLUs w/ Team Lead',note:'Lamb PLUs vary by seasonal availability and location.',items:[['Lamb Rack Frenched',null],['Lamb Loin Chops',null],['Lamb Leg Bone-In',null],['Lamb Leg Boneless',null],['Lamb Shoulder Chops',null]]},
+  ]},
+  poultry:{label:'Poultry',icon:'🐔',color:C.poultry,sections:[
+    {title:'Foster Farms',items:[['Foster Farms B/S Breast',861],['Foster Farms Thighs',864],['Foster Farms Drumsticks',863],['Foster Farms B/S Thighs',862],['Foster Farms Party Wings',7233],['Foster Farms Whole Fryers',7234],['Foster Farms Tenderloins',7237],['Foster Farms Turkey Toms',113],['Foster Farms Turkey Hens',114]]},
+    {title:'Lincoln Premium (LPP)',items:[['LPP Air Chilled Party Wings',4725],['LPP Tenderloins',4729],['LPP B/S Thighs',4731],['LPP Whole Fryers',4734],['LPP B/S Breasts',4735],['LPP Thighs',4737],['LPP Drumsticks',4739]]},
+    {title:'Pilgrims (KS)',items:[['Pilgrims B/S Breasts',519],['Pilgrims Thighs',1522],['Pilgrims Drumsticks',529],['Pilgrims Party Wings',32],['Pilgrims Tenderloins',147],['Pilgrims Whole Fryers',1555],['Pilgrims B/S Thighs',564]]},
+    {title:'Organic — Pilgrims',items:[['Org Pilgrims Whole Fryers',5971],['Org Pilgrims B/S Breasts',233],['Org Pilgrims Drumsticks',100],['Org Pilgrims Wings',103],['Org Pilgrims Tenderloins',106],['Org Pilgrims B/S Thighs',105]]},
+    {title:'Organic — Pitman',items:[['Org Pitman Whole Fryers',386],['Org Pitman B/S Breasts',280],['Org Pitman Drumsticks',187],['Org Pitman Wings',188],['Org Pitman Turkey Toms',190],['Org Pitman Turkey Hens',189]]},
+    {title:'Kosher — Empire',items:[['Empire Kosher Whole Fryers',777],['Empire Kosher B/S Breasts',781],['Empire Kosher Drumsticks',877],['Empire Kosher Thighs',558],['Empire Kosher Turkey Tenders',876],['Empire Kosher Ground Turkey',531]]},
+  ]},
+  seafood:{label:'Seafood',icon:'🐟',color:C.seafood,sections:[
+    {title:'Salmon — Farmed Fresh',items:[['Salmon Fillet (Norway, ABF)',2100],['Salmon Fillet (Chile, ABF)',382],['Salmon Fillet (Faroe Islands)',1391],['Salmon Fillet (Scotland)',708],['Salmon Portion (Norway, ABF)',747]]},
+    {title:'Salmon — Wild',items:[['Wild Sockeye Fillet',186],['Wild Copper River Sockeye',913],['Wild King Salmon Fillet',129],['Wild Coho Fillet',390],['Wild Keta Salmon',946]]},
+    {title:'Fresh Fish',items:[['Pacific Halibut',256],['Atlantic Halibut',257],['Mahi Mahi',1002],['Ahi Tuna',64],['Opah',838],['Rockfish',645],['Black Cod',393],['Tilapia',175],['Barramundi',508],['Catfish',502],['Snapper',591],['Corvina',749],['Haddock',710],['Pacific Cod',562],['Sea Bass / Branzino',563]]},
+    {title:'Whole Fish',items:[['Whole Atlantic Salmon (Farmed)',551],['Whole Sockeye (Wild)',168],['Whole Coho (Farmed)',163],['Whole Tilapia',354],['Whole Snapper',23],['Whole Branzino',560],['Whole Trout',122]]},
+    {title:'Shellfish — Fresh',items:[['Dungeness Crab (Cooked)',728],['Dungeness Crab Meat',254],['Dungeness Crab Clusters',704],['Live Mussels',582],['Live Clams (Manila)',285],['Live Oysters',987],['Scallops U-20',561],['Spot Prawns',904]]},
+    {title:'Shellfish — Frozen',items:[['Red King Crab (4-7ct)',456],['Snow Crab Legs',227],['Golden King Crab',218],['Argentinian King Crab',627],['Cold Water Lobster Tails 5lb',293],['Black Tiger Shrimp U-8',373],['White Shrimp U-15',688],['Sea Scallops U-10',481]]},
+    {title:'Frozen Fish',items:[['Chilean Sea Bass',765],['Swordfish',914],['Wild Sockeye Fillet (frozen)',770],['Wild Pacific Cod Loins',1693]]},
+  ]},
+  grinds:{label:'Grinds',icon:'⚙️',color:C.grinds,sections:[
+    {title:'Ground Beef',animal:'beef',items:[['Ground Beef 88/12',90],['Ground Beef — Patties',93],['Ground Beef — 10 lb Chubs',157],['Bull Meat',7653]]},
+    {title:'Ground Pork',animal:'pork',items:[['Ground Pork',300]]},
+  ]},
+  cryo:{label:'Cryo',icon:'🧊',color:C.cryo,shelfLife:true,sections:[]},
+  cases:{label:'Cases',icon:'📦',color:C.cases,caseInfo:true,sections:[]},
+  logs:{label:'Logs',icon:'📝',color:C.logs,sections:[
+    {title:'Admin / Production',items:[
+      ['Beef Trim (→ Grind Production)',903,'beef'],
+      ['COOL Log (Seafood / Poultry / Lamb)',999,'seafood'],
+    ]},
+  ]},
+};
+
+// Build cryo cross-section
+['beef','pork','seafood'].forEach(k=>{
+  const items=[];
+  CATS[k].sections.forEach(s=>s.items.forEach(([n,p])=>{if(/cryo/i.test(n))items.push([n,p]);}));
+  if(items.length) CATS.cryo.sections.push({title:CATS[k].label,animal:k,items});
+});
+
+// Build case cross-section
+['beef','pork','seafood'].forEach(k=>{
+  const items=[];
+  CATS[k].sections.forEach(s=>s.items.forEach(([n,p])=>{if(/case/i.test(n))items.push([n,p]);}));
+  if(items.length) CATS.cases.sections.push({title:CATS[k].label,animal:k,items});
+});
+
+function itemCount(key){
+  return CATS[key].sections.reduce((s,sec)=>s+sec.items.filter(i=>i[1]!==null).length,0);
+}
+
+// ── AS400 ─────────────────────────────────────────────────────────────────────
+const CMDS=[
+  {cmd:'67',cat:'rf',name:'Scan Into Production',desc:'Scan sub-primal boxes before cutting. Federal traceability requirement.',steps:'Every box BEFORE cutting begins.<br><b>Won\'t scan?</b> Look for depot label first.<br><b>No depot label → F6 Manual Mode:</b> key Establishment Code, Pack Date, Costco Item#, Case Weight from box end label.',tip:'Never skip — required for traceability.'},
+  {cmd:'69',cat:'rf',name:'Scan Beef Trim into Grinds',desc:'Log trim into grind production record.',steps:'Scan trim item → enter weight → confirm.<br>Use when converting trim (PLU 903) into ground beef.'},
+  {cmd:'72',cat:'rf',name:'Scan Shrink',desc:'Remove damaged/disposed items from on-hand inventory.',steps:'Scan/key items to remove from on-hand.<br><b>Same-day reversal:</b> enter negative amount in Sell Unit field.<br><b>Older reversal:</b> RTV option NSE18.',tip:'Requires password (72).'},
+  {cmd:'11',cat:'rf',name:'Item Inquiry',desc:'MOST USED. Scan or enter item# → on-hand qty and dept instantly.',steps:'Scan barcode OR key item# → on-hand qty, dept, status appear.'},
+  {cmd:'13',cat:'rf',name:'Item Alpha Inquiry',desc:'Search items by description or dept number.',steps:'Enter description (min 3 chars) + optional dept# → results.'},
+  {cmd:'16',cat:'rf',name:'UPC Inquiry',desc:'Scan UPC → item description and item number.',steps:'Scan UPC → item description + item# appear immediately.'},
+  {cmd:'20',cat:'rf',name:'Merchandise Audit Entry',desc:'Scan or key inventory audit counts.',steps:'Scan items to build count list. Multiple counts per item OK.'},
+  {cmd:'21',cat:'rf',name:'Clear Audit Count List',desc:'Clears ALL counts entered in option 20.',steps:'Clears list — run before starting a fresh audit count.'},
+  {cmd:'22',cat:'rf',name:'Print Merchandise Audit',desc:'Print inventory counts from option 20.',steps:'Prints the count list entered in option 20.'},
+  {cmd:'23',cat:'rf',name:'EDP Sign Requests',desc:'Print merchandise signs from handheld.',steps:'Enter size letter → scan/key items → F10 review → F21 print → select printer.'},
+  {cmd:'36',cat:'rf',name:'Print Pallet Tag',desc:'Print pallet ID tags for floor merchandise.',steps:'Select printer → enter item/UPC → qty → optional PO# + initials → Enter.'},
+  {cmd:'63',cat:'rf',name:'Fresh Foods Inventory Input',desc:'Enter fresh foods inventory counts from handheld.',steps:'Used on first day of each fiscal period for dept inventory.'},
+  {cmd:'88',cat:'rf',name:'Item/UPC Cross Reference',desc:'Cross-reference item# to all UPCs. Use when item won\'t scan.',steps:'Enter item# → full list of associated UPCs.'},
+  {cmd:'98',cat:'rf',name:'Item/UPC Check',desc:'View description, item#, UPC, and sell price.',steps:'Scan UPC or enter item# → full detail including sell price.'},
+  {cmd:'07',cat:'rf',name:'Print Depot Labels',desc:'Free-form text on pallet labels.',steps:'Printer: 1=RCV / 2=RTV → enter text → tag count → print.'},
+  {cmd:'18',cat:'rf',name:'Item Sales Report',desc:'Generate item sales report from handheld.',steps:'Enter whse# + optional date → scan/key items → F21 print.'},
+  {cmd:'IAI',cat:'item',name:'Item Alpha Inquiry',desc:'Search any item by keyword. Best starting point.',steps:'Enter keyword → Field Enter.<br>Drill: <b>8=ITMW</b> (full detail) · <b>6=Print Sign</b> · <b>4=RHI</b> (receive history)'},
+  {cmd:'ITMW',cat:'item',name:'Item Inquiry for Warehouse',desc:'Full detail — on-hand, price, on order, arrival date, real-time sales.',steps:'Enter item# → view all detail. <b>F21</b>=print sign'},
+  {cmd:'IOH',cat:'item',name:'Inventory On Hand',desc:'Current on-hand, future arrivals, daily sales snapshot.',steps:'Enter item# → view on-hand snapshot.'},
+  {cmd:'RHI',cat:'item',name:'Receiving History Inquiry',desc:'See when a specific item was last received.',steps:'Enter whse# + item# → receiving dates list.'},
+  {cmd:'IXI',cat:'item',name:'Item/UPC Cross Reference',desc:'Match item# to all UPCs. Use when item won\'t scan at register.',steps:'Enter item# → list of all UPCs.',tip:'UPC not listed = not set up. Contact EDP.'},
+  {cmd:'STK',cat:'sales',name:'Sales Tracking Inquiry',desc:'4-week unit sales + D&D. Primary production planning tool for Meat.',steps:'Enter fiscal year, period, week + location + dept#.<br><b>F19/F20</b>=scroll weeks · <b>F22</b>=export Excel.',tip:'Compare same day across last 4 weeks to calibrate cut quantities.'},
+  {cmd:'IWS',cat:'sales',name:'Weekly Item Unit Sales',desc:'Hourly sales breakdown for specific items.',steps:'Enter whse#, item#, time frame. Page Down for multiple items.'},
+  {cmd:'WIUS',cat:'sales',name:'Half-Hour Item Unit Sales',desc:'30-min interval version of IWS for granular planning.',steps:'Enter whse#, item#, time frame.'},
+  {cmd:'IAIMV',cat:'sales',name:'Dept Salvage Summary',desc:'Full D&D summary for an entire department.',steps:'Enter whse#, dept#, time frame.'},
+  {cmd:'IAD',cat:'sales',name:'Item Activity by Dept',desc:'Daily D&D in dollars by item.',steps:'Enter dept + date range → per-item D&D breakdown.'},
+  {cmd:'EDMP',cat:'signs',name:'Print Daily Maintenance',desc:'Print ALL price-change signs for the day. Run after 3am.',steps:'After 3am · Print=Y, size M · F21. Auto-sends to sign printer 1.',tip:'Must be printed and hung before opening every day.'},
+  {cmd:'EDSR',cat:'signs',name:'Electronic Data Sign Request',desc:'Quick sign print when item# known.',steps:'Select size (M or L) → enter up to 45 item#s or UPCs → F21.'},
+  {cmd:'EDSM',cat:'signs',name:'Custom Sign Maintenance',desc:'Customize a sign — Last One, price correction, same-day change.',steps:'Enter item#, size, qty → edit fields → <b>F3 to exit</b> (prints on exit).',tip:'Changed sell price? Per-oz unit price does NOT auto-update — recalculate manually.'},
+  {cmd:'MACR',cat:'rpts',name:'Merchandise Audit Count List',desc:'On-hand inventory by dept and category.',steps:'Enter dept# → optional category code filter.'},
+  {cmd:'FFPII',cat:'rpts',name:'Fresh Foods Period Inventory',desc:'Complete inventory snapshot for Meat at end of fiscal period.',steps:'Enter whse# + dept# → Page Up/Down to review all items.'},
+  {cmd:'GMD',cat:'rpts',name:'Gross Margin Dashboard',desc:'Financial performance for Fresh departments.',steps:'Enter whse# + dept# · Page Down for last year comparison.'},
+  {cmd:'OUTQ',cat:'rpts',name:'Print Outqueue',desc:'Manage all print jobs.',steps:'<b>2</b>=Change · <b>4</b>=Delete · <b>5</b>=Display · <b>6</b>=Release/print.<br>F19=other outqueues · Main: PRINT[loc#]'},
+];
+
+// ── SOP ───────────────────────────────────────────────────────────────────────
+const SOPS=[
+  {id:'grind',label:'Grinding 101',icon:'⚙️',sub:'Procedure & cleanup',content:`
+    <div class="sop-sec">
+      <div class="sop-sec-title">Pre-Grind Checklist</div>
+      <div class="sop-step"><div class="sop-n">1</div><div class="sop-body">Verify grinder was cleaned and sanitized per <b>SSOP FS06</b> before use.</div></div>
+      <div class="sop-step"><div class="sop-n">2</div><div class="sop-body">Confirm plate, knife, and auger are assembled and secured.</div></div>
+      <div class="sop-step"><div class="sop-n">3</div><div class="sop-body">All trim boxes must be scanned into production first — <b>RF Option 67</b>.</div></div>
+    </div>
+    <div class="sop-sec">
+      <div class="sop-sec-title">Grind Procedure</div>
+      <div class="sop-step"><div class="sop-n">1</div><div class="sop-body">Scan trim into grinds via <b>RF Option 69</b>. Enter weight for each trim item.</div></div>
+      <div class="sop-step"><div class="sop-n">2</div><div class="sop-body">Keep all trim at <b>40°F or below</b> throughout. Do not let product sit out.</div></div>
+      <div class="sop-step"><div class="sop-n">3</div><div class="sop-body">Grind, scale, tray, and label immediately. <b>Packed On = today. Sell By = today + 2 days.</b></div></div>
+      <div class="sop-step"><div class="sop-n">4</div><div class="sop-body">Do not mix choice and prime trim. Keep lean/fat batches separate.</div></div>
+      <div class="sop-note">Ground beef shelf life: <b>3 days tray pack</b> (Packed On + 2).</div>
+    </div>
+    <div class="sop-sec">
+      <div class="sop-sec-title">Post-Grind Cleanup — SSOP FS06</div>
+      <div class="sop-step"><div class="sop-n">1</div><div class="sop-body"><b>Disconnect power</b> before any disassembly.</div></div>
+      <div class="sop-step"><div class="sop-n">2</div><div class="sop-body">Remove Ring, Plate, Knife, Auger, Paddle.</div></div>
+      <div class="sop-step"><div class="sop-n">3</div><div class="sop-body"><b>WRS</b> (Wash, Rinse, Sanitize) all parts per SSOP. Air dry only — no towel dry.</div></div>
+      <div class="sop-step"><div class="sop-n">4</div><div class="sop-body">WRS grinder body and all contact surfaces.</div></div>
+      <div class="sop-step"><div class="sop-n">5</div><div class="sop-body">Complete SSOP form FS06. Apply mineral oil to parts. Reassemble.</div></div>
+      <div class="sop-warn">⚠ SSOP form required after every grind cycle — no exceptions.</div>
+    </div>`},
+  {id:'scan-in',label:'Scan Into Prod.',icon:'📡',sub:'RF Option 67',content:`
+    <div class="sop-sec">
+      <div class="sop-sec-title">RF Option 67 — Scan Into Production</div>
+      <div class="sop-step"><div class="sop-n">1</div><div class="sop-body">At RF scanner, select <b>Option 67 — Scan Into Production</b>.</div></div>
+      <div class="sop-step"><div class="sop-n">2</div><div class="sop-body">Scan the barcode on the sub-primal box end label.</div></div>
+      <div class="sop-step"><div class="sop-n">3</div><div class="sop-body"><b>Box won't scan?</b> Look for a depot-generated label on the box and try that.</div></div>
+      <div class="sop-step"><div class="sop-n">4</div><div class="sop-body"><b>No depot label:</b> Press <b>F6 Manual Mode</b> → key Establishment Code, Pack Date, Costco Item#, and Case Weight from box end label.</div></div>
+      <div class="sop-step"><div class="sop-n">5</div><div class="sop-body">Confirm entry. Repeat for every box before cutting begins.</div></div>
+      <div class="sop-warn">⚠ Federal traceability requirement — every box must be scanned BEFORE cutting begins.</div>
+    </div>
+    <div class="sop-sec">
+      <div class="sop-sec-title">Box End Label Fields</div>
+      <div class="sop-step"><div class="sop-n">•</div><div class="sop-body"><b>Establishment Code:</b> 3–4 digit USDA plant number (e.g. 969)</div></div>
+      <div class="sop-step"><div class="sop-n">•</div><div class="sop-body"><b>Pack Date:</b> Julian date (e.g. 145 = May 25)</div></div>
+      <div class="sop-step"><div class="sop-n">•</div><div class="sop-body"><b>Costco Item#:</b> 5–6 digit item number</div></div>
+      <div class="sop-step"><div class="sop-n">•</div><div class="sop-body"><b>Case Weight:</b> Net weight printed on box end</div></div>
+    </div>`},
+  {id:'case-sale',label:'Case Sale',icon:'📦',sub:'Toledo scale process',content:`
+    <div class="sop-sec">
+      <div class="sop-sec-title">Selling a Whole Case</div>
+      <div class="sop-step"><div class="sop-n">1</div><div class="sop-body">Member requests a case — pull product from back cooler.</div></div>
+      <div class="sop-step"><div class="sop-n">2</div><div class="sop-body">Scan box into production via <b>RF Option 67</b>.</div></div>
+      <div class="sop-step"><div class="sop-n">3</div><div class="sop-body">Bring to Toledo scale.</div></div>
+      <div class="sop-step"><div class="sop-n">4</div><div class="sop-body">Select <b>Category 690</b> PLU on scale.</div></div>
+      <div class="sop-step"><div class="sop-n">5</div><div class="sop-body">Enter PLU number → enter weight.</div></div>
+      <div class="sop-step"><div class="sop-n">6</div><div class="sop-body">Press <b>PRINT INHIBITS</b> to remove sell-by date.</div></div>
+      <div class="sop-step"><div class="sop-n">7</div><div class="sop-body">Tab <b>SELL BY DATE</b> until field is blank → print label.</div></div>
+      <div class="sop-note">Case PLUs are in the Cases section. Category 690 = whole case override.</div>
+    </div>`},
+  {id:'cool',label:'COOL',icon:'🌎',sub:'Country of Origin',content:`
+    <div class="sop-sec">
+      <div class="sop-sec-title">What Requires COOL Labeling</div>
+      <div class="sop-step"><div class="sop-n">•</div><div class="sop-body">Federal law: must label <b>Country of Origin</b> AND <b>Wild or Farmed</b> on all covered items.</div></div>
+      <div class="sop-step"><div class="sop-n">✓</div><div class="sop-body"><b>Covered:</b> Seafood (uncooked/unseasoned), Poultry, Lamb.</div></div>
+      <div class="sop-step"><div class="sop-n">✗</div><div class="sop-body"><b>Not covered:</b> Beef, Pork (processed items exempt).</div></div>
+      <div class="sop-step"><div class="sop-n">•</div><div class="sop-body">Post COOL reference sheet at every seafood scale.</div></div>
+      <div class="sop-step"><div class="sop-n">•</div><div class="sop-body">Sell under the CORRECT item number — wrong PLU = wrong COOL declaration.</div></div>
+      <div class="sop-warn">⚠ COOL violations can trigger federal audit findings.</div>
+    </div>
+    <div class="sop-sec">
+      <div class="sop-sec-title">Record Retention</div>
+      <div class="sop-step"><div class="sop-n">•</div><div class="sop-body">Retain original box labels or equivalent documentation for audits.</div></div>
+      <div class="sop-step"><div class="sop-n">•</div><div class="sop-body">Records must show Country of Origin AND Wild vs. Farmed.</div></div>
+      <div class="sop-step"><div class="sop-n">•</div><div class="sop-body">Use <b>PLU 999 (COOL Log)</b> to track covered items daily.</div></div>
+    </div>`},
+  {id:'shelf-life',label:'Shelf Life',icon:'📅',sub:'Dating reference',content:`
+    <div class="sop-sec">
+      <div class="sop-sec-title">Meat &amp; Seafood Shelf Life</div>
+      <div class="sop-step"><div class="sop-n" style="color:#c04040;font-size:14px">7d</div><div class="sop-body"><b>Sub Primals</b> — vacuum packed (all species)</div></div>
+      <div class="sop-step"><div class="sop-n" style="color:#c04040;font-size:14px">4d</div><div class="sop-body"><b>Steak / Roast</b> — tray pack</div></div>
+      <div class="sop-step"><div class="sop-n" style="color:#d06090;font-size:14px">4d</div><div class="sop-body"><b>Pork</b> — tray pack</div></div>
+      <div class="sop-step"><div class="sop-n" style="color:#c04040;font-size:14px">3d</div><div class="sop-body"><b>Ground Beef / Patties</b> — tray pack</div></div>
+      <div class="sop-step"><div class="sop-n" style="color:#c8a800;font-size:14px">3d</div><div class="sop-body"><b>Chicken</b> — tray pack</div></div>
+      <div class="sop-step"><div class="sop-n" style="color:#4a9ae0;font-size:14px">14d</div><div class="sop-body"><b>Fresh Salmon Fillet</b> — farmed (Norway / Chile / Faroe)</div></div>
+      <div class="sop-step"><div class="sop-n" style="color:#4a9ae0;font-size:14px">10d</div><div class="sop-body"><b>Fresh Wild Fish</b> — most species</div></div>
+      <div class="sop-step"><div class="sop-n" style="color:#4a9ae0;font-size:14px">10d</div><div class="sop-body"><b>Fresh Shellfish</b> — live clams / mussels / oysters</div></div>
+      <div class="sop-step"><div class="sop-n" style="color:#4a9ae0;font-size:14px">7d</div><div class="sop-body"><b>Dungeness Crab</b> — cooked</div></div>
+      <div class="sop-step"><div class="sop-n" style="color:#7aaac8;font-size:14px">7d</div><div class="sop-body"><b>Frozen Seafood</b> — deglazing WIP label</div></div>
+      <div class="sop-note">Sell By = Packed On + shelf life days, minus 1. Example: Steak packed Monday → Sell By Thursday.</div>
+    </div>`},
+  {id:'closing',label:'Closing',icon:'🔒',sub:'End-of-day checklist',content:`
+    <div class="sop-sec">
+      <div class="sop-sec-title">Meat Dept Closing</div>
+      <div class="sop-step"><div class="sop-n">1</div><div class="sop-body">Pull all expired or same-day sell-by product. Mark down or remove from floor.</div></div>
+      <div class="sop-step"><div class="sop-n">2</div><div class="sop-body">Consolidate and rotate remaining product. Face-forward all trays.</div></div>
+      <div class="sop-step"><div class="sop-n">3</div><div class="sop-body">Scan all shrink via <b>RF Option 72</b> — damaged or disposed product must be logged.</div></div>
+      <div class="sop-step"><div class="sop-n">4</div><div class="sop-body">Clean and sanitize all cutting boards, scales, knives, and work surfaces.</div></div>
+      <div class="sop-step"><div class="sop-n">5</div><div class="sop-body">If grinder was used: complete full <b>SSOP FS06</b> cleanup and form.</div></div>
+      <div class="sop-step"><div class="sop-n">6</div><div class="sop-body">Check all cooler temps. Log readings per HACCP requirements.</div></div>
+      <div class="sop-step"><div class="sop-n">7</div><div class="sop-body">Stock cases for next-day open if product is available.</div></div>
+      <div class="sop-step"><div class="sop-n">8</div><div class="sop-body">Update COOL log (PLU 999) if seafood / poultry / lamb was processed.</div></div>
+      <div class="sop-note">All coolers must hold 28–36°F for meat products.</div>
+    </div>`},
+];
+
+// ── VIEW STATE ────────────────────────────────────────────────────────────────
+const STACK=[{id:'hub',title:'Meat Field Guide',sub:'DEPT 61 · TEMPE'}];
+
+function nav(id,title,sub){
+  const el=document.getElementById('v-'+id);
+  if(!el)return;
+  STACK.push({id,title,sub});
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('page-title').textContent=title||'';
+  document.getElementById('page-sub').textContent=sub||'';
+  document.getElementById('back-btn').classList.toggle('hide',STACK.length<=1);
+  document.getElementById('content').scrollTop=0;
+}
+
+function goBack(){
+  if(STACK.length<=1)return;
+  STACK.pop();
+  const prev=STACK[STACK.length-1];
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-'+prev.id).classList.add('active');
+  document.getElementById('page-title').textContent=prev.title||'';
+  document.getElementById('page-sub').textContent=prev.sub||'';
+  document.getElementById('back-btn').classList.toggle('hide',STACK.length<=1);
+  document.getElementById('content').scrollTop=0;
+}
+
+// ── RENDER PLU HUB ─────────────────────────────────────────────────────────────
+function renderPLUHub(){
+  const order=['beef','pork','lamb','poultry','seafood','grinds','cryo','cases'];
+  let html='';
+  order.forEach(k=>{
+    const cat=CATS[k];
+    const n=itemCount(k);
+    html+=`<button class="pcat-btn" style="background:${cat.color.bg}22;border:1px solid ${cat.color.bg}66" onclick="openPLU('${k}')">
+      <div class="pcat-icon">${cat.icon}</div>
+      <div class="pcat-label" style="color:${cat.color.tx}">${cat.label}</div>
+      <div class="pcat-count" style="color:${cat.color.tx}">${n} items</div>
+    </button>`;
+  });
+  const lc=CATS.logs;
+  html+=`<button class="pcat-btn pcat-logs" style="background:${lc.color.bg}22;border:1px solid ${lc.color.bg}66" onclick="openPLU('logs')">
+    <div class="pcat-icon">${lc.icon}</div>
+    <div class="pcat-label" style="color:${lc.color.tx}">Logs</div>
+    <div class="pcat-count" style="color:${lc.color.tx}">Admin / Production</div>
+  </button>`;
+  document.getElementById('plu-hub-grid').innerHTML=html;
+}
+
+// ── SHELF LIFE HTML ───────────────────────────────────────────────────────────
+const SHELF_HTML=`<div class="shelf-wrap"><details class="shelf">
+  <summary class="shelf-sum">Shelf Life Reference <svg class="shev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></summary>
+  <div class="shelf-body">
+    <div class="shelf-row"><span class="shelf-item">Sub Primals (vacuum packed)</span><span class="shelf-days">7d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Steak / Roast (tray pack)</span><span class="shelf-days">4d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Pork (tray pack)</span><span class="shelf-days">4d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Ground Beef / Patties (tray pack)</span><span class="shelf-days">3d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Chicken (tray pack)</span><span class="shelf-days">3d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Fresh Salmon Fillet (farmed)</span><span class="shelf-days">14d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Fresh Wild Fish (most)</span><span class="shelf-days">10d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Fresh Shellfish (live)</span><span class="shelf-days">10d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Dungeness Crab (cooked)</span><span class="shelf-days">7d</span></div>
+    <div class="shelf-row"><span class="shelf-item">Frozen Seafood (WIP)</span><span class="shelf-days">7d</span></div>
+  </div>
+</details></div>`;
+
+const CASE_HTML=`<div class="case-card">
+  <div class="case-title">How to Sell a Whole Case</div>
+  <div class="case-step"><div class="case-n">1.</div>Member requests case — pull from back cooler</div>
+  <div class="case-step"><div class="case-n">2.</div>Scan into production (RF Option 67)</div>
+  <div class="case-step"><div class="case-n">3.</div>Toledo scale → select <b>Category 690</b> PLU</div>
+  <div class="case-step"><div class="case-n">4.</div>Enter PLU number → enter weight</div>
+  <div class="case-step"><div class="case-n">5.</div>Press <b>PRINT INHIBITS</b> → tab SELL BY until blank → print</div>
+</div>`;
+
+// ── RENDER PLU LIST ───────────────────────────────────────────────────────────
+function openPLU(key){
+  const cat=CATS[key];
+  if(!cat)return;
+  let html='';
+  if(cat.shelfLife) html+=SHELF_HTML;
+  if(cat.caseInfo) html+=CASE_HTML;
+
+  cat.sections.forEach(sec=>{
+    const animalKey=sec.animal||((['beef','pork','lamb','poultry','seafood'].includes(key))?key:null);
+    const clr=animalKey&&C[animalKey]?C[animalKey]:null;
+    const titleTx=clr?clr.tx:'#7a8499';
+    const titleBd=clr?clr.bg+'44':'#2a2a2a';
+
+    if(sec.note){
+      html+=`<div class="plu-sec-hdr" style="color:${titleTx};border-bottom-color:${titleBd}">${sec.title}</div>`;
+      html+=`<div style="padding:10px 14px;font-size:12px;color:var(--mt);background:#0f0f0f">${sec.note}</div>`;
+      return;
+    }
+
+    html+=`<div class="plu-sec-hdr" style="color:${titleTx};border-bottom-color:${titleBd}">${sec.title}</div>`;
+    sec.items.forEach(item=>{
+      const [name,plu,overrideAnimal]=item;
+      const rowAnimal=overrideAnimal||(sec.animal||animalKey);
+      const numClr=rowAnimal&&C[rowAnimal]?C[rowAnimal].tx:'#e8192c';
+      if(plu===null){
+        html+=`<div class="plu-row" style="opacity:.55;cursor:default">
+          <div class="plu-name">${name}</div>
+          <div class="plu-num" style="font-size:11px;color:var(--mt)">verify</div>
+        </div>`;
+      } else {
+        html+=`<div class="plu-row" onclick="tapPLU(${plu})">
+          <div class="plu-name">${name}</div>
+          <div class="plu-num" style="color:${numClr}">${plu}</div>
+        </div>`;
+      }
+    });
+  });
+
+  document.getElementById('plu-list-inner').innerHTML=html;
+  nav('plu-list',cat.label+' PLUs',cat.label.toUpperCase());
+}
+
+// ── RENDER AS400 ──────────────────────────────────────────────────────────────
+function renderAS400(){
+  const secs=[
+    {key:'rf',label:'RF Scanner / Handheld',color:'#1a8a50'},
+    {key:'item',label:'Item Lookup',color:'#cc1020'},
+    {key:'sales',label:'Production & Sales Planning',color:'#4a9ae0'},
+    {key:'signs',label:'Signs',color:'#c8a800'},
+    {key:'rpts',label:'Reports & Inventory',color:'#9aaab8'},
+  ];
+  let html='';
+  secs.forEach(sec=>{
+    const cmds=CMDS.filter(c=>c.cat===sec.key);
+    if(!cmds.length)return;
+    html+=`<div class="a4-sec" style="color:${sec.color}">${sec.label}</div>`;
+    if(sec.key==='rf'){
+      html+=`<details class="cmd"><summary class="cmd-sum">
+        <div class="cmd-top"><span class="cbadge rf">QUICK REF</span><span class="cmd-name">RF Scanner Options</span>
+        <svg class="cchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+      </summary><div class="cmd-body" style="padding:0">
+        <table class="rf-table"><tr><th>Opt</th><th>Function</th></tr>`;
+      cmds.forEach(c=>{html+=`<tr><td>${c.cmd}</td><td>${c.name}</td></tr>`;});
+      html+=`</table></div></details>`;
+    }
+    cmds.forEach(c=>{
+      html+=`<details class="cmd"><summary class="cmd-sum">
+        <div class="cmd-top">
+          <span class="cbadge${c.cat==='rf'?' rf':''}">${c.cmd}</span>
+          <span class="cmd-name">${c.name}</span>
+          <svg class="cchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="cmd-desc">${c.desc}</div>
+      </summary>
+      <div class="cmd-body">
+        ${c.steps?`<div>${c.steps}</div>`:''}
+        ${c.tip?`<div class="cmd-tip">⚡ ${c.tip}</div>`:''}
+      </div></details>`;
+    });
+  });
+  document.getElementById('as400-inner').innerHTML=html;
+}
+
+// ── RENDER SOP HUB ────────────────────────────────────────────────────────────
+function renderSOPHub(){
+  document.getElementById('sop-grid').innerHTML=SOPS.map(s=>
+    `<button class="sop-btn" onclick="openSOP('${s.id}')">
+      <div class="sop-icon">${s.icon}</div>
+      <div class="sop-label">${s.label}</div>
+      <div class="sop-sub">${s.sub}</div>
+    </button>`
+  ).join('');
+}
+
+function openSOP(id){
+  const s=SOPS.find(x=>x.id===id);
+  if(!s)return;
+  document.getElementById('sop-detail-inner').innerHTML=s.content;
+  nav('sop-detail',s.label,'SOP');
+}
+
+// ── SEARCH ────────────────────────────────────────────────────────────────────
+function sc(text,q){
+  if(!text||!q)return 0;
+  const t=text.toLowerCase(),qL=q.toLowerCase();
+  if(t===qL)return 100;
+  if(t.startsWith(qL))return 88;
+  if(t.includes(qL))return 72;
+  return 0;
+}
+function hl(text,q){
+  if(!q)return String(text||'');
+  return String(text).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark>$1</mark>');
+}
+
+function doSearch(raw){
+  const q=raw.trim();
+  if(!q){clearSearch();return;}
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-search').classList.add('active');
+  const pluRes=[],cmdRes=[];
+  const isNum=/^\d+$/.test(q);
+  Object.entries(CATS).forEach(([key,cat])=>{
+    cat.sections.forEach(sec=>{
+      const ak=sec.animal||((['beef','pork','lamb','poultry','seafood'].includes(key))?key:null);
+      sec.items.forEach(item=>{
+        const [name,plu,overAnimal]=item;
+        if(plu===null)return;
+        const ps=String(plu);
+        const rowAnimal=overAnimal||ak;
+        let s=0;
+        if(isNum){if(ps===q)s=300;else if(ps.startsWith(q))s=200;else if(ps.includes(q))s=100;}
+        s=Math.max(s,sc(name,q),sc(ps,q),sc(cat.label,q));
+        if(s>0)pluRes.push({name,plu,catLabel:cat.label,rowAnimal,s});
+      });
+    });
+  });
+  pluRes.sort((a,b)=>b.s-a.s);
+  CMDS.forEach(c=>{
+    const s=Math.max(sc(c.cmd,q),sc(c.name,q),sc(c.desc||'',q));
+    if(s>0)cmdRes.push({...c,s});
+  });
+  cmdRes.sort((a,b)=>b.s-a.s);
+  let html='';
+  if(pluRes.length){
+    html+=`<div class="sr-hdr">PLU Numbers (${pluRes.length})</div>`;
+    pluRes.slice(0,20).forEach(r=>{
+      const numClr=r.rowAnimal&&C[r.rowAnimal]?C[r.rowAnimal].tx:'#e8192c';
+      html+=`<div class="sr-card" onclick="tapPLU(${r.plu})">
+        <div class="sr-plu" style="color:${numClr}">${hl(String(r.plu),q)}</div>
+        <div class="sr-name">${hl(r.name,q)}</div>
+        <div class="sr-sub">${hl(r.catLabel,q)}</div>
+      </div>`;
+    });
+  }
+  if(cmdRes.length){
+    html+=`<div class="sr-hdr">AS400 Commands (${cmdRes.length})</div>`;
+    cmdRes.slice(0,10).forEach(r=>{
+      html+=`<div class="sr-card">
+        <div><span class="sr-cbadge">${hl(r.cmd,q)}</span><span style="font-weight:700">${hl(r.name,q)}</span></div>
+        <div class="sr-desc">${hl(r.desc,q)}</div>
+      </div>`;
+    });
+  }
+  if(!html)html=`<div class="no-res">No results for "<b>${q}</b>"</div>`;
+  document.getElementById('search-inner').innerHTML=html;
+}
+
+function clearSearch(){
+  document.getElementById('srch-input').value='';
+  document.getElementById('srch-clr').style.display='none';
+  const cur=STACK[STACK.length-1];
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-'+cur.id).classList.add('active');
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────────────
+function tapPLU(plu){
+  if(navigator.vibrate)navigator.vibrate(30);
+  if(navigator.clipboard)navigator.clipboard.writeText(String(plu)).catch(()=>{});
+  showToast('PLU '+plu+' copied!');
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+// ── VIEWPORT ──────────────────────────────────────────────────────────────────
+let _vh=0;
+function applyVH(){
+  const h=window.visualViewport?window.visualViewport.height:window.innerHeight;
+  if(!_vh)_vh=h;
+  document.getElementById('app').style.height=((_vh-h>150)?h:_vh)+'px';
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  renderPLUHub();
+  renderAS400();
+  renderSOPHub();
+
+  const inp=document.getElementById('srch-input');
+  const clr=document.getElementById('srch-clr');
+  let st;
+  inp.addEventListener('input',()=>{
+    const v=inp.value;
+    clr.style.display=v?'flex':'none';
+    clearTimeout(st);
+    st=setTimeout(()=>doSearch(v),v.length<3?0:50);
+  });
+  inp.addEventListener('blur',()=>{
+    setTimeout(()=>{if(_vh)document.getElementById('app').style.height=_vh+'px';},100);
+  });
+
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',()=>{if(document.activeElement!==inp)applyVH();});
+  }
+  window.addEventListener('resize',()=>{if(document.activeElement!==inp)applyVH();});
+  applyVH();
+  window.addEventListener('beforeinstallprompt',e=>e.preventDefault());
+
+  if('serviceWorker' in navigator){
+    const sw=`const C='mg-v1';self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(clients.claim()));self.addEventListener('fetch',e=>e.respondWith(caches.open(C).then(c=>c.match(e.request).then(h=>{const f=fetch(e.request).then(r=>{c.put(e.request,r.clone());return r}).catch(()=>h);return h||f}))));`;
+    navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'})),{scope:'./'}).catch(()=>{});
+  }
+});
+</script>
+</body>
+</html>
